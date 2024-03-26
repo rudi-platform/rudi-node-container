@@ -2,6 +2,7 @@
 **/custom.ini
 **/*custom.ini
 **/env.json
+env/*
 
 # Generated
 *-lock.json
