@@ -1,17 +1,17 @@
-# !/bin/bash
+#!/usr/bin/env bash
+
+# ==================================================================================================
+# This script installs all the module (except prodmanager/front that was built earlier)
+# ==================================================================================================
 
 ls -la
 
 source .bashrc
-mv .bashrc ~
 
 WK_DIR=`pwd`
 
 npm config set loglevel error
 npm i -g npm@latest
-
-logmsg "Installing MongoDB"
-# ccd "${WK_DIR}/mongo" && npm i -g mongo 
 
 for module in api media prodmanager console crypto; do
     logmsg "Installing NodeJS app: rudi-${module} "

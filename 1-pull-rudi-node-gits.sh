@@ -1,10 +1,12 @@
 #!/bin/bash
 
+# ==================================================================================================
+# This script clone (or pull) the git repository for every RUDI module then builds RUDI Prodmanager 
+# frontend
+# ==================================================================================================
+
 source "./install/.bashrc"
 logmsg 'File .bashrc sourced'
-
-# Argument 1 is the name for the docker image that is produced.
-CONTAINER_IMG_NAME="$1" || "rudi-node:release"
 
 REPO=https://-:${aqmo_git_rudi_container}@gitlab.aqmo.org/rudidev
 WK_DIR=`pwd`
@@ -23,23 +25,11 @@ for module in api media prodmanager console crypto; do
         git clone "${mod_repo}" "${mod_dir}"
     fi
     if [ $module == prodmanager ]; then
-        logmsg "Installing prodmanager front"
+        logmsg "Installing prodmanager frontend"
         cd front
-        rm -fR front/build/*
         export PUBLIC_URL=/prodmanager
         npm i
-        logmsg "Building prodmanager front"
+        logmsg "Building prodmanager frontend"
         npm run build
-        rm -fR node_modules
     fi
 done
-
-logmsg "Building the OCI image '${CONTAINER_IMG_NAME}'"
-
-cd "$WK_DIR"
-podman build                             \
-    -f Dockerfile                        \
-    -t "${CONTAINER_IMG_NAME}" .         \
-    2>&1 | tee `logfile rudi-node-build`
-
-logmsg "Container built"
