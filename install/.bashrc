@@ -7,7 +7,10 @@
 HISTCONTROL=ignoreboth
 
 # append to the history file, don't overwrite it
-# shopt -s histappend
+shopt -s histappend
+
+# enable alias expansion
+shopt -s expand_aliases
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
@@ -77,22 +80,74 @@ fi
 
 
 #----- Functions -----------------------------------------------------------------------------------
+# Execute a mathematical operation expressed as a string
 calc () { awk "BEGIN { print "$*" }"; }
 
-nowMs () { node -e 'console.log(Date.now())'; }
-export nowMs
+# Gives the actual date in seconds as a string
+now_s_str () { date +%Y-%m-%d_%H%M%S; }
+export nowS
 
-TIME_SOURCED=$(nowMs)
+# Gives the actual date in Ms as an integer number
+now_ms_int () { node -e 'console.log(Date.now())'; }
+export now_ms_int
+
+TIME_SOURCED=$(now_ms_int)
 export TIME_SOURCED
-timeSpent () { echo "$( calc "($(nowMs)-${TIME_SOURCED})/1000" )"; }
-export timeSpent
 
+# Calculate the time spent (s, float) between two dates expressed in ms, int
+# Arg 1: reference time (ms, int) - defaulted to above ${TIME_SOURCED}
+# Arg 2: actual time (ms, int) - defaulted to the result of above now_ms_int function
+time_spent_s () { 
+    if [ $# -lt 2 ]; then 
+        now=`now_ms_int`; 
+    else
+        now=$2
+    fi
+    if [ $# -lt 1 ]; then 
+        ref_time=0${TIME_SOURCED}; 
+    else
+        ref_time=$1
+    fi
+    echo "$( calc "(${now}-${ref_time})/1000" )"; 
+}
+export time_spent_s
+
+# Access a folder like `cd` but creates the folder beforehand if it doesn't exist
 ccd () { test -d "$1" || mkdir -p "$1" && cd "$1"; }
 export ccd 
 
-logfile () { mkdir -p logs; echo "logs/${1}_$(date +%Y-%m-%d_%H%M%S).log"; }
-export logfile
+logfile_path () { mkdir -p logs; echo "logs/${1}_$(now_s_str).log"; }
+export logfile_path
 
-logmsg () { echo; echo "-----( $(timeSpent)s )----------[ $1 ]"; echo; }
-export logmsg 
+log_msg () { echo; echo "-----( $(time_spent_s)s )----------[ $@ ]"; echo; }
+export log_msg 
 
+log_in_file () { exec > >(tee `logfile_path "$1"`) 2>&1; }
+export log_in_file
+
+# Gives the name of the most recently modified file in a folder, excluding dot files and subfolders 
+last_modified () {
+    if [ $# -lt 1 ]; then 
+        folder=.
+    else
+        folder=$*
+    fi
+    # find "${folder}" -maxdepth 1 -type f ! -name ".*" -exec stat -f "%m %N" {} + | sort -rn | head -n 1 | awk '{for (i=2; i<NF; i++) printf $i " "; print $NF}'
+    # find "$folder" -maxdepth 1 -type f ! -name ".*" -printf "%T+ %p\n" | sort -r | head -n 1 | cut -d" " -f2-; 
+    # ls -ltp "$folder"
+    ls -ltp "$folder" | grep -v '^[dl]' | grep -v '^\.' | grep -v '^total.*$' | head -1 | awk '{for (i=9; i<=NF; i++) printf $i " "; print ""}'
+}
+export last_modified
+
+#----- SIGTERM -------------------------------------------------------------------------------------
+
+# Function to handle SIGTERM
+cleanup() {
+  echo "Signal received, shutting down..."
+  # Use 'kill 0' to terminate all processes in the current process group
+  kill 0
+}
+export cleanup
+
+# Trap SIGTERM and call the cleanup function
+trap 'cleanup' SIGTERM

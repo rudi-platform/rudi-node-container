@@ -5,7 +5,9 @@
 # ==================================================================================================
 
 source "./install/.bashrc"
-logmsg 'File .bashrc sourced'
+log_in_file rudi-node-img
+TIME_START=$(now_ms_int)
+
 
 # Argument 1 is the name for the docker image that is produced.
 if [ $# -ne 1 ]; then
@@ -14,11 +16,13 @@ else
     CONTAINER_IMG_NAME=$1
 fi
 
-logmsg "Building the OCI image '${CONTAINER_IMG_NAME}'"
+log_msg "Building the OCI image '${CONTAINER_IMG_NAME}'"
 
-podman build                             \
-    -f Dockerfile                        \
-    -t "${CONTAINER_IMG_NAME}" .         \
-    2>&1 | tee `logfile rudi-node-build`
+podman build \
+    -f Dockerfile \
+    -t "${CONTAINER_IMG_NAME}" .         
+    # 2>&1 | tee `logfile_path rudi-node-build`
 
-logmsg "Container built"
+log_msg "Container built"
+
+echo "Execution time: $(time_spent_s ${TIME_START})s ($(basename "$0"))"

@@ -3,6 +3,7 @@
 **/*custom.ini
 **/env.json
 env/*
+_
 
 # Generated
 *-lock.json
@@ -31,6 +32,7 @@ tests/doc
 **/*.pem
 **/*.prv
 **/*.pub
+.ssh
 
 # Idz
 features
