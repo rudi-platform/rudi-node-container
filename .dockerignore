@@ -28,7 +28,6 @@ tests/doc
 # Keys
 **/*.pem
 **/*.prv
-**/*.pub
 .ssh
 
 # Idz
@@ -40,6 +39,4 @@ z_*
 # Dev
 .vscode
 
-# Doc
-**/doc
 

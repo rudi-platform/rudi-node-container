@@ -116,7 +116,8 @@ export time_spent_s
 ccd () { test -d "$1" || mkdir -p "$1" && cd "$1"; }
 export ccd 
 
-logfile_path () { mkdir -p logs; echo "logs/${1}_$(now_s_str).log"; }
+export LOG_DIR=./logs
+logfile_path () { mkdir -p logs; echo "${LOG_DIR}/${1}_$(now_s_str).log"; }
 export logfile_path
 
 log_msg () { echo; echo "-----( $(time_spent_s)s )----------[ $@ ]"; echo; }
@@ -135,9 +136,18 @@ last_modified () {
     # find "${folder}" -maxdepth 1 -type f ! -name ".*" -exec stat -f "%m %N" {} + | sort -rn | head -n 1 | awk '{for (i=2; i<NF; i++) printf $i " "; print $NF}'
     # find "$folder" -maxdepth 1 -type f ! -name ".*" -printf "%T+ %p\n" | sort -r | head -n 1 | cut -d" " -f2-; 
     # ls -ltp "$folder"
-    ls -ltp "$folder" | grep -v '^[dl]' | grep -v '^\.' | grep -v '^total.*$' | head -1 | awk '{for (i=9; i<=NF; i++) printf $i " "; print ""}'
+    ls -ltp "$folder" \
+        | grep -v '^[dl]' \
+        | grep -v '^\.' \
+        | grep -v '^total.*$' \
+        | head -1 \
+        | awk '{printf "%s", $9; for (i=10; i<=NF; i++) printf " %s", $i; print ""}'
 }
 export last_modified
+
+
+#----- NodeJS --------------------------------------------------------------------------------------
+export NODE_PATH=$(npm root -g)
 
 #----- SIGTERM -------------------------------------------------------------------------------------
 

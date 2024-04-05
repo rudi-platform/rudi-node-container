@@ -24,6 +24,7 @@ tests/doc
 # Zip
 **/*.zip
 **/*.gz
+data
 
 # XLSX
 **/*.xls*
@@ -32,6 +33,7 @@ tests/doc
 **/*.pem
 **/*.prv
 **/*.pub
+pubk
 .ssh
 
 # Idz

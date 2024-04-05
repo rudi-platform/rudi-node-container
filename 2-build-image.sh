@@ -25,4 +25,4 @@ podman build \
 
 log_msg "Container built"
 
-echo "Execution time: $(time_spent_s ${TIME_START})s ($(basename "$0"))"
+echo "Execution time: $(time_spent_s "${TIME_START}")s ($(basename "$0"))"
