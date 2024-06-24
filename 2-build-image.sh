@@ -19,7 +19,7 @@ fi
 log_msg "Building the OCI image '${CONTAINER_IMG_NAME}'"
 
 podman build \
-    -f Dockerfile \
+    -f ./Dockerfile \
     -t "${CONTAINER_IMG_NAME}" .         
     # 2>&1 | tee `logfile_path rudi-node-build`
 

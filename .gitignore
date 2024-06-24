@@ -2,7 +2,7 @@
 **/custom.ini
 **/*custom.ini
 **/env.json
-env/*
+**/env
 _
 
 # Generated
@@ -33,14 +33,15 @@ data
 **/*.pem
 **/*.prv
 **/*.pub
-pubk
 .ssh
+ssh
 
 # Idz
 features
 notes
 demo
 z_*
+wip*
 
 # Dev
 .vscode

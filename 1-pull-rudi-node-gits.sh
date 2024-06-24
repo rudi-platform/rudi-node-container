@@ -9,23 +9,25 @@ source "./install/.bashrc"
 log_in_file rudi-node-git
 TIME_START=$(now_ms_int)
 
+# shellcheck disable=SC2154
+GIT_TOKEN="${aqmo_git_rudi_pod_token}"
 
-REPO=https://-:${aqmo_git_rudi_container}@gitlab.aqmo.org/rudidev
-export WK_DIR=$(pwd)
-SRC_DIR=${WK_DIR}/src
+REPO=https://-:${GIT_TOKEN}@gitlab.aqmo.org/rudidev
+PRJ_DIR=$(pwd)
+PRJ_SRC_DIR=${PRJ_DIR}/src
 
 # This file is used to gather each repository's git tag
-ENV_DIR=${WK_DIR}/env
-GIT_REV_FILE=${ENV_DIR}/git-rev.ini
+PRJ_ENV_DIR=${PRJ_DIR}/env
+GIT_REV_FILE=${PRJ_ENV_DIR}/git-rev.ini
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
 for module in api media prodmanager console crypto; do
     # Recreating the git repo URI for this RUDI module
-    mod_git=$( jq -r .${module} <"${WK_DIR}/git_sources.json")
+    mod_git=$( jq -r .${module} <"${PRJ_DIR}/git_sources.json")
     mod_repo=${REPO}/${mod_git}
     # Local destination folder for the RUDI module
-    mod_dir=${SRC_DIR}/rudi-${module}
-    ccd "${SRC_DIR}"
+    mod_dir=${PRJ_SRC_DIR}/rudi-${module}
+    ccd "${PRJ_SRC_DIR}"
 
     if [ -d "${mod_dir}" ]; then 
         log_msg Pulling git repo: rudi-${module}

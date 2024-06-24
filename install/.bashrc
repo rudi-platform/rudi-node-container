@@ -1,3 +1,4 @@
+#!/bin/bash
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -74,14 +75,11 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
+if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi
 
 #----- Functions -----------------------------------------------------------------------------------
 # Execute a mathematical operation expressed as a string
-calc () { awk "BEGIN { print "$*" }"; }
+calc () { awk "BEGIN { print $* }"; }
 
 # Gives the actual date in seconds as a string
 now_s_str () { date +%Y-%m-%d_%H%M%S; }
@@ -99,7 +97,7 @@ export TIME_SOURCED
 # Arg 2: actual time (ms, int) - defaulted to the result of above now_ms_int function
 time_spent_s () { 
     if [ $# -lt 2 ]; then 
-        now=`now_ms_int`; 
+        now=$(now_ms_int); 
     else
         now=$2
     fi
@@ -113,17 +111,17 @@ time_spent_s () {
 export time_spent_s
 
 # Access a folder like `cd` but creates the folder beforehand if it doesn't exist
-ccd () { test -d "$1" || mkdir -p "$1" && cd "$1"; }
+ccd () { test -d "$1" || mkdir -p "$1" && cd "$1" || exit; }
 export ccd 
 
 export LOG_DIR=./logs
 logfile_path () { mkdir -p logs; echo "${LOG_DIR}/${1}_$(now_s_str).log"; }
 export logfile_path
 
-log_msg () { echo; echo "-----( $(time_spent_s)s )----------[ $@ ]"; echo; }
+log_msg () { echo; echo "-----( $(time_spent_s)s )----------[ $* ]"; echo; }
 export log_msg 
 
-log_in_file () { exec > >(tee `logfile_path "$1"`) 2>&1; }
+log_in_file () { exec > >(tee "$(logfile_path "$1")") 2>&1; }
 export log_in_file
 
 # Gives the name of the most recently modified file in a folder, excluding dot files and subfolders 
@@ -145,6 +143,16 @@ last_modified () {
 }
 export last_modified
 
+
+#----- SSH -----------------------------------------------------------------------------------------
+export SSH_RUDIAPI=pm_api
+export SSH_RUDIMEDIA=pm_media
+genssh() { 
+    if [[ $# -lt 2 ]]; then out="./$1"; else out="$2/$1"; fi
+    ssh-keygen -t ed25519 -C "$1" -q -N '' -f "$out"
+    chmod 400 "$out"
+}
+export genssh
 
 #----- NodeJS --------------------------------------------------------------------------------------
 export NODE_PATH=$(npm root -g)
