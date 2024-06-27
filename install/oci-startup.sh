@@ -77,6 +77,16 @@ log_msg "----- Launching RUDI node module: Storage"
 cd "${WK_DIR}/rudi-storage/"
 node index.js --revision "$revision" --ini "$RUDI_STORAGE_USER_CONF" &
 
+# Starting RUDI node Manager backend in the background
+log_msg "----- Launching RUDI node module: Manager back-end"
+cd "${WK_DIR}/rudi-manager/"
+node server.js --hash $storage_git_rev --tag "$REVISION" --node_env="$NODE_ENV" --conf "$RUDI_MANAGER_USER_CONF" &
+
+# Starting RUDI node Manager frontend in the background
+log_msg "----- Launching RUDI node module: Manager front-end"
+cd "${WK_DIR}/rudi-manager/front"
+
+
 # Bringing the primary process back ito the foreground
 # and leaving it there
 fg %1

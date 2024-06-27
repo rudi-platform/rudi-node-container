@@ -21,12 +21,10 @@ echo RUDI_CATALOG_USER_CONF="$RUDI_CATALOG_USER_CONF"
 
 chmod 100 "$ENV_DIR"
 
-l
-
 log_msg "SSH setup"
 chmod 700 "$SSH_DIR"
 
-for keyname in "$SSH_RUDIAPI" "$SSH_RUDIMEDIA"; do
+for keyname in ${SSH_KEYS[@]}; do
     genssh "$keyname" "$SSH_DIR/"
 done
 chmod 400 "$SSH_DIR"/*.pub
