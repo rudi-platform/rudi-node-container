@@ -1,7 +1,7 @@
 {
-  "api": "rudi-prod.git",
+  "catalog": "rudi-prod.git",
   "media": "rudi-media.git",
-  "prodmanager": "rudi-console-proxy.git",
+  "manager": "rudi-console-proxy.git",
   "console": "rudi-console.git",
   "crypto": "rudi-crypto.git"
 }

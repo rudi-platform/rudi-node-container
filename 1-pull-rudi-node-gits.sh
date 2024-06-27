@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==================================================================================================
-# This script clone (or pull) the git repository for every RUDI module then builds RUDI Prodmanager 
+# This script clone (or pull) the git repository for every RUDI module then builds RUDI Prodmanager
 # frontend
 # ==================================================================================================
 
@@ -21,7 +21,7 @@ PRJ_ENV_DIR=${PRJ_DIR}/env
 GIT_REV_FILE=${PRJ_ENV_DIR}/git-rev.ini
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
-for module in api media prodmanager console crypto; do
+for module in catalog storage manager console crypto; do
     # Recreating the git repo URI for this RUDI module
     mod_git=$( jq -r .${module} <"${PRJ_DIR}/git_sources.json")
     mod_repo=${REPO}/${mod_git}
@@ -29,7 +29,7 @@ for module in api media prodmanager console crypto; do
     mod_dir=${PRJ_SRC_DIR}/rudi-${module}
     ccd "${PRJ_SRC_DIR}"
 
-    if [ -d "${mod_dir}" ]; then 
+    if [ -d "${mod_dir}" ]; then
         log_msg Pulling git repo: rudi-${module}
         cd "${mod_dir}" || exit 1
         git pull origin release
@@ -37,12 +37,12 @@ for module in api media prodmanager console crypto; do
         log_msg Cloning git repo: rudi-${module}
         git clone -b release --single-branch "${mod_repo}" "${mod_dir}"
     fi
-    if [ $module == prodmanager ]; then
-        log_msg Installing prodmanager frontend
+    if [ $module == manager ]; then
+        log_msg Installing manager frontend
         cd "${mod_dir}/front" || exit 1
-        export PUBLIC_URL=/prodmanager
+        export PUBLIC_URL=/ui
         npm i
-        log_msg Building prodmanager frontend
+        log_msg Building manager frontend
         npm run build
     fi
     log_msg Collecting the git tag

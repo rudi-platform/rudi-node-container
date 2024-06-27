@@ -7,9 +7,9 @@ RUN apt-get update && apt-get install -y curl &&                    \
     rm -rf /var/lib/apt/lists/*
 
 ENV WK_DIR="/app/rudi-node"                 \
-    SSH_DIR="/.ssh"             
+    SSH_DIR="/.ssh"
 ENV ENV_DIR="$WK_DIR/env"                   \
-    env_init_sh="$WK_DIR/env/_env-init.sh"   
+    env_init_sh="$WK_DIR/env/_env-init.sh"
 
 WORKDIR "$WK_DIR"
 
@@ -22,5 +22,5 @@ COPY ./ssh/* "$SSH_DIR"/
 RUN ./oci-setup.sh &&   \
     rm ./oci-setup.sh
 
-EXPOSE 3000-3003
-CMD ls -la ./oci-startup.sh && ./oci-startup.sh
+EXPOSE 3000-3033
+CMD ./oci-startup.sh

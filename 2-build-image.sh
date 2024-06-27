@@ -11,16 +11,15 @@ TIME_START=$(now_ms_int)
 
 # Argument 1 is the name for the docker image that is produced.
 if [ $# -ne 1 ]; then
-    CONTAINER_IMG_NAME=rudi-node:release
+    CONTAINER_IMG_NAME=rudinode:release
 else
     CONTAINER_IMG_NAME=$1
 fi
-
+echo CONTAINER_IMG_NAME=$CONTAINER_IMG_NAME > ./env/_oci_name.sh
 log_msg "Building the OCI image '${CONTAINER_IMG_NAME}'"
 
 podman build \
-    -f ./Dockerfile \
-    -t "${CONTAINER_IMG_NAME}" .         
+    -t "${CONTAINER_IMG_NAME}" .
     # 2>&1 | tee `logfile_path rudi-node-build`
 
 log_msg "Container built"

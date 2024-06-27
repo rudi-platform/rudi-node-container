@@ -45,3 +45,4 @@ wip*
 
 # Dev
 .vscode
+*.code-workspace
