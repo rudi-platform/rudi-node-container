@@ -30,6 +30,7 @@ done
 chmod 400 "$SSH_DIR"/*.pub
 chmod 500 "$SSH_DIR"
 
+echo "Key generated"
 l "$SSH_DIR"
 
 
@@ -39,7 +40,13 @@ npm config set loglevel error && npm i -g npm@latest
 
 for module in catalog storage manager console crypto; do
     log_msg "Installing NodeJS app: rudi-$module"
-    cd "$WK_DIR/rudi-$module" && npm i
+    module_dir="$WK_DIR/rudi-$module"
+    (cd "$module_dir" && npm i) || exit 2
+    if [ $module == manager ]; then
+        log_msg Cleaning manager front-end
+        cd "${module_dir}/front" || exit 2
+        l
+    fi
 done
 echo
 echo global packages installed here: "$(npm root -g)"

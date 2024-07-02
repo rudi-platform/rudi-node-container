@@ -22,5 +22,5 @@ COPY ./ssh/* "$SSH_DIR"/
 RUN ./oci-setup.sh &&   \
     rm ./oci-setup.sh
 
-EXPOSE 3000-3033
+EXPOSE 3330 4440 5550
 CMD ./oci-startup.sh
