@@ -1,6 +1,6 @@
 {
   "catalog": "rudi-prod.git",
-  "media": "rudi-media.git",
+  "storage": "rudi-media.git",
   "manager": "rudi-console-proxy.git",
   "console": "rudi-console.git",
   "crypto": "rudi-crypto.git"

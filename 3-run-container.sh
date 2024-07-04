@@ -22,9 +22,10 @@ podman run -it                                      \
     --log-level debug                               \
     --rm                                            \
     --name rudinode                                 \
-    --publish 3330:3330                             \
-    --publish 4440:4440                             \
-    --publish 5550:5550                             \
+    --publish 3030:3030                             \
+    --publish 3040:3040                             \
+    --publish 3050:3050                             \
+    --publish 3060:3060                             \
     --volume "${HOME}/data/dump":/data/dump:z       \
     "${CONTAINER_IMG_NAME}"
 

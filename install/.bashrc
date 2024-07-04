@@ -145,16 +145,10 @@ export last_modified
 
 
 #----- SSH -----------------------------------------------------------------------------------------
-export SSH_MNGR_CATALOG=catalog_mngr
-export SSH_MNGR_STORAGE=storage_mngr
-export SSH_STORAGE_SELF=storage_self
-
-export SSH_KEYS=($SSH_MNGR_CATALOG $SSH_MNGR_STORAGE $SSH_STORAGE_SELF)
-
 genssh() {
     if [[ $# -lt 2 ]]; then out="./$1"; else out="$2/$1"; fi
     ssh-keygen -t ed25519 -C "$1" -q -N '' -f "$out"
-    chmod 400 "$out"
+    chmod 400 "$out*"
 }
 export genssh
 

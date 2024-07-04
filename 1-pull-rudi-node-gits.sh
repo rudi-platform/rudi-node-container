@@ -9,10 +9,8 @@ source "./install/.bashrc"
 log_in_file rudi-node-git
 TIME_START=$(now_ms_int)
 
-# shellcheck disable=SC2154
-GIT_TOKEN="${aqmo_git_rudi_pod_token}"
 
-REPO=https://-:${GIT_TOKEN}@gitlab.aqmo.org/rudidev
+REPO=https://-:${rudi_node_git_token}@gitlab.aqmo.org/rudidev
 PRJ_DIR=$(pwd)
 PRJ_SRC_DIR=${PRJ_DIR}/src
 

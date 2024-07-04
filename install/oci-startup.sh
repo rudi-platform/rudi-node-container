@@ -16,7 +16,7 @@ source .bashrc
 TIME_START=$(now_ms_int)
 
 log_msg Init RUDI environment variables
-source "${env_init_sh}"
+source "${ENV_INIT_SH}"
 echo RUDI_CATALOG_USER_CONF="$RUDI_CATALOG_USER_CONF"
 
 # echo
@@ -66,26 +66,38 @@ mkdir -p "$DB_LOG_DIR"
 mongod > "${DB_LOG_DIR}/mongo-$(now_s_str).log" &
 db_restore
 
-# Starting RUDI node Catalog in the background
+# Generating the SSH keys
+log_msg "SSH setup"
+chmod 700 "$SSH_DIR"
+
+for keyname in storage_mngr catalog_mngr; do
+    ssh-keygen -t ed25519 -C "$keyname" -q -N '' -f "$SSH_DIR/$keyname"
+    chmod 400 "$SSH_DIR"/*
+done
+chmod 500 "$SSH_DIR"
+
+echo "Key generated"
+l "$SSH_DIR"
+
+# Starting RUDI node Catalog
 log_msg "----- Launching RUDI node module: Catalog"
 cd "${WK_DIR}/rudi-catalog/"
-node rudiServer.js --conf="$RUDI_CATALOG_USER_CONF" &
+node rudiServer.js --hash="$catalog_git_rev" --conf="$RUDI_CATALOG_USER_CONF" &
 
-
-# Starting RUDI node Storage in the background
+# Starting RUDI node Storage
 log_msg "----- Launching RUDI node module: Storage"
 cd "${WK_DIR}/rudi-storage/"
-node index.js --revision "$REVISION" --ini "$RUDI_STORAGE_USER_CONF" &
+node index.js --revision "$storage_git_rev" --ini "$RUDI_STORAGE_USER_CONF" &
 
-# Starting RUDI node Manager backend in the background
+# Starting RUDI node Manager backend (node_env="production" => serves the built front-end)
 log_msg "----- Launching RUDI node module: Manager"
 cd "${WK_DIR}/rudi-manager/"
-node server.js --hash $storage_git_rev --tag "$REVISION" --node_env="production" --conf "$RUDI_MANAGER_USER_CONF" &
+node server.js --hash $manager_git_rev --tag "$REVISION" --node_env="production" --conf "$RUDI_MANAGER_USER_CONF" &
 
-# Starting RUDI node Manager frontend in the background
+# Starting RUDI node Console
 log_msg "----- Launching RUDI node module: Console"
 cd "${WK_DIR}/rudi-console/"
-node index.js --revision "$REVISION" --config "$RUDI_CONSOLE_USER_CONF" &
+node index.js --revision "$console_git_rev" --config "$RUDI_CONSOLE_USER_CONF" &
 
 # Bringing the primary process back ito the foreground
 # and leaving it there
