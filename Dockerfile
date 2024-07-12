@@ -13,7 +13,7 @@ ARG SRC_DIR="./src"
 ARG public_url="https://rudinode.org"
 
 # Tag for the container, usually the RUDI node version
-ARG tag="OCI-00-2.4.0"
+ARG tag="OCI-2.5.0"
 
 # Declaring dockerfile input arguments as environment variables for later use
 ENV PUBLIC_URL=$public_url                  \
@@ -24,22 +24,24 @@ ENV WK_DIR="/app/rudi-node"                 \
     NODE_ENV="production"
 
 ENV ENV_DIR="$WK_DIR/env"                   \
-    ENV_INIT_SH="$WK_DIR/env/_env-init.sh"
+    ENV_INIT_SH="$WK_DIR/env/_env-init.sh"  \
+    CONF_DIR="$WK_DIR/conf"
 
 WORKDIR "$WK_DIR"
-RUN mkdir -p "$ENV_DIR" "$SSH_DIR"
+RUN mkdir -p "$ENV_DIR" "$SSH_DIR" "$CONF_DIR"
 
 COPY "$SRC_DIR" ./install/* "$WK_DIR"/
-COPY ./env/* "$ENV_DIR"/
 COPY ./ssh/* "$SSH_DIR"/
+COPY ./env/* "$ENV_DIR"/
+COPY ./conf/* "$CONF_DIR"/
 
-EXPOSE 3030 3040 3050 3060
+EXPOSE 3030 3031 3033
 
 RUN chmod 100 "$ENV_DIR"                                     && \
     export PATH="$(npm get prefix):$PATH"                    && \
     npm config set loglevel error                            && \
     npm i -g npm@latest                                      && \
-    for module in catalog storage manager console crypto; do    \
+    for module in catalog storage manager crypto; do            \
         echo "Installing NodeJS app: rudi-$module";             \
         cd "$WK_DIR/rudi-$module" && npm i;                     \
     done                                                     && \

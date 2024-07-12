@@ -19,7 +19,7 @@ PRJ_ENV_DIR=${PRJ_DIR}/env
 GIT_REV_FILE=${PRJ_ENV_DIR}/git-rev.ini
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
-for module in catalog storage manager console crypto; do
+for module in catalog storage manager crypto; do
     # Recreating the git repo URI for this RUDI module
     mod_git=$( jq -r .${module} <"${PRJ_DIR}/git_sources.json")
     mod_repo=${REPO}/${mod_git}

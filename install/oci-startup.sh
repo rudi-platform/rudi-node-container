@@ -7,7 +7,6 @@
 # - RUDI Storage (ex-Media)
 # - RUDI Manager: backend
 # - RUDI Manager: frontend
-# - RUDI Console
 #
 # It then performs some tests
 # ==================================================================================================
@@ -35,11 +34,11 @@ log_msg "----- DB preparation"
 
 # Waiting for MongoDB to be ready
 db_wait () {
-        until nc -z localhost $MONGO_PORT; do
+    until nc -z localhost "$MONGO_PORT"; do
         echo waiting for MongoDB to initialize...
         sleep 1
     done
-    log_msg DB is ready and listening on $(nc -z localhost $MONGO_PORT)
+    log_msg DB is ready and listening on $(nc -z localhost "$MONGO_PORT")
 }
 
 # Retrieving the last dump in the bound folder /data/dump/
@@ -51,6 +50,7 @@ db_restore () {
     db_wait
 
     log_msg Restoring a previously dumped DB
+    # shellcheck disable=SC2086
     last_dump="${DUMP_DIR}/$(last_modified ${DUMP_DIR})"
     echo "last_dump: \"${last_dump}\""
     echo
@@ -81,23 +81,18 @@ l "$SSH_DIR"
 
 # Starting RUDI node Catalog
 log_msg "----- Launching RUDI node module: Catalog"
-cd "${WK_DIR}/rudi-catalog/"
+cd "${WK_DIR}/rudi-catalog/" || exit
 node rudiServer.js --hash="$catalog_git_rev" --conf="$RUDI_CATALOG_USER_CONF" &
 
 # Starting RUDI node Storage
 log_msg "----- Launching RUDI node module: Storage"
-cd "${WK_DIR}/rudi-storage/"
+cd "${WK_DIR}/rudi-storage/" || exit
 node index.js --revision "$storage_git_rev" --ini "$RUDI_STORAGE_USER_CONF" &
 
 # Starting RUDI node Manager backend (node_env="production" => serves the built front-end)
 log_msg "----- Launching RUDI node module: Manager"
-cd "${WK_DIR}/rudi-manager/"
-node server.js --hash $manager_git_rev --tag "$REVISION" --node_env="production" --conf "$RUDI_MANAGER_USER_CONF" &
-
-# Starting RUDI node Console
-log_msg "----- Launching RUDI node module: Console"
-cd "${WK_DIR}/rudi-console/"
-node index.js --revision "$console_git_rev" --config "$RUDI_CONSOLE_USER_CONF" &
+cd "${WK_DIR}/rudi-manager/" || exit
+node server.js --hash="$manager_git_rev" --tag="$TAG" --node_env="production" --conf "$RUDI_MANAGER_USER_CONF" &
 
 # Bringing the primary process back ito the foreground
 # and leaving it there

@@ -8,6 +8,7 @@ source "./install/.bashrc"
 log_in_file rudi-node-run
 TIME_START=$(now_ms_int)
 PRJ_DIR=$(pwd)
+WK_DIR=/app/rudi-node
 echo "$PRJ_DIR"
 
 log_msg Deleting the previous container to avoid accumulation
@@ -23,10 +24,12 @@ podman run -it                                      \
     --rm                                            \
     --name rudinode                                 \
     --publish 3030:3030                             \
-    --publish 3040:3040                             \
-    --publish 3050:3050                             \
-    --publish 3060:3060                             \
-    --volume "${HOME}/data/dump":/data/dump:z       \
+    --publish 3031:3031                             \
+    --publish 3033:3033                             \
+    --volume "${HOME}/data/db":/data/db:Z           \
+    --volume "${HOME}/data/dump":/data/dump:Z       \
+    --volume "${HOME}/data/media":/data/media:Z     \
+    --volume "${HOME}/data/conf":$WK_DIR/conf:Z     \
     "${CONTAINER_IMG_NAME}"
 
 
@@ -35,11 +38,11 @@ podman run -it                                      \
     # --ip 10.88.0.88
     # --network bridge:ip=10.88.0.88,alias=rudinode
     # --network bridge:ip=10.88.0.88,alias=rudinode
-    # --publish 127.0.0.1:insidePort:outsidePort
+    # --publish localhost:insidePort:outsidePort
     # --env-file ./env/_env-init.sh
     # --log-opt=/log/path
     # --ip 10.88.0.88
-    # -v "${PRJ_DIR}/.ssh":.ssh:Z:ro
+    # -v "${PRJ_DIR}/.ssh":.ssh:Z:Ro
     # -w /app/rudi-node
 
 # Details on --publish option:
@@ -48,4 +51,6 @@ podman run -it                                      \
 # mongodump -d rudi_prod --archive=dump/rudi_catalog_dump.gz --gzip --excludeCollection logentries
 # mongorestore -vvvvv --archive=./dump/rudi_catalog_dump.gz --gzip --numInsertionWorkersPerCollection=10
 
-echo "Execution time: $( time_spent_s "${TIME_START}")s \($(basename "$0")\) )"
+echo
+# shellcheck disable=SC2046
+echo Execution time: $( time_spent_s $TIME_START)s \($(basename "$0")\)

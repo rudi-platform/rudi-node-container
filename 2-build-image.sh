@@ -8,7 +8,6 @@ source "./install/.bashrc"
 log_in_file rudi-node-img
 TIME_START=$(now_ms_int)
 
-
 # Argument 1 is the name for the docker image that is produced.
 if [ $# -ne 1 ]; then
     CONTAINER_IMG_NAME=rudinode:release
@@ -18,7 +17,7 @@ fi
 echo CONTAINER_IMG_NAME=$CONTAINER_IMG_NAME > ./env/_oci_name.sh
 log_msg "Building the OCI image '${CONTAINER_IMG_NAME}'"
 
-podman build \
+podman build                    \
     -t "${CONTAINER_IMG_NAME}" .
     # 2>&1 | tee `logfile_path rudi-node-build`
 
