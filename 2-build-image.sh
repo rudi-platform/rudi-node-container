@@ -14,7 +14,9 @@ if [ $# -ne 1 ]; then
 else
     CONTAINER_IMG_NAME=$1
 fi
-echo CONTAINER_IMG_NAME=$CONTAINER_IMG_NAME > ./env/_oci_name.sh
+
+mkdir -p ./tmp
+echo CONTAINER_IMG_NAME=$CONTAINER_IMG_NAME > ./tmp/oci_name
 log_msg "Building the OCI image '${CONTAINER_IMG_NAME}'"
 
 podman build                    \

@@ -15,7 +15,7 @@ source .bashrc
 TIME_START=$(now_ms_int)
 
 log_msg Init RUDI environment variables
-source "${ENV_INIT_SH}"
+source "$ENV_INIT_SH"
 echo RUDI_CATALOG_USER_CONF="$RUDI_CATALOG_USER_CONF"
 
 # echo
@@ -64,7 +64,7 @@ db_restore () {
 log_msg "----- Launching MongoDB"
 mkdir -p "$DB_LOG_DIR"
 mongod > "${DB_LOG_DIR}/mongo-$(now_s_str).log" &
-db_restore
+# db_restore
 
 # Generating the SSH keys
 log_msg "SSH setup"
@@ -82,17 +82,28 @@ l "$SSH_DIR"
 # Starting RUDI node Catalog
 log_msg "----- Launching RUDI node module: Catalog"
 cd "${WK_DIR}/rudi-catalog/" || exit
-node rudiServer.js --hash="$catalog_git_rev" --conf="$RUDI_CATALOG_USER_CONF" &
+node rudiServer.js                      \
+    --hash="$catalog_git_rev"           \
+    --api_url="$catalog_public_url"     \
+    --conf="$RUDI_CATALOG_USER_CONF"    &
 
 # Starting RUDI node Storage
 log_msg "----- Launching RUDI node module: Storage"
 cd "${WK_DIR}/rudi-storage/" || exit
-node index.js --revision "$storage_git_rev" --ini "$RUDI_STORAGE_USER_CONF" &
+node index.js                           \
+    --hash "$storage_git_rev"           \
+    --url "$storage_public_url"         \
+    --conf "$RUDI_STORAGE_USER_CONF"     &
 
 # Starting RUDI node Manager backend (node_env="production" => serves the built front-end)
 log_msg "----- Launching RUDI node module: Manager"
 cd "${WK_DIR}/rudi-manager/" || exit
-node server.js --hash="$manager_git_rev" --tag="$TAG" --node_env="production" --conf "$RUDI_MANAGER_USER_CONF" &
+node server.js                          \
+    --hash="$manager_git_rev"           \
+    --su="$su"                          \
+    --tag="$tag"                        \
+    --node_env="production"             \
+    --conf "$RUDI_MANAGER_USER_CONF"    &
 
 # Bringing the primary process back ito the foreground
 # and leaving it there

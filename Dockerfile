@@ -10,30 +10,37 @@ RUN apt-get update && apt-get install -y curl                    && \
 ARG SRC_DIR="./src"
 
 # Public URL of the container (used for the metadata connector URL)
-ARG public_url="https://rudinode.org"
+ARG node_public_url="https://rudinode.org"
+ARG catalog_public_url="http://localhost:3030"
+ARG storage_public_url="http://localhost:3031"
 
 # Tag for the container, usually the RUDI node version
 ARG tag="OCI-2.5.0"
+# Base64 encoded <usr>:<hashedPwd> pair. You may use /api/open/hash-credentials to correctly hash the password and encode the pair
+ARG su="bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5yTktudUFQTEp0Y1RBOFBkSklZS3dXRmpTU1lINHBHaVNVNXJsVHBBVGEyLTB0ZzItM1hBQWFrUmlUREtLTzNoR3cwMFVENmFzVXJZcFdQSW9IbXc="
 
 # Declaring dockerfile input arguments as environment variables for later use
-ENV PUBLIC_URL=$public_url                  \
-    TAG=$tag
+ENV node_public_url=$node_public_url        \
+    catalog_public_url=$catalog_public_url  \
+    storage_public_url=$storage_public_url  \
+    tag=$tag                                \
+    su=$su
 
 ENV WK_DIR="/app/rudi-node"                 \
     SSH_DIR="/.ssh"                         \
     NODE_ENV="production"
 
 ENV ENV_DIR="$WK_DIR/env"                   \
-    ENV_INIT_SH="$WK_DIR/env/_env-init.sh"  \
-    CONF_DIR="$WK_DIR/conf"
+    ENV_INIT_SH="$WK_DIR/env/env-init.sh"   \
+    INI_DIR="$WK_DIR/ini"
 
 WORKDIR "$WK_DIR"
-RUN mkdir -p "$ENV_DIR" "$SSH_DIR" "$CONF_DIR"
+RUN mkdir -p "$ENV_DIR" "$SSH_DIR" "$INI_DIR"
 
 COPY "$SRC_DIR" ./install/* "$WK_DIR"/
 COPY ./ssh/* "$SSH_DIR"/
 COPY ./env/* "$ENV_DIR"/
-COPY ./conf/* "$CONF_DIR"/
+COPY ./ini/* "$INI_DIR"/
 
 EXPOSE 3030 3031 3033
 
