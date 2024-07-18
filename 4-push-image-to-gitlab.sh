@@ -6,7 +6,6 @@
 
 
 source "./install/.bashrc"
-# source "./env/env-init.sh"
 log_in_file rudi-node-push
 
 source ./tmp/oci_name

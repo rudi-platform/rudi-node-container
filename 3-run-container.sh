@@ -5,7 +5,7 @@
 # ==================================================================================================
 
 source "./install/.bashrc"
-source "./env/env-init.sh"
+source "./install/env-init.sh"
 log_in_file rudi-node-run
 TIME_START=$(now_ms_int)
 PRJ_DIR=$(pwd)
@@ -46,7 +46,6 @@ podman run -it                                  \
     # --network bridge:ip=10.88.0.88,alias=rudinode
     # --network bridge:ip=10.88.0.88,alias=rudinode
     # --publish localhost:insidePort:outsidePort
-    # --env-file ./env/env-init.sh
     # --log-opt=/log/path
     # --ip 10.88.0.88
     # -v "${PRJ_DIR}/.ssh":.ssh:Z:Ro

@@ -42,16 +42,13 @@ ENV WK_DIR="/app/rudi-node"                 \
     SSH_DIR="/.ssh"                         \
     NODE_ENV="production"
 
-ENV ENV_DIR="$WK_DIR/env"                   \
-    ENV_INIT_SH="$WK_DIR/env/env-init.sh"   \
-    INI_DIR="$WK_DIR/ini"
+ENV INI_DIR="$WK_DIR/ini"
 
 WORKDIR "$WK_DIR"
 RUN mkdir -p "$ENV_DIR" "$SSH_DIR" "$INI_DIR"
 
 COPY "$SRC_DIR" ./install/* "$WK_DIR"/
 COPY ./ssh/* "$SSH_DIR"/
-COPY ./env/* "$ENV_DIR"/
 COPY ./ini/* "$INI_DIR"/
 
 EXPOSE 3030 3031 3033
