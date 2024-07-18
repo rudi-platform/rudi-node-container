@@ -23,6 +23,8 @@ fetch_sources:
   script:
     - echo 'fetching sources'
     - echo $CI_PROJECT_PATH
+    - ls -la $CI_PROJECT_PATH
+    - ls -la ..
     - cd $(basename ${PROJECT_PATH})
     - ls -la
     - source ./1-pull-rudi-node-gits.sh
