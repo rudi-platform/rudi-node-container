@@ -9,7 +9,12 @@ source "./install/.bashrc"
 log_in_file rudi-node-git
 TIME_START=$(now_ms_int)
 
-source "./git_sources.sh"
+
+git_sources[catalog]=rudi-prod.git
+git_sources[storage]=rudi-media.git
+git_sources[manager]=rudi-console-proxy.git
+git_sources[crypto]=rudi-crypto.git
+
 
 REPO=https://-:${rudi_node_git_token}@gitlab.aqmo.org/rudidev
 PRJ_DIR=$(pwd)
