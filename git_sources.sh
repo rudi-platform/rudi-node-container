@@ -1,0 +1,8 @@
+#!/bin/bash
+
+git_sources=(                       \
+  [catalog]=rudi-prod.git           \
+  [storage]=rudi-media.git          \
+  [manager]=rudi-console-proxy.git  \
+  [crypto]=rudi-crypto.git          \
+)

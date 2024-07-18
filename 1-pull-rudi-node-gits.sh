@@ -9,6 +9,7 @@ source "./install/.bashrc"
 log_in_file rudi-node-git
 TIME_START=$(now_ms_int)
 
+source "./git_sources.sh"
 
 REPO=https://-:${rudi_node_git_token}@gitlab.aqmo.org/rudidev
 PRJ_DIR=$(pwd)
@@ -16,12 +17,13 @@ PRJ_SRC_DIR=${PRJ_DIR}/src
 
 # This file is used to gather each repository's git tag
 PRJ_ENV_DIR=${PRJ_DIR}/env
+mkdir -p "$PRJ_ENV_DIR"
 GIT_REV_FILE=${PRJ_ENV_DIR}/git-rev.ini
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
 for module in catalog storage manager crypto; do
     # Recreating the git repo URI for this RUDI module
-    mod_git=$( jq -r .${module} <"${PRJ_DIR}/git_sources.json")
+    mod_git=$git_sources[$module]
     mod_repo=${REPO}/${mod_git}
     # Local destination folder for the RUDI module
     module_dir=${PRJ_SRC_DIR}/rudi-${module}

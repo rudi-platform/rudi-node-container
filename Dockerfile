@@ -51,7 +51,6 @@ RUN mkdir -p "$ENV_DIR" "$SSH_DIR" "$INI_DIR"
 
 COPY "$SRC_DIR" ./install/* "$WK_DIR"/
 COPY ./ssh/* "$SSH_DIR"/
-COPY ./env/* "$ENV_DIR"/
 COPY ./ini/* "$INI_DIR"/
 
 EXPOSE 3030 3031 3033
@@ -64,7 +63,6 @@ RUN chmod 100 "$ENV_DIR"                                     && \
         echo "Installing NodeJS app: rudi-$module";             \
         cd "$WK_DIR/rudi-$module" && npm i;                     \
     done                                                     && \
-    chmod 100 "$ENV_DIR"                                     && \
     echo "wk_dir=$(pwd); content:"                           && \
     ls -la "$WK_DIR"
 
