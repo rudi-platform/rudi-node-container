@@ -22,7 +22,8 @@ fetch_sources:
     NODE_ENV: development
   script:
     - echo 'fetching sources'
-    - ./1-pull-rudi-node-gits.sh
+    - echo $CI_PROJECT_PATH
+    - source $CI_PROJECT_PATH/1-pull-rudi-node-gits.sh
 
 #---------------------------------------------------------------------------------------------------
 build_container_img:
