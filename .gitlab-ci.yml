@@ -5,10 +5,19 @@
 # --------------------------------------------------------------------------------------------------
 
 stages:
+  - check_shell
   - fetch_sources
   - build_container_img
 
 #---------------------------------------------------------------------------------------------------
+check_shell:
+  image: koalaman/shellcheck-alpine:stable
+  stage: check_shell
+  before_script:
+    - shellcheck --version
+  script:
+    - shellcheck scripts/**/*.sh  # path to your shell scripts
+
 fetch_sources:
   stage: fetch_sources
   rules:
@@ -23,6 +32,7 @@ fetch_sources:
   script:
     - echo 'fetching sources'
     - ls -la .
+    - ls /bin
     - /bin/bash -c "source ./1-pull-rudi-node-gits.sh"
 
 #---------------------------------------------------------------------------------------------------
