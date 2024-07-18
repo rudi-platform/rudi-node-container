@@ -23,7 +23,8 @@ fetch_sources:
   script:
     - echo 'fetching sources'
     - echo $CI_PROJECT_PATH
-    - source $CI_PROJECT_PATH/1-pull-rudi-node-gits.sh
+    - echo $pwd
+    - source $pwd/1-pull-rudi-node-gits.sh
 
 #---------------------------------------------------------------------------------------------------
 build_container_img:
