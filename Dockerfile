@@ -1,10 +1,21 @@
 FROM mongo:7.0.7
 
+# Additional dependecies
 RUN apt-get update && apt-get install -y curl                    && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash -    && \
-    apt-get install -y netcat nodejs keychain                    && \
+    apt-get install -y                                              \
+        netcat                                                      \
+        nodejs                                                      \
+        keychain                                                 && \
     apt-get clean                                                && \
     rm -rf /var/lib/apt/lists/*
+
+
+# # User
+# ARG DOCKER_USER=default_user
+# RUN groupadd -g 6000 "$DOCKER_USER"                           && \
+#     useradd -ms /bin/bash -u 6001 -g "$DOCKER_USER" "$DOCKER_USER"
+# USER $DOCKER_USER
 
 # Folder that contains the source of every rudi-node module
 ARG SRC_DIR="./src"
@@ -23,8 +34,9 @@ ARG su="bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5y
 ENV node_public_url=$node_public_url        \
     catalog_public_url=$catalog_public_url  \
     storage_public_url=$storage_public_url  \
-    tag=$tag                                \
-    su=$su
+    DOCKER_USER=$DOCKER_USER                  \
+    su=$su                                  \
+    tag=$tag
 
 ENV WK_DIR="/app/rudi-node"                 \
     SSH_DIR="/.ssh"                         \

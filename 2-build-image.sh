@@ -8,19 +8,22 @@ source "./install/.bashrc"
 log_in_file rudi-node-img
 TIME_START=$(now_ms_int)
 
+DOCKER_USER=5999
+
 # Argument 1 is the name for the docker image that is produced.
 if [ $# -ne 1 ]; then
-    CONTAINER_IMG_NAME=rudinode:release
+    DOCKER_IMG_NAME=rudinode:release
 else
-    CONTAINER_IMG_NAME=$1
+    DOCKER_IMG_NAME=$1
 fi
 
 mkdir -p ./tmp
-echo CONTAINER_IMG_NAME=$CONTAINER_IMG_NAME > ./tmp/oci_name
-log_msg "Building the OCI image '${CONTAINER_IMG_NAME}'"
+echo DOCKER_IMG_NAME=$DOCKER_IMG_NAME > ./tmp/oci_name
+log_msg "Building the OCI image '${DOCKER_IMG_NAME}'"
 
-podman build                    \
-    -t "${CONTAINER_IMG_NAME}" .
+podman build                            \
+    --build-arg username=$DOCKER_USER    \
+    -t "${DOCKER_IMG_NAME}" .
     # 2>&1 | tee `logfile_path rudi-node-build`
 
 log_msg "Container built"

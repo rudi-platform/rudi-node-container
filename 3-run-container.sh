@@ -9,6 +9,7 @@ source "./env/env-init.sh"
 log_in_file rudi-node-run
 TIME_START=$(now_ms_int)
 PRJ_DIR=$(pwd)
+
 WK_DIR=/app/rudi-node
 TAG=OCI-2.5.0-A
 SU_CREDS=bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5yTktudUFQTEp0Y1RBOFBkSklZS3dXRmpTU1lINHBHaVNVNXJsVHBBVGEyLTB0ZzItM1hBQWFrUmlUREtLTzNoR3cwMFVENmFzVXJZcFdQSW9IbXc=
@@ -36,7 +37,7 @@ podman run -it                                  \
     --volume "${HOME}/data/conf":$WK_DIR/conf:Z \
     -e su=$SU_CREDS                             \
     -e tag=$TAG                                 \
-    "${CONTAINER_IMG_NAME}"
+    "${DOCKER_IMG_NAME}"
 
 
     # --network host

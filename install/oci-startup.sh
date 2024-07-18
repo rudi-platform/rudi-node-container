@@ -13,7 +13,8 @@
 
 source .bashrc
 TIME_START=$(now_ms_int)
-
+log_msg "Executing as user $whoami"
+whoami
 log_msg Init RUDI environment variables
 source "$ENV_INIT_SH"
 echo RUDI_CATALOG_USER_CONF="$RUDI_CATALOG_USER_CONF"
