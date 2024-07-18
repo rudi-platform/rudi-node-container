@@ -23,7 +23,7 @@ fetch_sources:
   script:
     - echo 'fetching sources'
     - ls -la .
-    - bash -c "source ./1-pull-rudi-node-gits.sh"
+    - /bin/bash -c "source ./1-pull-rudi-node-gits.sh"
 
 #---------------------------------------------------------------------------------------------------
 build_container_img:
@@ -37,4 +37,4 @@ build_container_img:
     - nodejs-20
   script:
     - echo 'building container image'
-    - bash -c "source ./2-build-image.sh"
+    - /bin/bash -c "source ./2-build-image.sh"
