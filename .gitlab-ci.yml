@@ -20,12 +20,10 @@ fetch_sources:
     - nodejs-20
   variables:
     NODE_ENV: development
-  shell: bash
   script:
     - echo 'fetching sources'
     - ls -la .
-
-    - source ./1-pull-rudi-node-gits.sh
+    - bash -c "source ./1-pull-rudi-node-gits.sh"
 
 #---------------------------------------------------------------------------------------------------
 build_container_img:
@@ -37,7 +35,6 @@ build_container_img:
       when: manual
   tags:
     - nodejs-20
-  shell: bash
   script:
     - echo 'building container image'
-    - ./2-build-image.sh
+    - bash -c "source ./2-build-image.sh"
