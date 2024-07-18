@@ -22,10 +22,7 @@ fetch_sources:
     NODE_ENV: development
   script:
     - echo 'fetching sources'
-    - echo $CI_PROJECT_PATH
-    - ls -la ..
     - ls -la .
-    - cd $(basename ${PROJECT_PATH})
     - source ./1-pull-rudi-node-gits.sh
 
 #---------------------------------------------------------------------------------------------------
