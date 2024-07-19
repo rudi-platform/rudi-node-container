@@ -4,29 +4,38 @@
 # This script runs the container image with podman
 # ==================================================================================================
 
-source "./install/.bashrc"
-source "./install/env-init.sh"
-log_in_file rudi-node-run
+source ./install/.bashrc
+
+WK_DIR=/app/rudi-node
+
+
+# Argument 1 is the destination platform for the container image. Defaults to "amd64"
+if [ $# -lt 1 ]; then source ./env/platform.ini; else IMG_PLATFORM=$1; fi
+
+# Argument 2 is the name of the container image that is produced. Defaults to "rudi-node"
+if [ $# -lt 2 ]; then source ./tmp/img_prefix.ini; else IMG_PREFIX=$2; fi
+
+IMG_NAME="${IMG_PREFIX}-${IMG_PLATFORM}"
+
+# log_in_file rudi-node-run
 TIME_START=$(now_ms_int)
 PRJ_DIR=$(pwd)
 
-WK_DIR=/app/rudi-node
 TAG=OCI-2.5.0-A
 SU_CREDS=bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5yTktudUFQTEp0Y1RBOFBkSklZS3dXRmpTU1lINHBHaVNVNXJsVHBBVGEyLTB0ZzItM1hBQWFrUmlUREtLTzNoR3cwMFVENmFzVXJZcFdQSW9IbXc=
 echo "$PRJ_DIR"
 
 log_msg Deleting the previous container to avoid accumulation
-podman rm rudinode 2>/dev/null
+podman rm "${IMG_NAME}" 2>/dev/null
 
 log_msg "Creating & running the new container"
-source ./tmp/oci_name
 
 # Create a new container and binding the following folders
 #   - .ssh as /keys for the secrets (:Z opt = private, :ro = read-only)
 #   - data as /data/dump to restore previous DB at startup
 podman run -it                                  \
     --rm                                        \
-    --name rudinode                             \
+    --name "$IMG_NAME"                          \
     --log-level debug                           \
     --publish 3030:3030                         \
     --publish 3031:3031                         \
@@ -37,7 +46,7 @@ podman run -it                                  \
     --volume "${HOME}/data/conf":$WK_DIR/conf:Z \
     -e su=$SU_CREDS                             \
     -e tag=$TAG                                 \
-    "${DOCKER_IMG_NAME}"
+    "$IMG_NAME"
 
 
     # --network host

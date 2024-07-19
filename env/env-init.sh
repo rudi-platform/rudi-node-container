@@ -14,7 +14,9 @@
 log_msg Initializaing the environment variables
 
 log_msg INIT git revisions
-source "$ENV_DIR/git-rev.ini"
+source "./env/git-rev.ini"
+
+export WK_DIR=/app/rudi-node
 
 # Checking if git rev variables were set
 if [ -z "$catalog_git_rev" ]; then

@@ -1,29 +1,40 @@
-#!/bin/bash
+#!/bin/sh
 
 # ==================================================================================================
 # This script builds the container image with podman
 # ==================================================================================================
 
-source "./install/.bashrc"
-log_in_file rudi-node-img
+source ./install/.shrc
+
 TIME_START=$(now_ms_int)
 
-DOCKER_USER=5999
+# DOCKER_USER=5999
 
-# Argument 1 is the name for the docker image that is produced.
-if [ $# -ne 1 ]; then
-    DOCKER_IMG_NAME=rudinode:release
+# Argument 1 is the destination platform for the container image. Defaults to "amd64"
+if [ $# -lt 1 ]; then
+    IMG_PLATFORM=arm64
 else
-    DOCKER_IMG_NAME=$1
+    IMG_PLATFORM=$1
 fi
+echo IMG_PLATFORM=$IMG_PLATFORM > ./env/platform.ini
 
+# Argument 2 is the name of the container image that is produced. Defaults to "rudi-node"
+if [ $# -lt 2 ]; then
+    IMG_PREFIX=rudi-node
+else
+    IMG_PREFIX=$2
+fi
 mkdir -p ./tmp
-echo DOCKER_IMG_NAME=$DOCKER_IMG_NAME > ./tmp/oci_name
-log_msg "Building the OCI image '${DOCKER_IMG_NAME}'"
 
-podman build                            \
-    --build-arg username=$DOCKER_USER    \
-    -t "${DOCKER_IMG_NAME}" .
+IMG_NAME="${IMG_PREFIX}-${IMG_PLATFORM}"
+
+log_msg "Building the OCI image '${IMG_NAME}'"
+echo IMG_PREFIX=$IMG_PREFIX > ./tmp/img_prefix.ini
+
+podman build                        \
+    --platform linux/$IMG_PLATFORM  \
+    -t "${IMG_NAME}" .
+    # --build-arg username=$DOCKER_USER    \
     # 2>&1 | tee `logfile_path rudi-node-build`
 
 log_msg "Container built"

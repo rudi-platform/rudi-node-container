@@ -13,11 +13,13 @@
 
 source .bashrc
 TIME_START=$(now_ms_int)
-log_msg "Executing as user $whoami"
-whoami
+log_msg "Executing as user $(whoami)"
 log_msg Init RUDI environment variables
-source "./env-init.sh"
+source "$ENV_DIR/env-init.sh"
+
 echo RUDI_CATALOG_USER_CONF="$RUDI_CATALOG_USER_CONF"
+echo Content of ./ini folder:
+ls -la "$INI_DIR"
 
 # echo
 # echo "----- I'm here:"
@@ -28,10 +30,10 @@ echo RUDI_CATALOG_USER_CONF="$RUDI_CATALOG_USER_CONF"
 # echo "------"
 # whoami
 
-log_msg "----- Turning on bash's job control"
+log_msg "Turning on bash's job control"
 set -m
 
-log_msg "----- DB preparation"
+log_msg "DB preparation"
 
 # Waiting for MongoDB to be ready
 db_wait () {
@@ -62,7 +64,7 @@ db_restore () {
 }
 
 # Starting MongoDB in the background
-log_msg "----- Launching MongoDB"
+log_msg "Launching MongoDB"
 mkdir -p "$DB_LOG_DIR"
 mongod > "${DB_LOG_DIR}/mongo-$(now_s_str).log" &
 # db_restore
@@ -78,10 +80,10 @@ done
 chmod 500 "$SSH_DIR"
 
 echo "Key generated"
-l "$SSH_DIR"
+ls -la "$SSH_DIR"
 
 # Starting RUDI node Catalog
-log_msg "----- Launching RUDI node module: Catalog"
+log_msg "Launching RUDI node module: Catalog"
 cd "${WK_DIR}/rudi-catalog/" || exit
 node rudiServer.js                      \
     --hash="$catalog_git_rev"           \
@@ -89,7 +91,7 @@ node rudiServer.js                      \
     --conf="$RUDI_CATALOG_USER_CONF"    &
 
 # Starting RUDI node Storage
-log_msg "----- Launching RUDI node module: Storage"
+log_msg "Launching RUDI node module: Storage"
 cd "${WK_DIR}/rudi-storage/" || exit
 node index.js                           \
     --hash "$storage_git_rev"           \
@@ -97,7 +99,7 @@ node index.js                           \
     --conf "$RUDI_STORAGE_USER_CONF"     &
 
 # Starting RUDI node Manager backend (node_env="production" => serves the built front-end)
-log_msg "----- Launching RUDI node module: Manager"
+log_msg "Launching RUDI node module: Manager"
 cd "${WK_DIR}/rudi-manager/" || exit
 node server.js                          \
     --hash="$manager_git_rev"           \
@@ -113,7 +115,7 @@ fg %1
 # Waiting for any process to exit
 wait
 
-log_msg "----- Launching over"
+log_msg "Launching over"
 echo "Execution time for launching: $(time_spent_s "${TIME_START}")s ($(basename "$0"))"
 
 # Exiting with status of process that exited first

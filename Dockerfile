@@ -34,7 +34,7 @@ ARG su="bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5y
 ENV node_public_url=$node_public_url        \
     catalog_public_url=$catalog_public_url  \
     storage_public_url=$storage_public_url  \
-    DOCKER_USER=$DOCKER_USER                  \
+    DOCKER_USER=$DOCKER_USER                \
     su=$su                                  \
     tag=$tag
 
@@ -42,26 +42,32 @@ ENV WK_DIR="/app/rudi-node"                 \
     SSH_DIR="/.ssh"                         \
     NODE_ENV="production"
 
-ENV INI_DIR="$WK_DIR/ini"
-
 WORKDIR "$WK_DIR"
-RUN mkdir -p "$ENV_DIR" "$SSH_DIR" "$INI_DIR"
+
+ENV ENV_DIR="$WK_DIR/env"                   \
+    INI_DIR="$WK_DIR/ini"
+
+RUN mkdir -p "$SSH_DIR" "$ENV_DIR" "$INI_DIR"
 
 COPY "$SRC_DIR" ./install/* "$WK_DIR"/
 COPY ./ssh/* "$SSH_DIR"/
+COPY ./env/* "$ENV_DIR"/
 COPY ./ini/* "$INI_DIR"/
 
 EXPOSE 3030 3031 3033
 
-RUN chmod 100 "$ENV_DIR"                                     && \
-    export PATH="$(npm get prefix):$PATH"                    && \
-    npm config set loglevel error                            && \
-    npm i -g npm@latest                                      && \
-    for module in catalog storage manager crypto; do            \
-        echo "Installing NodeJS app: rudi-$module";             \
-        cd "$WK_DIR/rudi-$module" && npm i;                     \
-    done                                                     && \
-    echo "wk_dir=$(pwd); content:"                           && \
-    ls -la "$WK_DIR"
+RUN export PATH="$(npm get prefix):$PATH"            && \
+    npm config set loglevel error                    && \
+    npm i -g npm@latest                              && \
+    for module in catalog storage manager crypto; do    \
+        echo "Installing NodeJS app: rudi-$module";     \
+        cd "$WK_DIR/rudi-$module" && npm i;             \
+    done                                             && \
+    cd "$WK_DIR"                                     && \
+    chmod 100 "$ENV_DIR"                             && \
+    echo "$SSH_DIR:" && ls -la "$SSH_DIR"            && \
+    echo "$ENV_DIR:" && ls -la "$ENV_DIR"            && \
+    echo "$INI_DIR:" && ls -la "$INI_DIR"            && \
+    echo "$WK_DIR:" && ls -la "$WK_DIR"
 
 CMD ./oci-startup.sh

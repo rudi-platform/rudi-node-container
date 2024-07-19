@@ -17,7 +17,7 @@ the token should also make it possible to push the final Docker image.
 
 ## Build the OCI/Docker image
 
-The name for the docker image can be set as an argument of this scritpt. It defaults to 'rudinode:release'
+The name for the docker image can be set as an argument of this scritpt. It defaults to 'rudi-container'
 
 ```sh
 ./2-build-image.sh
@@ -55,7 +55,7 @@ Here is a list of volume you might want to bind mount to access data from the co
 - `-v "${HOME}/data/db":/data/db:Z`: location of the Catalog MongoDB database as well as the RUDI Manager SQLite user database
 - `-v "${HOME}/data/dump":/data/dump:Z`: folder for dumping the RUDI Catalog MongoDB database
 - `-v "${HOME}/data/media":/data/media:Z`: storage of the media files for the RUDI Storage module
-- `-v "${HOME}/data/conf":$WK_DIR/conf:Z`: folder to set custom configuration files for a RUDI module (Catalog, Storage or Manager)
+- `-v "${HOME}/data/conf":$WK_DIR/conf:Z`: folder for setting custom configuration files for each RUDI module (Catalog, Storage or Manager)
 
 # Testing the running container
 

@@ -1,19 +1,19 @@
-#!/bin/bash
+#!/bin/sh
 
 # ==================================================================================================
 # This script clone (or pull) the git repository for every RUDI module then builds RUDI Prodmanager
 # frontend
 # ==================================================================================================
 
-source "./install/.bashrc"
-log_in_file rudi-node-git
+source "./install/.shrc"
+# log_in_file rudi-node-git
 TIME_START=$(now_ms_int)
 
-
-git_sources[catalog]=rudi-prod.git
-git_sources[storage]=rudi-media.git
-git_sources[manager]=rudi-console-proxy.git
-git_sources[crypto]=rudi-crypto.git
+# Correspondance between each RUDI module and its origine gitlab repo
+git_src_catalog=rudi-prod.git
+git_src_storage=rudi-media.git
+git_src_manager=rudi-console-proxy.git
+git_src_crypto=rudi-crypto.git
 
 
 REPO=https://-:${rudi_node_git_token}@gitlab.aqmo.org/rudidev
@@ -22,17 +22,13 @@ PRJ_SRC_DIR=${PRJ_DIR}/src
 
 # This file is used to gather each repository's git tag
 PRJ_ENV_DIR=${PRJ_DIR}/env
-mkdir -p "$PRJ_ENV_DIR"
+mkdir -p "$PRJ_ENV_DIR" "$PRJ_SRC_DIR"
 GIT_REV_FILE=${PRJ_ENV_DIR}/git-rev.ini
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
 for module in catalog storage manager crypto; do
-    # Recreating the git repo URI for this RUDI module
-    mod_git=$git_sources[$module]
-    mod_repo=${REPO}/${mod_git}
-    # Local destination folder for the RUDI module
+    cd "${PRJ_SRC_DIR}"
     module_dir=${PRJ_SRC_DIR}/rudi-${module}
-    ccd "${PRJ_SRC_DIR}"
 
     if [ -d "${module_dir}" ]; then
         log_msg Pulling git repo: rudi-${module}
@@ -40,6 +36,11 @@ for module in catalog storage manager crypto; do
         git pull origin release
     else
         log_msg Cloning git repo: rudi-${module}
+        # Recreating the git repo URI for this RUDI module
+        mod_git=$(eval echo \$git_src_$module)
+        mod_repo=${REPO}/${mod_git}
+        echo mod_repo=$mod_repo
+        # Local destination folder for the RUDI module
         git clone -b release --single-branch "${mod_repo}" "${module_dir}"
     fi
     if [ $module == manager ]; then

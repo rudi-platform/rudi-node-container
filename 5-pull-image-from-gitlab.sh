@@ -4,9 +4,6 @@
 # This script pushes the built image to gitlab
 # ==================================================================================================
 
-
-source "./install/.bashrc"
-
 # Argument 1 is the destination platform for the container image. Defaults to "amd64"
 if [ $# -lt 1 ]; then
     source ./env/platform.ini
@@ -23,6 +20,4 @@ fi
 
 IMG_NAME="${IMG_PREFIX}-${IMG_PLATFORM}"
 
-auth_file=$HOME/.config/containers/auth.json
-echo $om_oci_aqmo_token | podman login registry.aqmo.org -u=$om_aqmo_usr --password-stdin
-podman push "$IMG_NAME" registry.aqmo.org/public-rudi/public-packages/"$IMG_NAME" --creds=$om_aqmo_usr:$om_oci_aqmo_token
+podman pull "registry.aqmo.org/public-rudi/public-packages/$IMG_NAME"
