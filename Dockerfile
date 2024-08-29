@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y curl                    && \
     apt-get install -y                                              \
         netcat                                                      \
         nodejs                                                      \
+        vim                                                         \
         keychain                                                 && \
     apt-get clean                                                && \
     rm -rf /var/lib/apt/lists/*
@@ -21,9 +22,14 @@ RUN apt-get update && apt-get install -y curl                    && \
 ARG SRC_DIR="./src"
 
 # Public URL of the container (used for the metadata connector URL)
-ARG node_public_url="https://rudinode.org"
-ARG catalog_public_url="http://localhost:3030"
-ARG storage_public_url="http://localhost:3031"
+ARG node_public_url="http://localhost"
+ARG catalog_public_url="$node_public_url:3030"
+ARG storage_public_url="$node_public_url:3031"
+ARG manager_public_url="$node_public_url:3033"
+
+# Sets different flags such as debug level or cookie security. Set to production | staging | development
+ARG env="production"
+
 
 # Tag for the container, usually the RUDI node version
 ARG tag="OCI-2.5.0"
@@ -31,16 +37,17 @@ ARG tag="OCI-2.5.0"
 ARG su="bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5yTktudUFQTEp0Y1RBOFBkSklZS3dXRmpTU1lINHBHaVNVNXJsVHBBVGEyLTB0ZzItM1hBQWFrUmlUREtLTzNoR3cwMFVENmFzVXJZcFdQSW9IbXc="
 
 # Declaring dockerfile input arguments as environment variables for later use
-ENV node_public_url=$node_public_url        \
-    catalog_public_url=$catalog_public_url  \
-    storage_public_url=$storage_public_url  \
-    DOCKER_USER=$DOCKER_USER                \
-    su=$su                                  \
-    tag=$tag
+ENV node_public_url="$node_public_url "       \
+    catalog_public_url="$catalog_public_url"  \
+    storage_public_url="$storage_public_url"  \
+    manager_public_url="$manager_public_url"  \
+    DOCKER_USER="$DOCKER_USER "               \
+    su="$su"                                  \
+    env="$env"                                \
+    tag="$tag"
 
 ENV WK_DIR="/app/rudi-node"                 \
-    SSH_DIR="/.ssh"                         \
-    NODE_ENV="production"
+    SSH_DIR="/.ssh"
 
 WORKDIR "$WK_DIR"
 

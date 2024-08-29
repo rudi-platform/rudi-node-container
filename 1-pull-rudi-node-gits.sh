@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2034
 
 # ==================================================================================================
 # This script clone (or pull) the git repository for every RUDI module then builds RUDI Prodmanager
@@ -27,12 +28,12 @@ GIT_REV_FILE=${PRJ_ENV_DIR}/git-rev.ini
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
 for module in catalog storage manager crypto; do
-    cd "${PRJ_SRC_DIR}"
+    cd "${PRJ_SRC_DIR}" || exit
     module_dir=${PRJ_SRC_DIR}/rudi-${module}
 
     if [ -d "${module_dir}" ]; then
         log_msg Pulling git repo: rudi-${module}
-        cd "${module_dir}"
+        cd "${module_dir}" || exit
         git pull origin release
     else
         log_msg Cloning git repo: rudi-${module}

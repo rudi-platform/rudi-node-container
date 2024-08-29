@@ -62,7 +62,7 @@ Here is a list of volume you might want to bind mount to access data from the co
 ### Basic API tests
 
 - GET http://localhost:3033/api/open/test : answers "test"
-- GET http://localhost:3033/api/open/test : answers with the current git hash of the RUDI manager module
+- GET http://localhost:3033/api/open/hash : answers with the current git hash of the RUDI manager module
 - GET http://localhost:3033/api/open/tag : answers with the current tag of the RUDI node
 
 ### Hash credentials

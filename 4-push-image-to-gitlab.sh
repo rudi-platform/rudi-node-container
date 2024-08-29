@@ -25,4 +25,9 @@ IMG_NAME="${IMG_PREFIX}-${IMG_PLATFORM}"
 
 auth_file=$HOME/.config/containers/auth.json
 echo $om_oci_aqmo_token | podman login registry.aqmo.org -u=$om_aqmo_usr --password-stdin
-podman push "$IMG_NAME" registry.aqmo.org/public-rudi/public-packages/"$IMG_NAME" --creds=$om_aqmo_usr:$om_oci_aqmo_token
+
+# TODO (uneeded so far): put aqmo as registry in either of these locations:
+# /etc/containers/registries.conf
+# $HOME/.config/containers/registries.conf.
+log_msg "Pushing image $IMG_NAME to gitlab"
+podman push "$IMG_NAME" "registry.aqmo.org/public-rudi/public-packages/$IMG_NAME" --creds=$om_aqmo_usr:$om_oci_aqmo_token

@@ -96,16 +96,17 @@ cd "${WK_DIR}/rudi-storage/" || exit
 node index.js                           \
     --hash "$storage_git_rev"           \
     --url "$storage_public_url"         \
-    --conf "$RUDI_STORAGE_USER_CONF"     &
+    --conf "$RUDI_STORAGE_USER_CONF"    &
 
-# Starting RUDI node Manager backend (node_env="production" => serves the built front-end)
+# Starting RUDI node Manager backend (node_env!="development" => serves the built front-end)
 log_msg "Launching RUDI node module: Manager"
 cd "${WK_DIR}/rudi-manager/" || exit
 node server.js                          \
-    --hash="$manager_git_rev"           \
-    --su="$su"                          \
-    --tag="$tag"                        \
-    --node_env="production"             \
+    --hash "$manager_git_rev"           \
+    --su "$su"                          \
+    --tag "$tag"                        \
+    --node_env "$env"              \
+    --url "$manager_public_url"         \
     --conf "$RUDI_MANAGER_USER_CONF"    &
 
 # Bringing the primary process back ito the foreground

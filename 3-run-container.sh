@@ -26,6 +26,7 @@ SU_CREDS=bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5
 echo "$PRJ_DIR"
 
 log_msg Deleting the previous container to avoid accumulation
+podman stop "${IMG_NAME}" 2>/dev/null
 podman rm "${IMG_NAME}" 2>/dev/null
 
 log_msg "Creating & running the new container"
@@ -46,8 +47,8 @@ podman run -it                                  \
     --volume "${HOME}/data/conf":$WK_DIR/conf:Z \
     -e su=$SU_CREDS                             \
     -e tag=$TAG                                 \
+    -e env=staging                                 \
     "$IMG_NAME"
-
 
     # --network host
     # --expose 3030
