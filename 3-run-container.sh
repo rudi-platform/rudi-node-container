@@ -47,7 +47,7 @@ podman run -it                                  \
     --volume "${HOME}/data/conf":$WK_DIR/conf:Z \
     -e su=$SU_CREDS                             \
     -e tag=$TAG                                 \
-    -e env=staging                                 \
+    -e env=staging                              \
     "$IMG_NAME"
 
     # --network host
