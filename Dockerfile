@@ -36,22 +36,25 @@ ARG tag="OCI-2.5.0"
 # Base64 encoded <usr>:<hashedPwd> pair. You may use /api/open/hash-credentials to correctly hash the password and encode the pair
 ARG su="bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5yTktudUFQTEp0Y1RBOFBkSklZS3dXRmpTU1lINHBHaVNVNXJsVHBBVGEyLTB0ZzItM1hBQWFrUmlUREtLTzNoR3cwMFVENmFzVXJZcFdQSW9IbXc="
 
+ARG portal_conf
+
 # Declaring dockerfile input arguments as environment variables for later use
-ENV node_public_url="$node_public_url "       \
-    catalog_public_url="$catalog_public_url"  \
-    storage_public_url="$storage_public_url"  \
-    manager_public_url="$manager_public_url"  \
-    DOCKER_USER="$DOCKER_USER "               \
-    su="$su"                                  \
-    env="$env"                                \
+ENV node_public_url="$node_public_url "      \
+    catalog_public_url="$catalog_public_url" \
+    storage_public_url="$storage_public_url" \
+    manager_public_url="$manager_public_url" \
+    portal_conf="$portal_conf"               \
+    DOCKER_USER="$DOCKER_USER "              \
+    su="$su"                                 \
+    env="$env"                               \
     tag="$tag"
 
-ENV WK_DIR="/app/rudi-node"                 \
+ENV WK_DIR="/app/rudi-node"                  \
     SSH_DIR="/.ssh"
 
 WORKDIR "$WK_DIR"
 
-ENV ENV_DIR="$WK_DIR/env"                   \
+ENV ENV_DIR="$WK_DIR/env"                    \
     INI_DIR="$WK_DIR/ini"
 
 RUN mkdir -p "$SSH_DIR" "$ENV_DIR" "$INI_DIR"
@@ -75,6 +78,6 @@ RUN export PATH="$(npm get prefix):$PATH"            && \
     echo "$SSH_DIR:" && ls -la "$SSH_DIR"            && \
     echo "$ENV_DIR:" && ls -la "$ENV_DIR"            && \
     echo "$INI_DIR:" && ls -la "$INI_DIR"            && \
-    echo "$WK_DIR:" && ls -la "$WK_DIR"
+    echo "$WK_DIR:"  && ls -la "$WK_DIR"
 
 CMD ./oci-startup.sh

@@ -87,7 +87,8 @@ log_msg "Launching RUDI node module: Catalog"
 cd "${WK_DIR}/rudi-catalog/" || exit
 node rudiServer.js                      \
     --hash="$catalog_git_rev"           \
-    --api_url="$catalog_public_url"     \
+    --url="$catalog_public_url"         \
+    --portal_conf="$portal_conf"        \
     --conf="$RUDI_CATALOG_USER_CONF"    &
 
 # Starting RUDI node Storage
@@ -105,7 +106,7 @@ node server.js                          \
     --hash "$manager_git_rev"           \
     --su "$su"                          \
     --tag "$tag"                        \
-    --node_env "$env"              \
+    --node_env "$env"                   \
     --url "$manager_public_url"         \
     --conf "$RUDI_MANAGER_USER_CONF"    &
 
