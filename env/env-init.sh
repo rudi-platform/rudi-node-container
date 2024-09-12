@@ -19,7 +19,7 @@ source "./env/git-rev.ini"
 export WK_DIR=/app/rudi-node
 
 # Checking if git rev variables were set
-if [ -z "$catalog_git_rev" ]; then
+if [ -z "$CATALOG_GIT_REV" ]; then
     echo "WARN File \"${WK_DIR}/1-pull-rudi-node-gits.sh\" (line 49) should have been executed beforehand"
 fi
 
@@ -51,7 +51,7 @@ export RUDI_CATALOG_DB_URI="mongodb://localhost:${MONGO_PORT}/rudi_api"
 
 # ----- Node environment: 'production'|'development'
 export RUDI_CATALOG_ENV="$NODE_ENV"
-export RUDI_CATALOG_GIT_REV="$catalog_git_rev"
+export RUDI_CATALOG_GIT_REV="$CATALOG_GIT_REV"
 
 conf_path () {
     if [ -f "$CONF_DIR/$1" ]; then echo "$CONF_DIR/$1"; else echo "$INI_DIR/$1"; fi

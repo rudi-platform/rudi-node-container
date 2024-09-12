@@ -8,7 +8,7 @@ source ./install/.shrc
 
 TIME_START=$(now_ms_int)
 
-# DOCKER_USER=5999
+# DOCKER_USR=5999
 
 # Argument 1 is the destination platform for the container image. Defaults to "amd64"
 if [ $# -lt 1 ]; then
@@ -34,7 +34,7 @@ echo IMG_PREFIX=$IMG_PREFIX > ./tmp/img_prefix.ini
 podman build                        \
     --platform linux/$IMG_PLATFORM  \
     -t "${IMG_NAME}" .
-    # --build-arg username=$DOCKER_USER    \
+    # --build-arg username=$DOCKER_USR    \
     # 2>&1 | tee `logfile_path rudi-node-build`
 
 log_msg "Container built"

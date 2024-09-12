@@ -47,16 +47,8 @@ export TIME_SOURCED
 # Arg 1: reference time (ms, int) - defaulted to above ${TIME_SOURCED}
 # Arg 2: actual time (ms, int) - defaulted to the result of above now_ms_int function
 time_spent_s () {
-    if [ $# -lt 2 ]; then
-        now=$(now_ms_int);
-    else
-        now=$2
-    fi
-    if [ $# -lt 1 ]; then
-        ref_time=0${TIME_SOURCED};
-    else
-        ref_time=$1
-    fi
+    if [ $# -lt 2 ]; then now=$(now_ms_int);         else now=$2;      fi
+    if [ $# -lt 1 ]; then ref_time=0${TIME_SOURCED}; else ref_time=$1; fi
     echo "$( calc "(${now}-${ref_time})/1000" )";
 }
 export time_spent_s

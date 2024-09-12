@@ -47,3 +47,5 @@ wip*
 # Dev
 .vscode
 *.code-workspace
+bak
+dev*

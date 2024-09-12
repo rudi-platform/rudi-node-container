@@ -37,8 +37,8 @@ This script gives an example of a launching
 
 | env var | description                                                                                                                                                                        | optional | example value                      | note                                                                                                        |
 | :------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| tag     | Sets the RUDI node tag that is displayed in the upper right of the UI                                                                                                              | yes      | -e tag=OCI-2.5.0-A                 |
-| su      | Sets the username and password for the super user. Username and hashed password must be base 64 encoded as `<usr>:<hashed pwd>`. Seel bellow the **"Hash credentials"** paragraph. | yes      | -e su=PHVzZXI+OjxoYXNoZWRfcHdkPg== | If not set (e.g. for a test run), it defaults to login = '`node admin`' / pwd = '`manager admin password!`' |
+| TAG     | Sets the RUDI node TAG that is displayed in the upper right of the UI                                                                                                              | yes      | -e TAG=OCI-2.5.0-A                 |
+| SU      | Sets the username and password for the super user. Username and hashed password must be base 64 encoded as `<usr>:<hashed pwd>`. Seel bellow the **"Hash credentials"** paragraph. | yes      | -e SU=PHVzZXI+OjxoYXNoZWRfcHdkPg== | If not set (e.g. for a test run), it defaults to login = '`node admin`' / pwd = '`manager admin password!`' |
 
 ## Ports
 

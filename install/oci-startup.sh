@@ -86,28 +86,28 @@ ls -la "$SSH_DIR"
 log_msg "Launching RUDI node module: Catalog"
 cd "${WK_DIR}/rudi-catalog/" || exit
 node rudiServer.js                      \
-    --hash="$catalog_git_rev"           \
-    --url="$catalog_public_url"         \
-    --portal_conf="$portal_conf"        \
+    --hash="$CATALOG_GIT_REV"           \
+    --url="$CATALOG_PUBLIC_URL"         \
+    --portal_conf="$PORTAL_CONF"        \
     --conf="$RUDI_CATALOG_USER_CONF"    &
 
 # Starting RUDI node Storage
 log_msg "Launching RUDI node module: Storage"
 cd "${WK_DIR}/rudi-storage/" || exit
 node index.js                           \
-    --hash "$storage_git_rev"           \
-    --url "$storage_public_url"         \
+    --hash "$STORAGE_GIT_REV"           \
+    --url "$STORAGE_PUBLIC_URL"         \
     --conf "$RUDI_STORAGE_USER_CONF"    &
 
 # Starting RUDI node Manager backend (node_env!="development" => serves the built front-end)
 log_msg "Launching RUDI node module: Manager"
 cd "${WK_DIR}/rudi-manager/" || exit
 node server.js                          \
-    --hash "$manager_git_rev"           \
-    --su "$su"                          \
-    --tag "$tag"                        \
-    --node_env "$env"                   \
-    --url "$manager_public_url"         \
+    --hash "$MANAGER_GIT_REV"           \
+    --su "$SU"                          \
+    --tag "$TAG"                        \
+    --node_env "$ENV"                   \
+    --url "$MANAGER_PUBLIC_URL"         \
     --conf "$RUDI_MANAGER_USER_CONF"    &
 
 # Bringing the primary process back ito the foreground
