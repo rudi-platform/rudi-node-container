@@ -56,7 +56,8 @@ for module in catalog storage manager crypto; do
         npm run build:prod
     fi
     log_msg Collecting the git tag
-    echo "${module}_git_rev=$(git rev-parse --short HEAD)" >> "$GIT_REV_FILE"
+    GIT_REV=$(echo "${module}_git_rev" | tr a-z A-Z)
+    echo "${GIT_REV}=$(git rev-parse --short HEAD)" >> "$GIT_REV_FILE"
 done
 
 echo "Execution time: $(time_spent_s "${TIME_START}")s ($(basename "$0"))"
