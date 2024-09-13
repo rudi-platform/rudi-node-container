@@ -12,12 +12,12 @@
 # ==================================================================================================
 
 source .bashrc
+source ./git-rev.ini 2?>&1
+
 TIME_START=$(now_ms_int)
 log_msg "Executing as user $(whoami)"
 log_msg Init RUDI environment variables
-source "$ENV_DIR/env-init.sh"
 
-echo RUDI_CATALOG_USER_CONF="$RUDI_CATALOG_USER_CONF"
 echo Content of ./ini folder:
 ls -la "$INI_DIR"
 
@@ -34,6 +34,8 @@ log_msg "Turning on bash's job control"
 set -m
 
 log_msg "DB preparation"
+export MONGO_PORT=27017
+export DUMP_DIR=/data/dump
 
 # Waiting for MongoDB to be ready
 db_wait () {
@@ -45,6 +47,7 @@ db_wait () {
 }
 
 # Retrieving the last dump in the bound folder /data/dump/
+
 db_restore () {
     if [ ! -d "${DUMP_DIR}" ]; then
         log_msg "db_restore: folder ${DUMP_DIR} was not found."
@@ -65,6 +68,7 @@ db_restore () {
 
 # Starting MongoDB in the background
 log_msg "Launching MongoDB"
+export DB_LOG_DIR="/tmp/logs/mongo"
 mkdir -p "$DB_LOG_DIR"
 mongod > "${DB_LOG_DIR}/mongo-$(now_s_str).log" &
 # db_restore
@@ -85,30 +89,36 @@ ls -la "$SSH_DIR"
 # Starting RUDI node Catalog
 log_msg "Launching RUDI node module: Catalog"
 cd "${WK_DIR}/rudi-catalog/" || exit
+echo "$CATALOG_PROFILES"
+l    "$CATALOG_PROFILES"
 node rudiServer.js                      \
-    --hash="$CATALOG_GIT_REV"           \
-    --url="$CATALOG_PUBLIC_URL"         \
-    --portal_conf="$PORTAL_CONF"        \
-    --conf="$RUDI_CATALOG_USER_CONF"    &
+    --node_env "$ENV"                   \
+    --app_env  "$ENV"                   \
+    --hash      "$CATALOG_GIT_REV"      \
+    --url       "$CATALOG_PUBLIC_URL"   \
+    --conf      "$CATALOG_CONF"         \
+    --profiles  "$CATALOG_PROFILES"     \
+    --portal_conf "$PORTAL_CONF"        &
 
 # Starting RUDI node Storage
 log_msg "Launching RUDI node module: Storage"
 cd "${WK_DIR}/rudi-storage/" || exit
-node index.js                           \
-    --hash "$STORAGE_GIT_REV"           \
-    --url "$STORAGE_PUBLIC_URL"         \
-    --conf "$RUDI_STORAGE_USER_CONF"    &
+node index.js                       \
+    --hash "$STORAGE_GIT_REV"       \
+    --url  "$STORAGE_PUBLIC_URL"    \
+    --conf "$STORAGE_CONF"          &
 
 # Starting RUDI node Manager backend (node_env!="development" => serves the built front-end)
 log_msg "Launching RUDI node module: Manager"
 cd "${WK_DIR}/rudi-manager/" || exit
-node server.js                          \
-    --hash "$MANAGER_GIT_REV"           \
-    --su "$SU"                          \
-    --tag "$TAG"                        \
-    --node_env "$ENV"                   \
-    --url "$MANAGER_PUBLIC_URL"         \
-    --conf "$RUDI_MANAGER_USER_CONF"    &
+node server.js                      \
+    --su "$SU"                      \
+    --tag "$TAG"                    \
+    --node_env "$ENV"               \
+    --hash "$MANAGER_GIT_REV"       \
+    --url  "$MANAGER_PUBLIC_URL"    \
+    --conf "$MANAGER_CONF"          \
+    --db   "$MANAGER_DB_PATH"            &
 
 # Bringing the primary process back ito the foreground
 # and leaving it there

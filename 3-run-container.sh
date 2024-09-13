@@ -45,7 +45,8 @@ podman run -it                                  \
     --volume "${HOME}/data/dump":/data/dump:Z   \
     --volume "${HOME}/data/media":/data/media:Z \
     --volume "${HOME}/data/conf":$WK_DIR/conf:Z \
-    -e PORTAL_CONF="$WK_DIR/conf/rudi-catalog-portal.ini" \
+    -e CATALOG_PROFILES="$WK_DIR/ini/rudi-catalog-profiles.ini" \
+    -e PORTAL_CONF="$WK_DIR/conf/rudi-catalog-portal.ini"       \
     -e SU=$SU_CREDS                             \
     -e TAG=$TAG                                 \
     -e ENV=staging                              \
