@@ -11,15 +11,19 @@
 # It then performs some tests
 # ==================================================================================================
 
-source .bashrc
+
+source ./.bashrc
 source ./git-rev.ini 2?>&1
+
+alias l="ls -lah"
+
 
 TIME_START=$(now_ms_int)
 log_msg "Executing as user $(whoami)"
 log_msg Init RUDI environment variables
 
 echo Content of ./ini folder:
-ls -la "$INI_DIR"
+ls -lah "$INI_DIR"
 
 # echo
 # echo "----- I'm here:"
@@ -84,19 +88,20 @@ done
 chmod 500 "$SSH_DIR"
 
 echo "Key generated"
-ls -la "$SSH_DIR"
+ls -lah "$SSH_DIR"
 
 # Starting RUDI node Catalog
 log_msg "Launching RUDI node module: Catalog"
 cd "${WK_DIR}/rudi-catalog/" || exit
 echo "$CATALOG_PROFILES"
-l    "$CATALOG_PROFILES"
+ls -lah    "$CATALOG_PROFILES"
 node rudiServer.js                      \
     --node_env "$ENV"                   \
     --app_env  "$ENV"                   \
     --hash      "$CATALOG_GIT_REV"      \
     --url       "$CATALOG_PUBLIC_URL"   \
     --conf      "$CATALOG_CONF"         \
+    --db_uri    "$CATALOG_DB_URI"       \
     --profiles  "$CATALOG_PROFILES"     \
     --portal_conf "$PORTAL_CONF"        &
 
@@ -118,7 +123,7 @@ node server.js                      \
     --hash "$MANAGER_GIT_REV"       \
     --url  "$MANAGER_PUBLIC_URL"    \
     --conf "$MANAGER_CONF"          \
-    --db   "$MANAGER_DB_PATH"            &
+    --db   "$MANAGER_DB_PATH"       &
 
 # Bringing the primary process back ito the foreground
 # and leaving it there

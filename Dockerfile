@@ -68,6 +68,7 @@ ENV NODE_PUBLIC_URL="$NODE_PUBLIC_URL "      \
     MANAGER_CONF="$MANAGER_CONF"             \
     PORTAL_CONF="$PORTAL_CONF"               \
     CATALOG_PROFILES="$CATALOG_PROFILES"     \
+    CATALOG_DB_URI="$CATALOG_DB_URI"         \
     MANAGER_DB_PATH="$MANAGER_DB_PATH"       \
     DOCKER_USR="$DOCKER_USR"                 \
     NODE_ENV="$ENV"                          \

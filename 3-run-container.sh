@@ -15,6 +15,7 @@ if [ $# -lt 1 ]; then source ./env/platform.ini; else IMG_PLATFORM=$1; fi
 # Argument 2 is the name of the container image that is produced. Defaults to "rudi-node"
 if [ $# -lt 2 ]; then source ./tmp/img_prefix.ini; else IMG_PREFIX=$2; fi
 
+IMG_PLATFORM=arm64
 IMG_NAME="${IMG_PREFIX}-${IMG_PLATFORM}"
 
 # log_in_file rudi-node-run
