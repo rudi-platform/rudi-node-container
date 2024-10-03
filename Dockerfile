@@ -53,7 +53,7 @@ ARG MANAGER_DB_PATH="/data/db/rudi_mngr.db"
 ARG ENV="production"
 
 # Tag for the container, usually the RUDI node version
-ARG TAG="OCI-2.5.0"
+ARG TAG="RUDI-OCI-2.5.0"
 # Base64 encoded <usr>:<hashedPwd> pair. You may use /api/open/hash-credentials to correctly hash the password and encode the pair
 ARG SU="bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5yTktudUFQTEp0Y1RBOFBkSklZS3dXRmpTU1lINHBHaVNVNXJsVHBBVGEyLTB0ZzItM1hBQWFrUmlUREtLTzNoR3cwMFVENmFzVXJZcFdQSW9IbXc="
 

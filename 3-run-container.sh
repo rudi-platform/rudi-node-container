@@ -6,7 +6,6 @@
 
 source ./install/.bashrc
 
-WK_DIR=/app/rudi-node
 
 
 # Argument 1 is the destination platform for the container image. Defaults to "amd64"
@@ -24,6 +23,9 @@ PRJ_DIR=$(pwd)
 
 TAG=OCI-2.5.0-A
 SU_CREDS=bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5yTktudUFQTEp0Y1RBOFBkSklZS3dXRmpTU1lINHBHaVNVNXJsVHBBVGEyLTB0ZzItM1hBQWFrUmlUREtLTzNoR3cwMFVENmFzVXJZcFdQSW9IbXc=
+
+WK_DIR=/app/rudi-node
+
 echo "$PRJ_DIR"
 
 log_msg Deleting the previous container to avoid accumulation
