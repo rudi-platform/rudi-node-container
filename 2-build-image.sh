@@ -4,7 +4,7 @@
 # This script builds the container image with podman
 # ==================================================================================================
 
-source ./install/.shrc
+. ./install/.shrc
 
 TIME_START=$(now_ms_int)
 
@@ -12,7 +12,7 @@ TIME_START=$(now_ms_int)
 
 # Argument 1 is the destination platform for the container image. Defaults to "amd64"
 if [ $# -lt 1 ]; then
-    IMG_PLATFORM=arm64
+    [ "$(uname --machine)" = "x86_64" ] && IMG_PLATFORM=amd64 || IMG_PLATFORM=arm64
 else
     IMG_PLATFORM=$1
 fi

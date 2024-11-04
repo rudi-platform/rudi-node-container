@@ -30,14 +30,14 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 #----- Functions -----------------------------------------------------------------------------------
 # Execute a mathematical operation expressed as a string
-calc () { awk "BEGIN { print $* }"; }
+_calc () { awk "BEGIN { print $* }"; }
 
 # Gives the actual date in seconds as a string
 now_s_str () { date +%Y-%m-%d_%H%M%S; }
-export nowS
 
 # Gives the actual date in Ms as an integer number
-now_ms_int () { node -e 'console.log(Date.now())'; }
+_now_ms_int () { node -e 'console.log(Date.now())'; }
+now_ms_int () { date +%s.%N; }
 export now_ms_int
 
 TIME_SOURCED=$(now_ms_int)
@@ -46,7 +46,7 @@ export TIME_SOURCED
 # Calculate the time spent (s, float) between two dates expressed in ms, int
 # Arg 1: reference time (ms, int) - defaulted to above ${TIME_SOURCED}
 # Arg 2: actual time (ms, int) - defaulted to the result of above now_ms_int function
-time_spent_s () {
+_time_spent_s () {
     if [ $# -lt 2 ]; then
         now=$(now_ms_int);
     else
@@ -61,6 +61,12 @@ time_spent_s () {
 }
 export time_spent_s
 
+time_spent_s() {
+    [ $# -ge 2 ]  && local start=$2 || local start=${TIME_SOURCED}
+    [ $# -ge 1 ]  && local now=$2   || local now=$(now_ms_int)
+    echo "scale=2; $now - $start" | bc
+}
+
 # Access a folder like `cd` but creates the folder beforehand if it doesn't exist
 ccd () { test -d "$1" || mkdir -p "$1" && cd "$1" || exit; }
 export ccd
@@ -69,7 +75,7 @@ export LOG_DIR=./logs
 logfile_path () { mkdir -p logs; echo "${LOG_DIR}/${1}_$(now_s_str).log"; }
 export logfile_path
 
-log_msg () { echo; echo "-----( $(time_spent_s)s )----------[ $* ]"; echo; }
+log_msg () { printf -- "-----( %ss )----------[ %s ]\n" "$(time_spent_s)" "$*"  >&2; }
 export log_msg
 
 # log_in_file () { exec > >(tee "$(logfile_path "$1")") 2>&1; }
@@ -94,7 +100,6 @@ last_modified () {
 }
 export last_modified
 
-
 #----- SSH -----------------------------------------------------------------------------------------
 genssh() {
     if [[ $# -lt 2 ]]; then out="./$1"; else out="$2/$1"; fi
@@ -104,7 +109,7 @@ genssh() {
 export genssh
 
 #----- NodeJS --------------------------------------------------------------------------------------
-export NODE_PATH=$(npm root -g)
+which npm && export NODE_PATH=$(npm root -g)
 
 #----- SIGTERM -------------------------------------------------------------------------------------
 
@@ -117,4 +122,4 @@ cleanup() {
 export cleanup
 
 # Trap SIGTERM and call the cleanup function
-trap 'cleanup' SIGTERM
+trap 'cleanup' TERM

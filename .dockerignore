@@ -17,12 +17,17 @@ dump
 **/jest
 tests/doc
 
+# GIT
+**/.git
+**/.eslintrc
+**/.gitignore
+
 # PM frontend ignore
-src/rudi-manager/front/src
-src/rudi-manager/front/public
-src/rudi-manager/front/README.md
-src/rudi-manager/front/.*
-src/rudi-manager/front/package*
+#src/rudi-manager/front/src
+#src/rudi-manager/front/public
+#src/rudi-manager/front/README.md
+#src/rudi-manager/front/.*
+#src/rudi-manager/front/package*
 
 # Zip
 **/*.zip
@@ -44,5 +49,3 @@ z_*
 
 # Dev
 .vscode
-
-

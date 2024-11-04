@@ -6,7 +6,8 @@
 # frontend
 # ==================================================================================================
 
-source "./install/.shrc"
+test -r ./install/.shrc && . ./install/.shrc
+
 # log_in_file rudi-node-git
 TIME_START=$(now_ms_int)
 
@@ -16,15 +17,17 @@ git_src_storage=rudi-media.git
 git_src_manager=rudi-console-proxy.git
 git_src_crypto=rudi-crypto.git
 
-
 REPO=https://-:${rudi_node_git_token}@gitlab.aqmo.org/rudidev
 PRJ_DIR=$(pwd)
 PRJ_SRC_DIR=${PRJ_DIR}/src
 
-# This file is used to gather each repository's git tag
 PRJ_ENV_DIR=${PRJ_DIR}/env
-mkdir -p "$PRJ_ENV_DIR" "$PRJ_SRC_DIR"
 GIT_REV_FILE=${PRJ_ENV_DIR}/git-rev.ini
+
+test -r ./.local_conf.sh && . ./.local_conf.sh
+
+# This file is used to gather each repository's git tag
+mkdir -p "$PRJ_ENV_DIR" "$PRJ_SRC_DIR"
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
 for module in catalog storage manager crypto; do
@@ -44,7 +47,7 @@ for module in catalog storage manager crypto; do
         # Local destination folder for the RUDI module
         git clone -b release --single-branch "${mod_repo}" "${module_dir}"
     fi
-    if [ $module == manager ]; then
+    if false && [ $module == manager ]; then
         log_msg Installing manager front-end
         cd "${module_dir}/front" || exit 2
         export NODE_ENV='development'
