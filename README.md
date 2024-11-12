@@ -1,5 +1,7 @@
 # Containerization of the "RUDI Producer Node" modules
 
+A new containerization approach at the end.
+
 ## In short: execution example
 
 ```sh
@@ -209,3 +211,77 @@ An API is provided to hash credentials.
 - POST http://localhost:3033/api/open/hash-credentials: a JSON body must be provided with the request
   - either the password alone, in a JSON object with "pwd" key `{"pwd":"<my password>"}`. In such case, the answer is the hashed password
   - or the username + password pair `{"usr":"<my username>", "pwd":"<my password>"}`. In such case, the anwser is a base 64 encoded pair of `<username>:<hashed password>`
+
+
+## An alternative
+An alternative way to produce the container is proposed using the following approach.
+
+## Prerequite 
+
+The source code is fetch directly from the AQMO's GitLab, you need an
+account. The account can be specified using the local file
+*.local_conf.sh* you might want to can create.
+
+```bash
+# file ./.local_conf.sh
+REPO=https://gitlab.aqmo.org/rudidev
+```
+
+## Build and run the rudi container
+
+### Fetch the sources
+
+As before, the script to fetch the source. The difference is that you need nothing, only git.
+
+```sh
+./1-pull-rudi-node-gits.sh
+```
+
+### Build the OCI/Docker image
+
+The name for the docker image is set to 'rudicode', but can be what
+you need. The network is needed to fetch the source. This step can
+take some time, go take any hot beverage you like.
+
+```sh
+podman build --net host -f Dockerfile.build -t rudicode .
+```
+
+### Test the OCI/Docker image
+
+If you want to inspect you container, you can get inside :
+
+```sh
+podman run -it --rm --net host --name rudicode_t --user root -t rudicode '/bin/ash' -l
+```
+
+In this command, you become root, and call directly a shell. To continue the execution, simply run :
+
+```sh
+$ su -l rudiadm /app/rudi-node/oci-alpine-startup.sh &
+```
+
+To run the container with a remanent volume, only */data* is needed :
+
+```sh
+podman run -d --rm --net host --name rudicode_t --volume ./data:/data rudicode
+```
+
+This way, you can investigate any problem you may face.
+
+### Run the container with podman-compose
+
+You may need to install *podman-compose* as it is not necessarily installed together with Podman.
+Several types of deployments are possible :
+
+- A single container attached to the host network with *docker-compose-basic.yml*
+- A container by application attached to the host network with *docker-compose-host.yml*
+- A container by application with a local network with *docker-compose.yml* (default)
+
+You can build the necessary images with the command ```podman-compose build```
+
+Remainder:
+
+- To launch a deployment :  ```podman-compose  -f docker-compose-basic.yml up -d```
+- To stop a deployment :    ```podman-compose  -f docker-compose-basic.yml down```
+

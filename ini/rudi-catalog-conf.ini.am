@@ -8,9 +8,9 @@
 [server]
 ; server address
 ; 127.0.0.1 is deaf to external call, 0.0.0.0 is thus the way
-listening_address = 0.0.0.0
+listening_address = @LOCAL_INTERFACE@
 ; server port
-listening_port = 3030
+listening_port = @NODE_CATALOG_PORT@
 ; external URL for the RUDI Catalog server
 server_url = https://rudinode.org
 
@@ -19,7 +19,7 @@ server_url = https://rudinode.org
 log_level = trace
 ; folder for log files
 ; log_dir = ./logs
-log_dir = /var/log/rudi/catalog
+log_dir = @LOG_DIR@/catalog
 
 [syslog]
 ; sets the lowest priority level of the logs written
@@ -42,4 +42,4 @@ syslog_socket = /dev/log
 syslog_node_name = rudinode_oci
 ; folder for syslog backup files
 ; syslog_dir = /tmp/devLogs/rudi
-syslog_dir = /tmp/logs/rudi/catalog/
+syslog_dir = @LOG_DIR@/catalog/

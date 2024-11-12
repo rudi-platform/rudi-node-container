@@ -8,9 +8,9 @@
 [portal]
 ; ========== Portal metadata URL
 ; 'portal_url' commented => no portal connected
-; portal_url = ''
+portal_url = @PORTAL_URL@
 
 ; ========== Credentials
-login = 0
-passw = 0
+login = @PORTAL_USER@
+passw = @PORTAL_PASS@
 is_pwd_b64 = true

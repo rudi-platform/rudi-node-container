@@ -13,10 +13,12 @@ RUN apk update && apk add python3 xz
 
 COPY ./env/* "$WK_DIR"/
 
-ENV NPM_INSTALL="npm install --no-audit  --verbose"
+ENV NPM_INSTALL="npm install --no-audit --no-fund --verbose  --omit=dev"
 RUN npm config set registry http://registry.npmjs.org/ && \
     npm config set fetch-timeout 1000 && \
-    npm config set package-lock false && \
+    npm config set searchstaleness 3600 && \
+    npm config set prefer-offline true && \
+    npm config set package-lock true && \
     npm config set progress false && \
     npm config set loglevel warn && \
     npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
@@ -42,45 +44,53 @@ COPY ${SRC_DIR}/rudi-catalog ${WK_DIR}/rudi-catalog
 COPY ${SRC_DIR}/rudi-storage ${WK_DIR}/rudi-storage
 COPY ${SRC_DIR}/rudi-manager ${WK_DIR}/rudi-manager
 
+RUN ( cd rudi-catalog && ${NPM_INSTALL} )
+RUN ( cd rudi-storage && ${NPM_INSTALL} )
+RUN ( cd rudi-crypto  && ${NPM_INSTALL} )
+RUN ( cd rudi-manager && ${NPM_INSTALL} )
+
 COPY ./install/searchPackages.py /app/searchPackages.py
-RUN python3 /app/searchPackages.py > package.json && ${NPM_INSTALL}
+RUN python3 /app/searchPackages.py > package.json
+
+RUN npm config set package-lock false && \
+    rm -rf $(find . -iname 'package-lock.json' -o -iname 'node_modules' ) && \
+   ${NPM_INSTALL}
 
 RUN ( cd rudi-catalog && ${NPM_INSTALL} )
 RUN ( cd rudi-storage && ${NPM_INSTALL} )
 RUN ( cd rudi-crypto  && ${NPM_INSTALL} )
 RUN ( cd rudi-manager && ${NPM_INSTALL} )
-RUN ( cd rudi-manager/front && NODE_ENV='development' ${NPM_INSTALL} )
+RUN ( cd rudi-manager/front && NODE_ENV='development' ${NPM_INSTALL} --dev )
 
 ENV PUBLIC_URL=${PUBLIC_URL}
 RUN ( cd rudi-manager/front && npm run build:prod  )
 
-RUN chown -R rudiadm:rudi     node_modules *.ini *.json && \
-    chown -R rudicatalog:rudi rudi-catalog  && \
-    chown -R rudistorage:rudi rudi-storage  && \
-    chown -R rudicrypto:rudi  rudi-crypto   && \
-    chown -R rudimanager:rudi rudi-manager
+RUN ( rm -rf rudi-manager/front/node_modules rudi-manager/front/src $(find . -iname '.docker*' -o -iname '.git*' ) )
 
-RUN chmod -R u=rwX,g=X,o= rudi-catalog rudi-storage rudi-crypto rudi-manager && \
-    chmod -R u=rwX,g=rX,o= node_modules  *.ini *.json
+RUN chown -R root:rudi        node_modules *.ini *.json && \
+    chown -R root:rudicatalog rudi-catalog  && \
+    chown -R root:rudistorage rudi-storage  && \
+    chown -R root:rudicrypto  rudi-crypto   && \
+    chown -R root:rudimanager rudi-manager
 
-RUN ( cd /app && tar --exclude rudi-manager/front/node_modules --exclude rudi-manager/front/src --exclude '.git' -Jcvf /app/rudi-node.tar.xz rudi-node )
+RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-crypto rudi-manager && \
+    chmod -R u=rX,g=rX,o= node_modules  *.ini *.json
 
-RUN apk add squashfs-tools
-RUN mksquashfs /app/rudi-node /app/rudi-node.iso -comp xz -b 4096 -wildcards -e rudi-manager/front/src -e rudi-manager/front/node_modules -e '... .git'
+#RUN ( cd /app && tar -Jcvf /app/rudi-node.tar.xz rudi-node )
 
-FROM ubuntu:noble as system
+#RUN apk add squashfs-tools
+#RUN mksquashfs /app/rudi-node /app/rudi-node.iso -comp xz -b 4096 -wildcards -e rudi-manager/front/src -e rudi-manager/front/node_modules -e '... .git'
 
-WORKDIR /home/ferretdb
-ADD https://deb.nodesource.com/setup_20.x                                                        /home/ferretdb/nodejs_setup.sh
-ADD https://github.com/FerretDB/FerretDB/releases/download/v1.23.1/ferretdb-linux-amd64.deb      /home/ferretdb/ferretdb-linux-amd64.deb
-ADD https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2404-x86_64-100.10.0.deb    /home/ferretdb/mongodb-database-tools.deb
+FROM alpine:3.20 as system
 
-RUN apt update && \
-    apt -y dist-upgrade && \
-    /bin/bash /home/ferretdb/nodejs_setup.sh && \
-    apt update && DEBIAN_FRONTEND=noninteractive apt install -y adduser nodejs xz-utils libgssapi-krb5-2 libkrb5-3 libk5crypto3 libkrb5support0 libkeyutils1 && \
-    dpkg -i ferretdb-linux-amd64.deb mongodb-database-tools.deb && \
-    apt -y autoremove && apt clean && rm -rf *.deb /var/lib/apt/lists/*
+WORKDIR /app
+RUN echo "Europe/Paris" > /etc/timezone
+RUN printf 'http://dl-cdn.alpinelinux.org/alpine/v3.9/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.9/community\n' >> /etc/apk/repositories && \
+    apk update && \
+    apk upgrade && \
+    apk add mongodb mongodb-tools nodejs openssh-keygen logrotate busybox-suid sqlite tzdata && \
+    apk cache clean && \
+    rm -f /var/cache/apk/*
 
 RUN addgroup --gid 5001 rudi && \
     addgroup --gid 5002 rudicatalog && \
@@ -88,17 +98,25 @@ RUN addgroup --gid 5001 rudi && \
     addgroup --gid 5004 rudicrypto && \
     addgroup --gid 5005 rudimanager
 
-RUN adduser --disabled-password --ingroup rudi        --uid 5001 rudiadm && \
-    adduser --disabled-password --ingroup rudicatalog --uid 5002 --ingroup rudi rudicatalog && \
-    adduser --disabled-password --ingroup rudistorage --uid 5003 --ingroup rudi rudistorage && \
-    adduser --disabled-password --ingroup rudicrypto  --uid 5004 --ingroup rudi rudicrypto && \
-    adduser --disabled-password --ingroup rudimanager --uid 5005 --ingroup rudi rudimanager
+RUN adduser --disabled-password -G rudi        --uid 5001 rudiadm && \
+    adduser --disabled-password -G rudicatalog --uid 5002 rudicatalog && \
+    adduser --disabled-password -G rudistorage --uid 5003 rudistorage && \
+    adduser --disabled-password -G rudicrypto  --uid 5004 rudicrypto && \
+    adduser --disabled-password -G rudimanager --uid 5005 rudimanager && \
+    for u in rudicatalog rudistorage rudicrypto rudimanager; do addgroup $u rudi ; addgroup rudiadm $u ; done
 
 WORKDIR /app
 
-COPY --from=NodeBuilder /app/rudi-node.tar.xz rudi-node.tar.xz
-RUN tar -Jxf rudi-node.tar.xz && rm rudi-node.tar.xz
+COPY --from=NodeBuilder /app/rudi-node /app/rudi-node
 
-# ferretdb --handler=sqlite --sqlite-url=file:/home/ferretdb/db/ --log-level=WARN  > ferretdb.log 2> ferretdb.err
+WORKDIR /app/rudi-node
+RUN mkdir -p -m 0770      /data /app/config/ini && \
+    chown -R rudiadm:rudi /data /app/config
 
-CMD /bin/bash -l
+COPY --chown=root:rudi    --chmod=440 ./ini /app/config/ini
+COPY                      --chmod=444 ./install/.profile /etc/profile.d/10-rudi.sh
+COPY --chown=root:rudi    --chmod=550 ./install/oci-alpine-startup.sh ./install/env-*  .
+
+USER rudiadm
+
+CMD /app/rudi-node/oci-alpine-startup.sh

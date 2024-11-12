@@ -1,0 +1,19 @@
+name: rudiproducer
+services:
+  rudiproducer:
+    image: rudicode
+    container_name: rudicode-t
+    restart: always
+    ports:
+      - "3030:3030"
+      - "3031:3031"
+      - "3032:3032"
+    volumes:
+      - ./data:/data:rw
+    environment:
+      NODE_PUBLIC_URL: "http://127.0.0.1"
+      ENABLE_DB: "true"
+      ENABLE_CATALOG: "true"
+      ENABLE_STORAGE: "true"
+      ENABLE_MANAGER: "true"
+    network_mode: "host"

@@ -7,9 +7,9 @@
 
 [server]
 ; prodmanager server address
-listening_address = 0.0.0.0
+listening_address = @LOCAL_INTERFACE@
 ; prodmanager server port
-listening_port = 3033
+listening_port = @NODE_MANAGER_PORT@
 
 [database]
 ; folder where the user database is stored
@@ -33,14 +33,17 @@ exp_time_s = 25200
 ; helmet conf: frontend can only make calls to trusted domains (and itself)
 
 ; rudi manager backend
-trusted_domain[] = http://localhost:3033
+trusted_domain[] = @CATALOG_LOCAL_URL@
 
 ; rudi storage/media
-trusted_domain[] = http://localhost:3031
+trusted_domain[] = @STORAGE_LOCAL_URL@
+
+; extra
+trusted_domain[] = @TRUSTED_DOMAINS@
 
 [rudi_api]
 ; RUDI Catalog server listening address
-rudi_api_url = http://localhost:3030
+rudi_api_url = @CATALOG_LOCAL_URL@
 
 ; sub-part of the RUDI Catalog URL reserved to the authenticated manipulations
 admin_api = /api/admin
@@ -48,7 +51,7 @@ admin_api = /api/admin
 ; prodmanager authentification private key
 ; used for the RUDI Catalog authentification JWT
 ; ! if not provided, <auth.pm_prv_key> will be used
-pm_api_key = "/.ssh/catalog_mngr"
+pm_api_key = "@SAFE_DIR@/catalog_mngr"
 
 ; identifier of the prodmanager for the RUDI Catalog authentification JWT
 pm_api_id = "rudi_node_manager"
@@ -58,11 +61,11 @@ exp_time_s = 1200
 
 [rudi_media]
 ; RUDI Media listening address
-rudi_media_url = http://localhost:3031/media
+rudi_media_url = @STORAGE_LOCAL_URL@/media
 ; prodmanager authentification private key
 ; used for the RUDI Media authentification JWT
 ; ! if not provided, <auth.pm_prv_key> will be used
-pm_media_key = "/.ssh/storage_mngr"
+pm_media_key = "@SAFE_DIR@/store_mngr"
 ; name of the prodmanager for the RUDI Media authentification JWT
 pm_media_id = "rudi_node_manager"
 ; expiration time in seconds for the RUDI MEdia authentification JWT
@@ -77,7 +80,7 @@ default_client_group = "producer"
 ; Name that identifies the prodmanager server in the logs (e.g. in Grafana)
 app_name = PMBack
 ; Folder for logs
-log_dir = ./logs/
+log_dir = @LOG_DIR@/manager
 ; Name of the log file
 log_file = manager.log
 ; Flag for enabling the logging of the configuration
@@ -101,4 +104,4 @@ syslog_socket = /var/run/syslog
 ; name of this machine
 syslog_node_name = dev
 ; folder for syslog backup files
-syslog_dir = /tmp/logs/rudi/manager/
+syslog_dir = @LOG_DIR@/rudi/manager/
