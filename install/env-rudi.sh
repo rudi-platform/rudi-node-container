@@ -67,16 +67,22 @@ assert_key() {
     cp -p ${kfile}.pub ${PUBKEY_DIR}/
 }
 
+dirCheck() {
+    local dir=${1}
+    test -d ${dir} -o -r ${dir} || mkdir -p ${dir}
+    test -d ${dir} -a -w ${dir}
+}
+
 rudi_check() {
     local user=${1:-rudiadm}
     local group=${2:-rudi}
     test -d ${APP_DIR}     || error "Could not find ${APP_DIR}"
-    test -d ${INI_DIR}     || mkdir -p ${INI_DIR}
-    test -d ${SAFE_DIR}    || mkdir -p ${SAFE_DIR}
-    test -d ${LOG_DIR}     || mkdir -p ${LOG_DIR}
-    test -d ${MEDIA_DIR}   || mkdir -p ${MEDIA_DIR}
-    test -d ${DB_DIR}      || mkdir -p ${DB_DIR}
-    test -d ${PUBKEY_DIR}  || mkdir -p ${PUBKEY_DIR}
+    dirCheck ${INI_DIR}    || error "Could not access or create ${INI_DIR}"
+    dirCheck ${SAFE_DIR}   || error "Could not access or create ${SAFE_DIR}"
+    dirCheck ${LOG_DIR}    || error "Could not access or create ${LOG_DIR}"
+    dirCheck ${MEDIA_DIR}  || error "Could not access or create ${MEDIA_DIR}"
+    dirCheck ${DB_DIR}     || error "Could not access or create ${DB_DIR}"
+    dirCheck ${PUBKEY_DIR} || error "Could not access or create ${PUBKEY_DIR}"
 
     chown $user:$group ${INI_DIR} ${SAFE_DIR} ${LOG_DIR} ${DB_DIR}
     chmod 770          ${INI_DIR} ${SAFE_DIR} ${LOG_DIR} ${DB_DIR}
