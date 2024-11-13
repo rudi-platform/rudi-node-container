@@ -269,6 +269,52 @@ podman run -d --rm --net host --name rudicode_t --volume ./data:/data rudicode
 
 This way, you can investigate any problem you may face.
 
+**Warning**
+
+The files and directories in the volume './data' has to comply with user access rights as configure for the container and shifted according to your configuration.
+For example, in rootless mode, here is my result :
+
+```sh
+$ podman info | yq .host.idMappings
+gidmap:
+  - container_id: 0
+    host_id: 1000
+    size: 1
+  - container_id: 1
+    host_id: 100000
+    size: 65536
+uidmap:
+  - container_id: 0
+    host_id: 1000
+    size: 1
+  - container_id: 1
+    host_id: 100000
+    size: 65536
+```
+
+This output tells that in my case the *root* user will have the id
+*1000*, and other users will have an id shifted by *100000*.  This
+configuration is set in the **'/etc/subuid'** and **'/etc/subgid'**
+files. So, if you use files in your containers that are not *root*, in
+our case, the user *rudiadm* has an id *5000* and the group *rudi* the same number.
+Outside the container, they must have the id/group numbers *105000*/*105000*.
+
+```sh
+$ ls -alF data/
+total 12
+drwxrwxr-x 3 105000 105000 4096 nov.  13 09:43 ./
+drwxrwxr-x 9 lmorin lmorin 4096 nov.  13 11:14 ../
+drwxr-x--- 4 105000 105000 4096 nov.  11 18:15 media/
+```
+
+How to proceed ? It your are a sudo user, easy :
+
+```sh
+$ mkdir ./data
+$ sudo chown 105001:105001 ./data
+```
+If you are not, mout the volume with any container runing a shell, and set it inside.
+
 ### Run the container with podman-compose
 
 You may need to install *podman-compose* as it is not necessarily installed together with Podman.
