@@ -37,22 +37,22 @@ log_msg "Creating & running the new container"
 # Create a new container and binding the following folders
 #   - .ssh as /keys for the secrets (:Z opt = private, :ro = read-only)
 #   - data as /data/dump to restore previous DB at startup
-podman run -it                                  \
-    --rm                                        \
-    --name "$IMG_NAME"                          \
-    --log-level debug                           \
-    --publish 3030:3030                         \
-    --publish 3031:3031                         \
-    --publish 3033:3033                         \
-    --volume "${HOME}/data/db":/data/db:Z       \
-    --volume "${HOME}/data/dump":/data/dump:Z   \
-    --volume "${HOME}/data/media":/data/media:Z \
-    --volume "${HOME}/data/conf":$WK_DIR/conf:Z \
+podman run -it                                                  \
+    --rm                                                        \
+    --name "$IMG_NAME"                                          \
+    --log-level debug                                           \
+    --publish 3030:3030                                         \
+    --publish 3031:3031                                         \
+    --publish 3033:3033                                         \
+    --volume "${HOME}/data/db":/data/db:Z                       \
+    --volume "${HOME}/data/dump":/data/dump:Z                   \
+    --volume "${HOME}/data/media":/data/media:Z                 \
+    --volume "${HOME}/data/conf":$WK_DIR/conf:Z                 \
     -e CATALOG_PROFILES="$WK_DIR/ini/rudi-catalog-profiles.ini" \
     -e PORTAL_CONF="$WK_DIR/conf/rudi-catalog-portal.ini"       \
-    -e SU=$SU_CREDS                             \
-    -e TAG=$TAG                                 \
-    -e ENV=staging                              \
+    -e SU=$SU_CREDS                                             \
+    -e TAG=$TAG                                                 \
+    -e ENV=staging                                              \
     "$IMG_NAME"
 
     # --network host

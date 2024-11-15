@@ -1,0 +1,11 @@
+[*.sh]
+function_next_line = false
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+keep_padding = true
+space_redirects = false
+switch_case_indent = true
+
+[src/**]
+ignore = true

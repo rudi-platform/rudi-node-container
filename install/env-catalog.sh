@@ -16,7 +16,7 @@ PORTAL_CONF="${PORTAL_CONF:-${INI_DIR}/rudi-catalog-portal.ini}"
 CATALOG_EXTERNAL_PROFILES="${CATALOG_EXTERNAL_PROFILES:-${INI_DIR}/rudi-catalog-profiles.ini}"
 CATALOG_PROFILES="${CATALOG_PROFILES:-${SAFE_DIR}/rudi-catalog-profiles.ini}"
 
-# 
+#
 # DB configuration
 CATALOG_DB_NAME=${CATALOG_DB_NAME:-${DB_PREFIX}rudi_api}
 CATALOG_DB_URI=${CATALOG_DB_URI:-${MONGODB}/${CATALOG_DB_NAME}}
@@ -39,14 +39,14 @@ EOF
 
 catalog_check() {
     test -z "${CATALOG_GIT_REV:-}" && error "catalog git rev not set"
-    test -d ${APP_CATALOG_DIR}  || error "Could not find ${APP_CATALOG_DIR}"
+    test -d ${APP_CATALOG_DIR} || error "Could not find ${APP_CATALOG_DIR}"
 
     preprocess ${CATALOG_CONF}
     preprocess ${CATALOG_EXTERNAL_PROFILES}
     preprocess ${PORTAL_CONF}
 
-    generateProfile manager ${PUBKEY_DIR}/catalog_mngr.pub  > ${CATALOG_PROFILES}
-    cat ${CATALOG_EXTERNAL_PROFILES}                       >> ${CATALOG_PROFILES}
+    generateProfile manager ${PUBKEY_DIR}/catalog_mngr.pub >${CATALOG_PROFILES}
+    cat ${CATALOG_EXTERNAL_PROFILES} >>${CATALOG_PROFILES}
 
     test -r ${CATALOG_CONF}     || error "Could not find ${CATALOG_CONF}"
     test -r ${CATALOG_PROFILES} || error "Could not find ${CATALOG_PROFILES}"
@@ -60,14 +60,15 @@ catalog_run() {
     log_msg "Launching RUDI node module: Catalog"
     cd "${APP_CATALOG_DIR}" || error "Catalog application directory not found"
     echo "$CATALOG_PROFILES"
-    ls -lah    "$CATALOG_PROFILES"
-    node rudiServer.js                       \
-	 --node_env "$env"                   \
-	 --app_env  "$env"                   \
-	 --hash      "$CATALOG_GIT_REV"      \
-	 --url       "$CATALOG_PUBLIC_URL"   \
-	 --conf      "$CATALOG_CONF"         \
-	 --db_uri    "$CATALOG_DB_URI"       \
-	 --profiles  "$CATALOG_PROFILES"     \
-	 --portal_conf "$PORTAL_CONF"        || error "Could not launch app in ${APP_CATALOG_DIR}"
+    ls -lah "$CATALOG_PROFILES"
+    node rudiServer.js                  \
+        --node_env "$env"               \
+        --app_env "$env"                \
+        --hash "$CATALOG_GIT_REV"       \
+        --url "$CATALOG_PUBLIC_URL"     \
+        --conf "$CATALOG_CONF"          \
+        --db_uri "$CATALOG_DB_URI"      \
+        --profiles "$CATALOG_PROFILES"  \
+        --portal_conf "$PORTAL_CONF"    ||
+           error "Could not launch app in ${APP_CATALOG_DIR}"
 }

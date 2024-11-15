@@ -1,8 +1,140 @@
-# Containerization of the "RUDI Producer Node" modules
+This file explains how to pull and run a RUDI producer node container.
+It also explains the different options that can be set.
+Eventually, a procedure to build your own image is detailed.
 
-A new containerization approach at the end.
+# 1. Basic use: pull the image and run a RUDI producer node
 
-## In short: execution example
+```sh
+# A. Pulling the image
+#    Two images are currenly available: either "amd64" for Linux-based PC, or "arm64" for MacOS.
+IMG_PLATFORM="amd64"
+IMG_NAME="rudi-node-$IMG_PLATFORM"
+podman pull "registry.aqmo.org/public-rudi/public-packages/$IMG_NAME"
+
+# B. Running the image
+#    To run the container with a remanent volume, only `/data` folder should be mounted as a volume.
+OCI_NAME="$IMG_NAME"
+podman stop "$OCI_NAME" 2>/dev/null
+podman rm "$OCI_NAME" 2>/dev/null
+
+podman run -d --rm --net host --name "$IMG_NAME" --volume ./data:/data "$OCI_NAME"
+```
+
+# 2. Building your own RUDI node container
+
+## Fetching the sources
+
+Two configurations are offered:
+
+- default is `.git_conf_rudip.sh` to fetch the sources from https://github.com/rudi-platform that is
+  accessible to anyone
+- alternatively, `.git_conf_aqmo.sh` can be used for development
+
+```sh
+LOCAL_CONF=.git_conf_rudip.sh
+./1-pull-rudi-node-gits.sh
+```
+
+## Building the OCI/Docker image
+
+The name for the docker image is set to 'rudicode', but can be what
+you need. The network is needed to fetch the source. This step can
+take some time, go take any hot beverage you like.
+
+```sh
+IMG_PLATFORM=${IMG_PLATFORM:-"amd64"} # or arm64
+DST_PLATFORM=linux/$IMG_PLATFORM
+USR_IMG_NAME=rudinode
+podman build --platform $DST_PLATFORM --net host -f Dockerfile.build -t $USR_IMG_NAME .
+```
+
+### Test the OCI/Docker image
+
+If you want to inspect you container, you can get inside :
+
+```sh
+podman run -it --rm --net host --name rudicode_t --user root -t rudicode '/bin/ash' -l
+```
+
+In this command, you become root, and call directly a shell. To continue the execution, simply run :
+
+```sh
+$ su -l rudiadm /app/rudi-node/oci-alpine-startup.sh &
+```
+
+To run the container with a remanent volume, only _/data_ is needed :
+
+```sh
+podman run -d --rm --net host --name rudicode_t --volume ./data:/data rudicode
+```
+
+This way, you can investigate any problem you may face.
+
+**Warning**
+
+The files and directories in the volume './data' has to comply with user access rights as configure
+for the container and shifted according to your configuration.
+For example, in rootless mode, here is my result :
+
+```sh
+$ podman info | yq .host.idMappings
+gidmap:
+  - container_id: 0
+    host_id: 1000
+    size: 1
+  - container_id: 1
+    host_id: 100000
+    size: 65536
+uidmap:
+  - container_id: 0
+    host_id: 1000
+    size: 1
+  - container_id: 1
+    host_id: 100000
+    size: 65536
+```
+
+This output tells that in my case the _root_ user will have the id
+_1000_, and other users will have an id shifted by _100000_. This
+configuration is set in the **'/etc/subuid'** and **'/etc/subgid'**
+files. So, if you use files in your containers that are not _root_, in
+our case, the user _rudiadm_ has an id _5000_ and the group _rudi_ the same number.
+Outside the container, they must have the id/group numbers _105000_/_105000_.
+
+```sh
+$ ls -alF data/
+total 12
+drwxrwxr-x 3 105000 105000 4096 nov.  13 09:43 ./
+drwxrwxr-x 9 lmorin lmorin 4096 nov.  13 11:14 ../
+drwxr-x--- 4 105000 105000 4096 nov.  11 18:15 media/
+```
+
+How to proceed ? It your are a sudo user, easy :
+
+```sh
+$ mkdir ./data
+$ sudo chown 105001:105001 ./data
+```
+
+If you are not, mount the volume with any container runing a shell, and set it inside.
+
+### Run the container with podman-compose
+
+You may need to install _podman-compose_ as it is not necessarily installed together with Podman.
+Several types of deployments are possible :
+
+- A single container attached to the host network with _docker-compose-basic.yml_
+- A container by application attached to the host network with _docker-compose-host.yml_
+- A container by application with a local network with _docker-compose.yml_ (default)
+
+You can build the necessary images with the command `podman-compose build`
+
+Remainder:
+
+- To launch a deployment : `podman-compose  -f docker-compose-basic.yml up -d`
+- To stop a deployment : `podman-compose  -f docker-compose-basic.yml down`
+
+# In short: execution example
 
 ```sh
 #!/bin/bash
@@ -164,7 +296,7 @@ This script gives an example of a launching
 
 | env var            | description                                                           | optional | example value                                                       | defaults                                                   | note                                                                                                                                                                                      |
 | :----------------- | :-------------------------------------------------------------------- | :------- | ------------------------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ENV                | Sets the RUDI node ENV variable                                       | yes      | -e ENV=production                                                   | production                                                 |                                                                                                                                                                                           |
+| ENV                | Sets the RUDI node ENV variable                                       | yes      | -e ENV=production                                                   | production                                                 | `development`: the frontend needs to be launched as a separate server<br>`staging`: unsafe cookies, http ok<br>`production`: safe cookies, CORS, https only                               |
 | TAG                | Sets the RUDI node TAG that is displayed in the upper right of the UI | yes      | -e TAG=RUDI-OCI-2.5.0-A                                             | RUDI-OCI-2.5.0                                             |                                                                                                                                                                                           |
 | SU                 | Sets the username and password for the super user.                    | yes\*    | -e SU=PHVzZXI+OjxoYXNoZWRfcHdkPg==                                  | login = '`node admin`' / pwd = '`manager admin password!`' | \* Testing purpose only, please change these credentials! Username and hashed password must be base 64 encoded as `<usr>:<hashed pwd>`. Seel bellow the **"Hash credentials"** paragraph. |
 | NODE_PUBLIC_URL    | Public URL for the node                                               | yes\*    | -e NODE_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr                | localhost                                                  | \* Testing purpose only. In a production environment, this should be set.                                                                                                                 |
@@ -211,123 +343,3 @@ An API is provided to hash credentials.
 - POST http://localhost:3033/api/open/hash-credentials: a JSON body must be provided with the request
   - either the password alone, in a JSON object with "pwd" key `{"pwd":"<my password>"}`. In such case, the answer is the hashed password
   - or the username + password pair `{"usr":"<my username>", "pwd":"<my password>"}`. In such case, the anwser is a base 64 encoded pair of `<username>:<hashed password>`
-
-
-## An alternative
-An alternative way to produce the container is proposed using the following approach.
-
-## Prerequite 
-
-The source code is fetch directly from the AQMO's GitLab, you need an
-account. The account can be specified using the local file
-*.local_conf.sh* you might want to can create.
-
-```bash
-# file ./.local_conf.sh
-REPO=https://gitlab.aqmo.org/rudidev
-```
-
-## Build and run the rudi container
-
-### Fetch the sources
-
-As before, the script to fetch the source. The difference is that you need nothing, only git.
-
-```sh
-./1-pull-rudi-node-gits.sh
-```
-
-### Build the OCI/Docker image
-
-The name for the docker image is set to 'rudicode', but can be what
-you need. The network is needed to fetch the source. This step can
-take some time, go take any hot beverage you like.
-
-```sh
-podman build --net host -f Dockerfile.build -t rudicode .
-```
-
-### Test the OCI/Docker image
-
-If you want to inspect you container, you can get inside :
-
-```sh
-podman run -it --rm --net host --name rudicode_t --user root -t rudicode '/bin/ash' -l
-```
-
-In this command, you become root, and call directly a shell. To continue the execution, simply run :
-
-```sh
-$ su -l rudiadm /app/rudi-node/oci-alpine-startup.sh &
-```
-
-To run the container with a remanent volume, only */data* is needed :
-
-```sh
-podman run -d --rm --net host --name rudicode_t --volume ./data:/data rudicode
-```
-
-This way, you can investigate any problem you may face.
-
-**Warning**
-
-The files and directories in the volume './data' has to comply with user access rights as configure for the container and shifted according to your configuration.
-For example, in rootless mode, here is my result :
-
-```sh
-$ podman info | yq .host.idMappings
-gidmap:
-  - container_id: 0
-    host_id: 1000
-    size: 1
-  - container_id: 1
-    host_id: 100000
-    size: 65536
-uidmap:
-  - container_id: 0
-    host_id: 1000
-    size: 1
-  - container_id: 1
-    host_id: 100000
-    size: 65536
-```
-
-This output tells that in my case the *root* user will have the id
-*1000*, and other users will have an id shifted by *100000*.  This
-configuration is set in the **'/etc/subuid'** and **'/etc/subgid'**
-files. So, if you use files in your containers that are not *root*, in
-our case, the user *rudiadm* has an id *5000* and the group *rudi* the same number.
-Outside the container, they must have the id/group numbers *105000*/*105000*.
-
-```sh
-$ ls -alF data/
-total 12
-drwxrwxr-x 3 105000 105000 4096 nov.  13 09:43 ./
-drwxrwxr-x 9 lmorin lmorin 4096 nov.  13 11:14 ../
-drwxr-x--- 4 105000 105000 4096 nov.  11 18:15 media/
-```
-
-How to proceed ? It your are a sudo user, easy :
-
-```sh
-$ mkdir ./data
-$ sudo chown 105001:105001 ./data
-```
-If you are not, mout the volume with any container runing a shell, and set it inside.
-
-### Run the container with podman-compose
-
-You may need to install *podman-compose* as it is not necessarily installed together with Podman.
-Several types of deployments are possible :
-
-- A single container attached to the host network with *docker-compose-basic.yml*
-- A container by application attached to the host network with *docker-compose-host.yml*
-- A container by application with a local network with *docker-compose.yml* (default)
-
-You can build the necessary images with the command ```podman-compose build```
-
-Remainder:
-
-- To launch a deployment :  ```podman-compose  -f docker-compose-basic.yml up -d```
-- To stop a deployment :    ```podman-compose  -f docker-compose-basic.yml down```
-

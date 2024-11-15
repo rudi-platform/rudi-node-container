@@ -1,4 +1,4 @@
-FROM node:20-alpine as NodeBuilder
+FROM node:20-alpine AS NodeBuilder
 
 # Folder that contains the source of every rudi-node module
 ARG SRC_DIR="./src"
@@ -9,37 +9,38 @@ ENV INI_DIR="$WK_DIR/ini"
 ENV NODE_ENV=production
 
 WORKDIR "$WK_DIR"
-RUN apk update && apk add python3 xz
+RUN apk update && apk add --no-cache python3 xz
+
 
 COPY ./env/* "$WK_DIR"/
 
-ENV NPM_INSTALL="npm install --no-audit --no-fund --verbose  --omit=dev"
-RUN npm config set registry http://registry.npmjs.org/ && \
-    npm config set fetch-timeout 1000 && \
-    npm config set searchstaleness 3600 && \
-    npm config set prefer-offline true && \
-    npm config set package-lock true && \
-    npm config set progress false && \
-    npm config set loglevel warn && \
+ENV NPM_INSTALL="npm install --no-audit --no-fund --verbose --omit=dev"
+RUN npm config set registry http://registry.npmjs.org/  && \
+    npm config set fetch-timeout 1000                   && \
+    npm config set searchstaleness 3600                 && \
+    npm config set prefer-offline true                  && \
+    npm config set package-lock true                    && \
+    npm config set progress false                       && \
+    npm config set loglevel warn                        && \
     npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
 
-RUN addgroup -g 5001 rudi && \
-    addgroup -g 5002 rudicatalog && \
-    addgroup -g 5003 rudistorage && \
-    addgroup -g 5004 rudicrypto && \
+RUN addgroup -g 5001 rudi                               && \
+    addgroup -g 5002 rudicatalog                        && \
+    addgroup -g 5003 rudistorage                        && \
+    addgroup -g 5004 rudicrypto                         && \
     addgroup -g 5005 rudimanager
 
-RUN adduser -D -G rudi        -u 5001 rudiadm && \
-    adduser -D -G rudicatalog -u 5002 rudicatalog && \
-    adduser -D -G rudistorage -u 5003 rudistorage && \
-    adduser -D -G rudicrypto  -u 5004 rudicrypto && \
-    adduser -D -G rudimanager -u 5005 rudimanager && \
-    addgroup rudicatalog rudi && \
-    addgroup rudistorage rudi && \
-    addgroup rudicrypto  rudi && \
+RUN adduser -D -G rudi        -u 5001 rudiadm           && \
+    adduser -D -G rudicatalog -u 5002 rudicatalog       && \
+    adduser -D -G rudistorage -u 5003 rudistorage       && \
+    adduser -D -G rudicrypto  -u 5004 rudicrypto        && \
+    adduser -D -G rudimanager -u 5005 rudimanager       && \
+    addgroup rudicatalog rudi                           && \
+    addgroup rudistorage rudi                           && \
+    addgroup rudicrypto  rudi                           && \
     addgroup rudimanager rudi
 
-COPY ${SRC_DIR}/rudi-crypto ${WK_DIR}/rudi-crypto
+COPY ${SRC_DIR}/rudi-crypto  ${WK_DIR}/rudi-crypto
 COPY ${SRC_DIR}/rudi-catalog ${WK_DIR}/rudi-catalog
 COPY ${SRC_DIR}/rudi-storage ${WK_DIR}/rudi-storage
 COPY ${SRC_DIR}/rudi-manager ${WK_DIR}/rudi-manager
@@ -68,9 +69,9 @@ RUN ( cd rudi-manager/front && npm run build:prod  )
 RUN ( rm -rf rudi-manager/front/node_modules rudi-manager/front/src $(find . -iname '.docker*' -o -iname '.git*' ) )
 
 RUN chown -R root:rudi        node_modules *.ini *.json && \
-    chown -R root:rudicatalog rudi-catalog  && \
-    chown -R root:rudistorage rudi-storage  && \
-    chown -R root:rudicrypto  rudi-crypto   && \
+    chown -R root:rudicatalog rudi-catalog              && \
+    chown -R root:rudistorage rudi-storage              && \
+    chown -R root:rudicrypto  rudi-crypto               && \
     chown -R root:rudimanager rudi-manager
 
 RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-crypto rudi-manager && \
@@ -85,24 +86,24 @@ FROM alpine:3.20 as system
 
 WORKDIR /app
 RUN echo "Europe/Paris" > /etc/timezone
-RUN printf 'http://dl-cdn.alpinelinux.org/alpine/v3.9/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.9/community\n' >> /etc/apk/repositories && \
-    apk update && \
-    apk upgrade && \
+RUN printf 'http://dl-cdn.alpinelinux.org/alpine/v3.9/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.9/community\n' >> /etc/apk/repositories                                                                                 && \
+    apk update                                                                               && \
+    apk upgrade                                                                              && \
     apk add mongodb mongodb-tools nodejs openssh-keygen logrotate busybox-suid sqlite tzdata && \
-    apk cache clean && \
+    apk cache clean                                                                          && \
     rm -f /var/cache/apk/*
 
-RUN addgroup --gid 5001 rudi && \
-    addgroup --gid 5002 rudicatalog && \
-    addgroup --gid 5003 rudistorage && \
-    addgroup --gid 5004 rudicrypto && \
+RUN addgroup --gid 5001 rudi                && \
+    addgroup --gid 5002 rudicatalog         && \
+    addgroup --gid 5003 rudistorage         && \
+    addgroup --gid 5004 rudicrypto          && \
     addgroup --gid 5005 rudimanager
 
-RUN adduser --disabled-password -G rudi        --uid 5001 rudiadm && \
-    adduser --disabled-password -G rudicatalog --uid 5002 rudicatalog && \
-    adduser --disabled-password -G rudistorage --uid 5003 rudistorage && \
-    adduser --disabled-password -G rudicrypto  --uid 5004 rudicrypto && \
-    adduser --disabled-password -G rudimanager --uid 5005 rudimanager && \
+RUN adduser --disabled-password -G rudi        --uid 5001 rudiadm       && \
+    adduser --disabled-password -G rudicatalog --uid 5002 rudicatalog   && \
+    adduser --disabled-password -G rudistorage --uid 5003 rudistorage   && \
+    adduser --disabled-password -G rudicrypto  --uid 5004 rudicrypto    && \
+    adduser --disabled-password -G rudimanager --uid 5005 rudimanager   && \
     for u in rudicatalog rudistorage rudicrypto rudimanager; do addgroup $u rudi ; addgroup rudiadm $u ; done
 
 WORKDIR /app

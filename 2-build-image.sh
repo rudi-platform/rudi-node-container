@@ -16,11 +16,11 @@ if [ $# -lt 1 ]; then
 else
     IMG_PLATFORM=$1
 fi
-echo IMG_PLATFORM=$IMG_PLATFORM > ./env/platform.ini
+echo IMG_PLATFORM=$IMG_PLATFORM >./env/platform.ini
 
 # Argument 2 is the name of the container image that is produced. Defaults to "rudi-node"
 if [ $# -lt 2 ]; then
-    IMG_PREFIX=rudi-node
+    IMG_PREFIX=${IMG_PREFIX:-"rudi-node"}
 else
     IMG_PREFIX=$2
 fi
@@ -29,13 +29,15 @@ mkdir -p ./tmp
 IMG_NAME="${IMG_PREFIX}-${IMG_PLATFORM}"
 
 log_msg "Building the OCI image '${IMG_NAME}'"
-echo IMG_PREFIX=$IMG_PREFIX > ./tmp/img_prefix.ini
+echo IMG_PREFIX=$IMG_PREFIX >./tmp/img_prefix.ini
 
 podman build                        \
     --platform linux/$IMG_PLATFORM  \
+    --net host                      \
+    -f Dockerfile.build             \
     -t "${IMG_NAME}" .
-    # --build-arg username=$DOCKER_USR    \
-    # 2>&1 | tee `logfile_path rudi-node-build`
+# --build-arg username=$DOCKER_USR    \
+# 2>&1 | tee `logfile_path rudi-node-build`
 
 log_msg "Container built"
 

@@ -14,6 +14,11 @@ listening_port = @NODE_CATALOG_PORT@
 ; external URL for the RUDI Catalog server
 server_url = https://rudinode.org
 
+[flags]
+should_log_console = false
+should_syslog = true
+should_syslog_in_console = true
+
 [logging]
 ; sets the lowest priority level of the logs written
 log_level = trace
