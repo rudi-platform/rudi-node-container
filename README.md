@@ -7,7 +7,7 @@ Eventually, a procedure to build your own image is detailed.
 ```sh
 # A. Pulling the image
 #    Two images are currenly available: either "amd64" for Linux-based PC, or "arm64" for MacOS.
-IMG_PLATFORM="amd64"
+IMG_PLATFORM="amd64" # or "arm64"
 IMG_NAME="rudi-node-$IMG_PLATFORM"
 podman pull "registry.aqmo.org/public-rudi/public-packages/$IMG_NAME"
 
@@ -17,7 +17,9 @@ OCI_NAME="$IMG_NAME"
 podman stop "$OCI_NAME" 2>/dev/null
 podman rm "$OCI_NAME" 2>/dev/null
 
-podman run -d --rm --net host --name "$IMG_NAME" --volume ./data:/data "$OCI_NAME"
+podman run -d --rm --net host --name "$OCI_NAME" --volume ./data:/data "$IMG_NAME"
+
+curl -v http://localhost:3033/api/open/test
 ```
 
 # 2. Building your own RUDI node container
@@ -37,7 +39,7 @@ LOCAL_CONF=.git_conf_rudip.sh
 
 ## Building the OCI/Docker image
 
-The name for the docker image is set to 'rudicode', but can be what
+The name for the docker image is set to 'rudinode-dc', but can be what
 you need. The network is needed to fetch the source. This step can
 take some time, go take any hot beverage you like.
 
@@ -53,7 +55,7 @@ podman build --platform $DST_PLATFORM --net host -f Dockerfile.build -t $USR_IMG
 If you want to inspect you container, you can get inside :
 
 ```sh
-podman run -it --rm --net host --name rudicode_t --user root -t rudicode '/bin/ash' -l
+podman run -it --rm --net host --name rudinode-dc --user root -t rudinode-dc '/bin/ash' -l
 ```
 
 In this command, you become root, and call directly a shell. To continue the execution, simply run :
@@ -65,7 +67,7 @@ $ su -l rudiadm /app/rudi-node/oci-alpine-startup.sh &
 To run the container with a remanent volume, only _/data_ is needed :
 
 ```sh
-podman run -d --rm --net host --name rudicode_t --volume ./data:/data rudicode
+podman run -d --rm --net host --name rudinode-dc_t --volume ./data:/data rudinode-dc
 ```
 
 This way, you can investigate any problem you may face.
@@ -127,7 +129,11 @@ Several types of deployments are possible :
 - A container by application attached to the host network with _docker-compose-host.yml_
 - A container by application with a local network with _docker-compose.yml_ (default)
 
-You can build the necessary images with the command `podman-compose build`
+You can build the necessary images with the command
+
+```sh
+podman-compose build
+```
 
 Remainder:
 

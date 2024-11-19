@@ -36,7 +36,7 @@ GIT_REV_FILE=${PRJ_ENV_DIR}/git-rev.ini
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
 
-for module in catalog storage manager crypto; do
+for module in catalog storage manager jwtauth; do
     cd "${PRJ_SRC_DIR}" || exit
     module_dir=${PRJ_SRC_DIR}/rudi-${module}
 

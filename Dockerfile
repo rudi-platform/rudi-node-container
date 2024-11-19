@@ -87,7 +87,7 @@ EXPOSE 3030 3031 3033
 RUN export PATH="$(npm get prefix):$PATH"            && \
     npm config set loglevel error                    && \
     npm i -g npm@latest                              && \
-    for module in catalog storage manager crypto; do    \
+    for module in catalog storage manager jwtauth; do   \
         echo "Installing NodeJS app: rudi-$module";     \
         cd "$WK_DIR/rudi-$module" && npm i;             \
     done                                             && \

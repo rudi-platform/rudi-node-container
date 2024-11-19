@@ -6,17 +6,17 @@ ROOT_DIR=$(dirname $(readlink -f $0))
 #
 # URL
 CRYPTO_PUBLIC_URL=${CRYPTO_PUBLIC_URL:-${NODE_PUBLIC_URL}:${NODE_CRYPTO_PORT}}
-APP_CRYPTO_DIR=${APP_CRYPTO_DIR:-${APP_DIR}/rudi-crypto}
+APP_CRYPTO_DIR=${APP_CRYPTO_DIR:-${APP_DIR}/rudi-jwtauth}
 
 #
 # Config files
-CRYPTO_CONF="${CRYPTO_CONF:-${INI_DIR}/rudi-crypto-conf.ini}"
-CRYPTO_KEY=${CRYPTO_KEY:-crypto_mngr}
+CRYPTO_CONF="${CRYPTO_CONF:-${INI_DIR}/rudi-jwtauth-conf.ini}"
+CRYPTO_KEY=${CRYPTO_KEY:-jwtauth_mngr}
 
-log_msg Init RUDI crypto variables
+log_msg Init RUDI jwtauth variables
 
-crypto_check() {
-    test -z "${CRYPTO_GIT_REV:-}" && error "crypto git rev not set"
+jwtauth_check() {
+    test -z "${CRYPTO_GIT_REV:-}" && error "jwtauth git rev not set"
     test -d ${APP_CRYPTO_DIR}  || error "Could not find ${APP_CRYPTO_DIR}"
 
     preprocess ${CRYPTO_CONF}
@@ -25,7 +25,7 @@ crypto_check() {
     assert_key ${CRYPTO_KEY} rudiadm rudi
 }
 
-crypto_run() {
+jwtauth_run() {
     local env=${ENV:-"production"}
 
     # Starting RUDI node Crypto

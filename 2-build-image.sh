@@ -31,13 +31,14 @@ IMG_NAME="${IMG_PREFIX}-${IMG_PLATFORM}"
 log_msg "Building the OCI image '${IMG_NAME}'"
 echo IMG_PREFIX=$IMG_PREFIX >./tmp/img_prefix.ini
 
-podman build                        \
-    --platform linux/$IMG_PLATFORM  \
-    --net host                      \
-    -f Dockerfile.build             \
-    -t "${IMG_NAME}" .
-# --build-arg username=$DOCKER_USR    \
-# 2>&1 | tee `logfile_path rudi-node-build`
+# podman build                        \
+#     --platform linux/$IMG_PLATFORM  \
+#     --net host                      \
+#     -f Dockerfile.build             \
+#     -t "${IMG_NAME}" .
+
+podman-compose build
+
 
 log_msg "Container built"
 
