@@ -33,4 +33,4 @@ consoleData= false
 directory= @LOG_DIR@/media/
 
 [logging]
-app_name = node-storage
+app_name = storage

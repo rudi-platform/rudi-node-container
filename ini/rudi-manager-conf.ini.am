@@ -78,7 +78,7 @@ default_client_group = "producer"
 
 [logging]
 ; Name that identifies the prodmanager server in the logs (e.g. in Grafana)
-app_name = PMBack
+app_name = manager
 ; Folder for logs
 log_dir = @LOG_DIR@/manager
 ; Name of the log file
@@ -87,6 +87,7 @@ log_file = manager.log
 displayConf = true
 
 [syslog]
+app_name = maanger
 ; sets the lowest priority level of the logs written
 syslog_level = debug
 ; syslog conf

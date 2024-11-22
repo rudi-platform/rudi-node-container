@@ -1,4 +1,4 @@
-FROM node:20-alpine AS NodeBuilder
+FROM node:22-alpine AS NodeBuilder
 
 # Folder that contains the source of every rudi-node module
 ARG SRC_DIR="./src"
@@ -22,6 +22,7 @@ RUN npm config set registry http://registry.npmjs.org/  && \
     npm config set package-lock true                    && \
     npm config set progress false                       && \
     npm config set loglevel warn                        && \
+    npm i -g npm@latest                                 && \
     npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
 
 RUN addgroup -g 5001 rudi         && \
@@ -37,31 +38,32 @@ RUN adduser -D -G rudi        -u 5001 rudiadm       && \
     adduser -D -G rudimanager -u 5005 rudimanager   && \
     addgroup rudicatalog rudi                       && \
     addgroup rudistorage rudi                       && \
-    addgroup rudijwtauth rudi                       && \
-    addgroup rudimanager rudi
+    addgroup rudimanager rudi                       && \
+    addgroup rudijwtauth rudi
 
-COPY ${SRC_DIR}/rudi-jwtauth ${WK_DIR}/rudi-jwtauth
 COPY ${SRC_DIR}/rudi-catalog ${WK_DIR}/rudi-catalog
 COPY ${SRC_DIR}/rudi-storage ${WK_DIR}/rudi-storage
 COPY ${SRC_DIR}/rudi-manager ${WK_DIR}/rudi-manager
+COPY ${SRC_DIR}/rudi-jwtauth ${WK_DIR}/rudi-jwtauth
 
-RUN for module in catalog storage jwtauth manager; do   \
-        echo "Installing NodeJS app: rudi-$module";     \
-        cd "$WK_DIR/rudi-$module" && ${NPM_INSTALL};    \
-    done
+RUN ( cd rudi-catalog && ${NPM_INSTALL} )
+RUN ( cd rudi-storage && ${NPM_INSTALL} )
+RUN ( cd rudi-manager && ${NPM_INSTALL} )
+RUN ( cd rudi-jwtauth && ${NPM_INSTALL} )
 
 COPY ./install/searchPackages.py /app/searchPackages.py
 RUN python3 /app/searchPackages.py > package.json
 
-RUN npm config set package-lock false && \
+RUN npm config set package-lock false                                     && \
     rm -rf $(find . -iname 'package-lock.json' -o -iname 'node_modules' ) && \
-   ${NPM_INSTALL}
+    ${NPM_INSTALL}
 
-RUN for module in catalog storage jwtauth manager; do   \
-        echo "Installing NodeJS app: rudi-$module";     \
-        cd "$WK_DIR/rudi-$module" && ${NPM_INSTALL};    \
-    done
-RUN ( cd "rudi-manager/front" && NODE_ENV='development' ${NPM_INSTALL} --dev )
+RUN ( cd rudi-catalog && ${NPM_INSTALL} )
+RUN ( cd rudi-storage && ${NPM_INSTALL} )
+RUN ( cd rudi-manager && ${NPM_INSTALL} )
+RUN ( cd rudi-jwtauth && ${NPM_INSTALL} )
+
+RUN ( cd "rudi-manager/front" && NODE_ENV='development' ${NPM_INSTALL} --include=dev )
 
 ENV PUBLIC_URL=${PUBLIC_URL}
 RUN ( cd "rudi-manager/front" && npm run build:prod  )
@@ -71,8 +73,8 @@ RUN ( rm -rf rudi-manager/front/node_modules rudi-manager/front/src $(find . -in
 RUN chown -R root:rudi        node_modules *.ini *.json && \
     chown -R root:rudicatalog rudi-catalog              && \
     chown -R root:rudistorage rudi-storage              && \
-    chown -R root:rudijwtauth rudi-jwtauth              && \
-    chown -R root:rudimanager rudi-manager
+    chown -R root:rudimanager rudi-manager              && \
+    chown -R root:rudijwtauth rudi-jwtauth
 
 RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-jwtauth rudi-manager && \
     chmod -R u=rX,g=rX,o= node_modules *.ini *.json
@@ -123,4 +125,5 @@ COPY --chown=root:rudi    --chmod=550 ./install/oci-alpine-startup.sh ./install/
 
 USER rudiadm
 
-CMD "oci-alpine-startup.sh"
+RUN ls -lah
+CMD "$WK_DIR/oci-alpine-startup.sh"

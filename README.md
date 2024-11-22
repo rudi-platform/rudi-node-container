@@ -33,7 +33,7 @@ Two configurations are offered:
 - alternatively, `.git_conf_aqmo.sh` can be used for development
 
 ```sh
-LOCAL_CONF=.git_conf_rudip.sh
+export LOCAL_CONF='.git_conf_rudip.sh' # or '.git_conf_aqmo.sh' if you have access to aqmo gitlab
 ./1-pull-rudi-node-gits.sh
 ```
 

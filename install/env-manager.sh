@@ -19,7 +19,7 @@ TAG=${TAG:-RUDI-OCI-2.5.0}
 #SU=${SU:-dG90bzp1cGlTVVNkUm1naDRCelc3SnVLMjVRaTJpN0F5TjVmRjdJRUd2X0wxQmlvME0zdmRYOXVkV0FxeXN2bDhsbW5OUUhUdTlvSUdsYVdzNmxZZVltc2Z2Zw}
 SU="UE0gQWRtaW46VGJTQ2NUM2ozdHg2R2c3UHZNdHNFRlAwRERMOE5RakZ4MUdGdzF1VmxOck5LbnVBUExKdGNUQThQZEpJWUt3V0ZqU1NZSDRwR2lTVTVybFRwQVRhMi0wdGcyLTNYQUFha1JpVERLS08zaEd3MDBVRDZhc1VyWXBXUElvSG13"
 
-# 
+#
 # DB configuration
 MANAGER_DB_DIR=${MANAGER_DB_DIR:-${DB_DIR}}
 MANAGER_DB_PATH=${MANAGER_DB_PATH:-${MANAGER_DB_DIR}/rudi_mngr.db}
@@ -66,12 +66,12 @@ manager_run() {
     cd "${APP_MANAGER_DIR}" || error "Manager application directory not found"
 
     touch ${MANAGER_DUMP_PATH}
-    node server.js                       \
-	 ${su_flag}                      \
-	 --tag "$TAG"                    \
-	 --node_env "$env"               \
-	 --hash "$MANAGER_GIT_REV"       \
-	 --url  "$MANAGER_PUBLIC_URL"    \
-	 --conf "$MANAGER_CONF"          \
-	 --db   "$MANAGER_DB_PATH"       || error "Could not launch app in ${APP_MANAGER_DIR}"
+    node run-rudinode-manager.js   \
+	 ${su_flag}                    \
+	 --tag "$TAG"                  \
+	 --node_env "$env"             \
+	 --hash "$MANAGER_GIT_REV"     \
+	 --url  "$MANAGER_PUBLIC_URL"  \
+	 --conf "$MANAGER_CONF"        \
+	 --db   "$MANAGER_DB_PATH"     || error "Could not launch app in ${APP_MANAGER_DIR}"
 }

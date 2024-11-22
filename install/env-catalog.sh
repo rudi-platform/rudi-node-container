@@ -61,7 +61,7 @@ catalog_run() {
     cd "${APP_CATALOG_DIR}" || error "Catalog application directory not found"
     echo "$CATALOG_PROFILES"
     ls -lah "$CATALOG_PROFILES"
-    node rudiServer.js                  \
+    node run-rudinode-catalog.js        \
         --node_env "$env"               \
         --app_env "$env"                \
         --hash "$CATALOG_GIT_REV"       \

@@ -13,10 +13,10 @@ services:
     volumes:
       - ./data:/data:rw
     environment:
-      ENABLE_DB: true
-      ENABLE_CATALOG: false
-      ENABLE_STORAGE: false
-      ENABLE_MANAGER: false
+      ENABLE_DB: 'true'
+      ENABLE_CATALOG: 'false'
+      ENABLE_STORAGE: 'false'
+      ENABLE_MANAGER: 'false'
     network_mode: host
 
   rudi-manager:
@@ -29,10 +29,10 @@ services:
       - ./data:/data:rw
     environment:
       NODE_PUBLIC_URL: http://localhost
-      ENABLE_DB: false
-      ENABLE_CATALOG: false
-      ENABLE_STORAGE: false
-      ENABLE_MANAGER: true
+      ENABLE_DB: 'false'
+      ENABLE_CATALOG: 'false'
+      ENABLE_STORAGE: 'false'
+      ENABLE_MANAGER: 'true'
     network_mode: host
     depends_on:
       - rudi-storage
@@ -48,10 +48,10 @@ services:
       - ./data:/data:rw
     environment:
       NODE_PUBLIC_URL: http://localhost
-      ENABLE_DB: false
-      ENABLE_CATALOG: true
-      ENABLE_STORAGE: false
-      ENABLE_MANAGER: false
+      ENABLE_DB: 'false'
+      ENABLE_CATALOG: 'true'
+      ENABLE_STORAGE: 'false'
+      ENABLE_MANAGER: 'false'
     network_mode: host
     depends_on:
       - rudi-db
@@ -66,10 +66,10 @@ services:
       - ./data:/data:rw
     environment:
       NODE_PUBLIC_URL: http://127.0.0.1
-      ENABLE_DB: false
-      ENABLE_CATALOG: false
-      ENABLE_STORAGE: true
-      ENABLE_MANAGER: false
+      ENABLE_DB: 'false'
+      ENABLE_CATALOG: 'false'
+      ENABLE_STORAGE: 'true'
+      ENABLE_MANAGER: 'false'
     network_mode: host
     depends_on:
       - rudi-db

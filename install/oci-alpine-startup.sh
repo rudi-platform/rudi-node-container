@@ -23,7 +23,7 @@ log_msg "Executing as user $(whoami)"
 ENABLE_DB=${ENABLE_DB:-true}
 ENABLE_CATALOG=${ENABLE_CATALOG:-true}
 ENABLE_STORAGE=${ENABLE_STORAGE:-true}
-ENABLE_CRYPTO=${ENABLE_CRYPTO:-false}
+ENABLE_JWTAUTH=${ENABLE_JWTAUTH:-false}
 ENABLE_MANAGER=${ENABLE_MANAGER:-true}
 
 # Load configurations
@@ -31,7 +31,7 @@ ENABLE_MANAGER=${ENABLE_MANAGER:-true}
 ${ENABLE_DB}      && . ${ROOT_DIR}/env-db.sh
 ${ENABLE_CATALOG} && . ${ROOT_DIR}/env-catalog.sh
 ${ENABLE_STORAGE} && . ${ROOT_DIR}/env-storage.sh
-${ENABLE_CRYPTO}  && . ${ROOT_DIR}/env-jwtauth.sh
+${ENABLE_JWTAUTH}  && . ${ROOT_DIR}/env-jwtauth.sh
 ${ENABLE_MANAGER} && . ${ROOT_DIR}/env-manager.sh
 
 # Chek installations
@@ -39,7 +39,7 @@ rudi_check
 ${ENABLE_DB}      && db_check
 ${ENABLE_CATALOG} && catalog_check
 ${ENABLE_STORAGE} && storage_check
-${ENABLE_CRYPTO}  && jwtauth_check
+${ENABLE_JWTAUTH}  && jwtauth_check
 ${ENABLE_MANAGER} && manager_check
 
 # Run services
@@ -48,7 +48,7 @@ rudi_run
 ${ENABLE_DB}      && db_run
 ${ENABLE_CATALOG} && catalog_run & PIDS="${PIDS} $!"
 ${ENABLE_STORAGE} && storage_run & PIDS="${PIDS} $!"
-${ENABLE_CRYPTO}  && jwtauth_run  & PIDS="${PIDS} $!"
+${ENABLE_JWTAUTH}  && jwtauth_run  & PIDS="${PIDS} $!"
 ${ENABLE_MANAGER} && manager_run & PIDS="${PIDS} $!"
 
 log_msg "Launching over"

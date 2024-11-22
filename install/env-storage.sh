@@ -14,7 +14,7 @@ APP_STORAGE_DIR=${APP_STORAGE_DIR:-${APP_DIR}/rudi-storage}
 STORAGE_CONF="${STORAGE_CONF:-${INI_DIR}/rudi-storage-conf.ini}"
 STORAGE_LOG_DIR="${STORAGE_LOG_DIR:-${LOG_DIR}/media/}"
 
-# 
+#
 # DB configuration
 STORAGE_DB_NAME=${STORAGE_DB_NAME:-rudi_api}
 STORAGE_DB_URI=${STORAGE_DB_URI:-${MONGODB}/${STORAGE_DB_NAME}}
@@ -34,7 +34,7 @@ storage_run() {
     # Starting RUDI node Storage
     log_msg "Launching RUDI node module: Storage"
     cd "${APP_STORAGE_DIR}" || error "Storage application directory not found"
-    node index.js                        \
+    node run-rudinode-storage.js     \
 	 --hash "$STORAGE_GIT_REV"       \
 	 --url  "$STORAGE_PUBLIC_URL"    \
 	 --conf "$STORAGE_CONF"          || error "Could not launch app in ${APP_STORAGE_DIR}"

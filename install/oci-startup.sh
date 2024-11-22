@@ -95,7 +95,7 @@ log_msg "Launching RUDI node module: Catalog"
 cd "${WK_DIR}/rudi-catalog/" || exit
 echo "$CATALOG_PROFILES"
 ls -lah    "$CATALOG_PROFILES"
-node rudiServer.js                      \
+node run-rudinode-catalog.js            \
     --node_env "$ENV"                   \
     --app_env  "$ENV"                   \
     --hash      "$CATALOG_GIT_REV"      \
@@ -108,7 +108,7 @@ node rudiServer.js                      \
 # Starting RUDI node Storage
 log_msg "Launching RUDI node module: Storage"
 cd "${WK_DIR}/rudi-storage/" || exit
-node index.js                       \
+node run-rudinode-storage.js        \
     --hash "$STORAGE_GIT_REV"       \
     --url  "$STORAGE_PUBLIC_URL"    \
     --conf "$STORAGE_CONF"          &
@@ -116,7 +116,7 @@ node index.js                       \
 # Starting RUDI node Manager backend (node_env!="development" => serves the built front-end)
 log_msg "Launching RUDI node module: Manager"
 cd "${WK_DIR}/rudi-manager/" || exit
-node server.js                      \
+node run-rudinode-manager.js        \
     --su "$SU"                      \
     --tag "$TAG"                    \
     --node_env "$ENV"               \
