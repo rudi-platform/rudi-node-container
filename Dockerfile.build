@@ -2,6 +2,11 @@ FROM node:22-alpine AS NodeBuilder
 
 # Folder that contains the source of every rudi-node module
 ARG SRC_DIR="./src"
+
+# Folder that contains the files to install all the modules in the same upper node_modules folder
+ARG NPMIG_DIR="./npmg"
+
+# The RUDI node public URL
 ARG PUBLIC_URL=""
 
 ENV WK_DIR="/app/rudi-node"
@@ -41,34 +46,26 @@ RUN adduser -D -G rudi        -u 5001 rudiadm       && \
     addgroup rudimanager rudi                       && \
     addgroup rudijwtauth rudi
 
-COPY ${SRC_DIR}/rudi-catalog ${WK_DIR}/rudi-catalog
-COPY ${SRC_DIR}/rudi-storage ${WK_DIR}/rudi-storage
-COPY ${SRC_DIR}/rudi-manager ${WK_DIR}/rudi-manager
-COPY ${SRC_DIR}/rudi-jwtauth ${WK_DIR}/rudi-jwtauth
+COPY "${SRC_DIR}/rudi-catalog" "${WK_DIR}/rudi-catalog"
+COPY "${SRC_DIR}/rudi-storage" "${WK_DIR}/rudi-storage"
+COPY "${SRC_DIR}/rudi-manager" "${WK_DIR}/rudi-manager"
+COPY "${SRC_DIR}/rudi-jwtauth" "${WK_DIR}/rudi-jwtauth"
 
-RUN ( cd rudi-catalog && ${NPM_INSTALL} )
-RUN ( cd rudi-storage && ${NPM_INSTALL} )
-RUN ( cd rudi-manager && ${NPM_INSTALL} )
-RUN ( cd rudi-jwtauth && ${NPM_INSTALL} )
-
-COPY ./install/searchPackages.py /app/searchPackages.py
-RUN python3 /app/searchPackages.py > package.json
-
-RUN npm config set package-lock false                                     && \
-    rm -rf $(find . -iname 'package-lock.json' -o -iname 'node_modules' ) && \
-    ${NPM_INSTALL}
-
-RUN ( cd rudi-catalog && ${NPM_INSTALL} )
-RUN ( cd rudi-storage && ${NPM_INSTALL} )
-RUN ( cd rudi-manager && ${NPM_INSTALL} )
-RUN ( cd rudi-jwtauth && ${NPM_INSTALL} )
-
+# Building the front-end
 RUN ( cd "rudi-manager/front" && NODE_ENV='development' ${NPM_INSTALL} --include=dev )
-
 ENV PUBLIC_URL=${PUBLIC_URL}
 RUN ( cd "rudi-manager/front" && npm run build:prod  )
+RUN ( rm -rf "rudi-manager/front/node_modules" "rudi-manager/front/src" $(find . -iname '.docker*' -o -iname '.git*' ) )
 
-RUN ( rm -rf rudi-manager/front/node_modules rudi-manager/front/src $(find . -iname '.docker*' -o -iname '.git*' ) )
+COPY "${NPMIG_DIR}/*" "${WK_DIR}/"
+RUN npm run install:all
+
+# COPY ./install/searchPackages.py /app/searchPackages.py
+# RUN python3 /app/searchPackages.py > package.json
+
+# RUN npm config set package-lock false                                     && \
+#     rm -rf $(find . -iname 'package-lock.json' -o -iname 'node_modules' ) && \
+#     ${NPM_INSTALL}
 
 RUN chown -R root:rudi        node_modules *.ini *.json && \
     chown -R root:rudicatalog rudi-catalog              && \

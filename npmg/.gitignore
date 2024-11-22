@@ -1,10 +1,12 @@
+# Modules
+rudi-*
+jwt-lib
+rudi-catalog
+
 # Config
 **/custom.ini
 **/*custom.ini
-**/env.json
-conf
-tmp
-_
+**/.env*
 
 # Generated
 *-lock.json
@@ -12,21 +14,20 @@ _
 *.lock
 **/node_modules
 dump
-src
-env
 
 # Logs
 **/logs
+**/*log
 
 # Tests
 **/actions
 **/jest
 tests/doc
+**bak
 
 # Zip
 **/*.zip
 **/*.gz
-data
 
 # XLSX
 **/*.xls*
@@ -35,19 +36,14 @@ data
 **/*.pem
 **/*.prv
 **/*.pub
-.ssh
-ssh
 
 # Idz
 features
 notes
 demo
 z_*
-wip*
 
 # Dev
 .vscode
-*.code-workspace
-bak
-*.bak
-dev*
+z_notes
+wip
