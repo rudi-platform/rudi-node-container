@@ -44,6 +44,21 @@ you need. The network is needed to fetch the source. This step can
 take some time, go take any hot beverage you like.
 
 ```sh
+USR_IMG_NAME=rudinode-dc
+podman-compose build -f Dockerfile.build -t $USR_IMG_NAME .
+```
+
+## Running the container
+
+You can
+
+```sh
+podman-compose -f docker-compose-basic.yml up -d
+```
+
+## ------------------------------vvv--- TO BE CLEANED ---vvv---
+
+```sh
 IMG_PLATFORM=${IMG_PLATFORM:-"amd64"} # or arm64
 DST_PLATFORM=linux/$IMG_PLATFORM
 USR_IMG_NAME=rudinode

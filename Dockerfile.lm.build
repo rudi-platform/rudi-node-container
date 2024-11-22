@@ -2,11 +2,6 @@ FROM node:22-alpine AS NodeBuilder
 
 # Folder that contains the source of every rudi-node module
 ARG SRC_DIR="./src"
-
-# Folder that contains the files to install all the modules in the same upper node_modules folder
-ARG NPMIG_DIR="./npmg"
-
-# The RUDI node public URL
 ARG PUBLIC_URL=""
 
 ENV WK_DIR="/app/rudi-node"
@@ -19,17 +14,16 @@ RUN apk update && apk add --no-cache python3 xz
 
 COPY ./env/* "$WK_DIR"/
 
-ENV NPM_INSTALL="npm install --no-audit --no-fund --verbose"
-ENV NPM_INSTALL_PRD="$NPM_INSTALL --omit=dev"
-ENV NPM_INSTALL_DEV="$NPM_INSTALL --include=dev"
-RUN npm config set registry http://registry.npmjs.org/  && \
-    npm config set fetch-timeout 1000                   && \
-    npm config set searchstaleness 3600                 && \
-    npm config set prefer-offline true                  && \
-    npm config set package-lock true                    && \
-    npm config set progress false                       && \
-    npm config set loglevel warn                        && \
-    npm i -g npm@latest                                 && \
+ENV NPM_INSTALL_PRD="npm install --no-audit --no-fund --verbose --omit=dev"
+ENV NPM_INSTALL_DEV="npm install --no-audit --no-fund --verbose --include=dev"
+RUN npm config set registry https://registry.npmjs.org/     && \
+    npm config set fetch-timeout 1000                       && \
+    npm config set searchstaleness 3600                     && \
+    npm config set prefer-offline true                      && \
+    npm config set package-lock true                        && \
+    npm config set progress false                           && \
+    npm config set loglevel warn                            && \
+    npm i -g npm@latest                                     && \
     npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
 
 RUN addgroup -g 5001 rudi         && \
@@ -48,25 +42,34 @@ RUN adduser -D -G rudi        -u 5001 rudiadm       && \
     addgroup rudimanager rudi                       && \
     addgroup rudijwtauth rudi
 
-COPY "${SRC_DIR}/rudi-catalog" "${WK_DIR}/rudi-catalog"
-COPY "${SRC_DIR}/rudi-storage" "${WK_DIR}/rudi-storage"
-COPY "${SRC_DIR}/rudi-manager" "${WK_DIR}/rudi-manager"
-COPY "${SRC_DIR}/rudi-jwtauth" "${WK_DIR}/rudi-jwtauth"
+COPY ${SRC_DIR}/rudi-catalog ${WK_DIR}/rudi-catalog
+COPY ${SRC_DIR}/rudi-storage ${WK_DIR}/rudi-storage
+COPY ${SRC_DIR}/rudi-manager ${WK_DIR}/rudi-manager
+COPY ${SRC_DIR}/rudi-jwtauth ${WK_DIR}/rudi-jwtauth
 
-# Building the front-end
+RUN ( cd rudi-catalog && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-storage && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-manager && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-jwtauth && ${NPM_INSTALL_PRD} )
+
+COPY ./install/searchPackages.py /app/searchPackages.py
+RUN python3 /app/searchPackages.py > package.json
+
+RUN npm config set package-lock false                                     && \
+    rm -rf $(find . -iname 'package-lock.json' -o -iname 'node_modules' ) && \
+    ${NPM_INSTALL_PRD}
+
+RUN ( cd rudi-catalog && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-storage && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-manager && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-jwtauth && ${NPM_INSTALL_PRD} )
+
+RUN ( cd "rudi-manager/front" && NODE_ENV='development' ${NPM_INSTALL_DEV} )
+
 ENV PUBLIC_URL=${PUBLIC_URL}
-RUN ( cd "rudi-manager/front" && NODE_ENV='development' ${NPM_INSTALL_DEV} && npm run build:prod  )
-RUN ( rm -rf "rudi-manager/front/node_modules" "rudi-manager/front/src" $(find . -iname '.docker*' -o -iname '.git*' ) )
+RUN ( cd "rudi-manager/front" && npm run build:prod  )
 
-COPY "${NPMIG_DIR}/*" "${WK_DIR}/"
-RUN npm run install:all
-
-# COPY ./install/searchPackages.py /app/searchPackages.py
-# RUN python3 /app/searchPackages.py > package.json
-
-# RUN npm config set package-lock false                                     && \
-#     rm -rf $(find . -iname 'package-lock.json' -o -iname 'node_modules' ) && \
-#     ${NPM_INSTALL_PRD}
+RUN ( rm -rf rudi-manager/front/node_modules rudi-manager/front/src $(find . -iname '.docker*' -o -iname '.git*' ) )
 
 RUN chown -R root:rudi        node_modules *.ini *.json && \
     chown -R root:rudicatalog rudi-catalog              && \
