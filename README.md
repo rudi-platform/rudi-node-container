@@ -50,11 +50,16 @@ podman-compose build -f Dockerfile.build -t $USR_IMG_NAME .
 
 ## Running the container
 
-You can
+You may remove the `-d` (detach) option to directly see the logs.
 
 ```sh
 podman-compose -f docker-compose-basic.yml up -d
 ```
+
+## Accessing the UI
+
+Go to the following URL and login with the Super User password you have set in the
+http://localhost:3032
 
 ## ------------------------------vvv--- TO BE CLEANED ---vvv---
 

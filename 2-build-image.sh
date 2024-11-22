@@ -9,35 +9,18 @@
 TIME_START=$(now_ms_int)
 
 # DOCKER_USR=5999
+#!/bin/bash
 
-# Argument 1 is the destination platform for the container image. Defaults to "amd64"
-if [ $# -lt 1 ]; then
-    [ "$(uname --machine)" = "x86_64" ] && IMG_PLATFORM=amd64 || IMG_PLATFORM=arm64
-else
-    IMG_PLATFORM=$1
-fi
-echo IMG_PLATFORM=$IMG_PLATFORM >./env/platform.ini
+# Define target platforms
+platforms=("linux/amd64" "linux/arm64")
 
-# Argument 2 is the name of the container image that is produced. Defaults to "rudi-node"
-if [ $# -lt 2 ]; then
-    IMG_PREFIX=${IMG_PREFIX:-"rudi-node"}
-else
-    IMG_PREFIX=$2
-fi
-mkdir -p ./tmp
-
-IMG_NAME="${IMG_PREFIX}-${IMG_PLATFORM}"
-
-log_msg "Building the OCI image '${IMG_NAME}'"
-echo IMG_PREFIX=$IMG_PREFIX >./tmp/img_prefix.ini
-
-# podman build                        \
-#     --platform linux/$IMG_PLATFORM  \
-#     --net host                      \
-#     -f Dockerfile.build             \
-#     -t "${IMG_NAME}" .
-
-podman-compose build
+# Build and tag for each platform
+for platform in "${platforms[@]}"; do
+    export TARGETPLATFORM=$platform
+    export TARGETPLATFORM_SANITIZED=$(echo "$TARGETPLATFORM" | tr '/' '-')
+    podman-compose -f "docker-compose-basic.yml" build
+#   podman-compose push  # Optional: Push to a registry if needed
+done
 
 
 log_msg "Container built"
