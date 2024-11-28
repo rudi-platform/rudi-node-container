@@ -8,12 +8,12 @@ Eventually, a procedure to build your own image is detailed.
 # A. Pulling the image
 #    Two images are currenly available: either "linux/amd64" for Linux-based PC (should work on Windows too)
 #    or "linux/arm64" for MacOS.
-export IMG_NAME="rudinode"
+export IMG_NAME="rudinode:linux-amd64"
 podman pull "registry.aqmo.org/public-rudi/public-packages/$IMG_NAME"
 
 # B. Running the image
 #    To run the container with a remanent volume, only `/data` folder should be mounted as a volume.
-export OCI_NAME="$IMG_NAME"
+export OCI_NAME="rudinode"
 podman stop "$OCI_NAME" 2>/dev/null
 podman rm "$OCI_NAME" 2>/dev/null
 
