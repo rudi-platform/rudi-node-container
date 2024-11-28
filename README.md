@@ -6,34 +6,38 @@ Eventually, a procedure to build your own image is detailed.
 
 ```sh
 # A. Pulling the image
-#    Two images are currenly available: either "amd64" for Linux-based PC, or "arm64" for MacOS.
-IMG_PLATFORM="amd64" # or "arm64"
-IMG_NAME="rudi-node-$IMG_PLATFORM"
+#    Two images are currenly available: either "linux/amd64" for Linux-based PC (should work on Windows too)
+#    or "linux/arm64" for MacOS.
+export IMG_NAME="rudinode"
 podman pull "registry.aqmo.org/public-rudi/public-packages/$IMG_NAME"
 
 # B. Running the image
 #    To run the container with a remanent volume, only `/data` folder should be mounted as a volume.
-OCI_NAME="$IMG_NAME"
+export OCI_NAME="$IMG_NAME"
 podman stop "$OCI_NAME" 2>/dev/null
 podman rm "$OCI_NAME" 2>/dev/null
 
 podman run -d --rm --net host --name "$OCI_NAME" --volume ./data:/data "$IMG_NAME"
 
+# C. Test the running container
 curl -v http://localhost:3033/api/open/test
 ```
 
 # 2. Building your own RUDI node container
 
+Scripts have been written to help you with building your own container, you may use them or take
+what you need from them.
+
 ## Fetching the sources
 
 Two configurations are offered:
 
-- default is `.git_conf_rudip.sh` to fetch the sources from https://github.com/rudi-platform that is
+- default is `.git-conf-rudip.sh` to fetch the sources from https://github.com/rudi-platform that is
   accessible to anyone
-- alternatively, `.git_conf_aqmo.sh` can be used for development
+- alternatively, `.git-conf-aqmo.sh` can be used for development
 
 ```sh
-export LOCAL_CONF='.git_conf_rudip.sh' # or '.git_conf_aqmo.sh' if you have access to aqmo gitlab
+export LOCAL_CONF='.git-conf-rudip.sh' # or '.git-conf-aqmo.sh' if you have access to aqmo gitlab
 ./1-pull-rudi-node-gits.sh
 ```
 
@@ -44,16 +48,19 @@ you need. The network is needed to fetch the source. This step can
 take some time, go take any hot beverage you like.
 
 ```sh
-USR_IMG_NAME=rudinode-dc
-podman-compose build -f Dockerfile.build -t $USR_IMG_NAME .
+export IMG_NAME="rudinode"
+export DOCKER_COMPOSE_CONF="docker-compose-multip.yml"
+./2-build-image.sh
 ```
 
 ## Running the container
 
-You may remove the `-d` (detach) option to directly see the logs.
-
 ```sh
-podman-compose -f docker-compose-basic.yml up -d
+# launch -- you may remove the `-d` (=detach) option to directly see the logs
+podman-compose -f "${DOCKER_COMPOSE_CONF:-'docker-compose-multip.yml'}" up -d
+
+# stop
+podman-compose -f "${DOCKER_COMPOSE_CONF:-'docker-compose-multip.yml'}" down
 ```
 
 ## Accessing the UI

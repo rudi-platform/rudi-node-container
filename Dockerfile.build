@@ -1,4 +1,7 @@
 FROM node:22-alpine AS NodeBuilder
+LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr"
+LABEL version="0.0.1"
+LABEL description="RUDI producer node - https://github.com/rudi-platform"
 
 # Folder that contains the source of every rudi-node module
 ARG SRC_DIR="./src"

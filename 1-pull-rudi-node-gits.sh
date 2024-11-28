@@ -12,7 +12,7 @@ test -r ./install/.shrc && . ./install/.shrc
 TIME_START=$(now_ms_int)
 
 # Loading the local conf file
-LOCAL_CONF=${LOCAL_CONF:-".git_conf_rudip.sh"}
+LOCAL_CONF=${LOCAL_CONF:-".git-conf-aqmo.sh"}
 test -r "./$LOCAL_CONF" && . "./$LOCAL_CONF"
 
 
@@ -38,7 +38,7 @@ if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
 for module in catalog storage manager jwtauth; do
     cd "${PRJ_SRC_DIR}" || exit
-    module_dir=${PRJ_SRC_DIR}/rudi-${module}
+    module_dir="${PRJ_SRC_DIR}/rudi-${module}"
 
     if [ -d "${module_dir}" ]; then
         log_msg Pulling git repo: rudi-${module}
@@ -53,9 +53,9 @@ for module in catalog storage manager jwtauth; do
         # Local destination folder for the RUDI module
         git clone -b release --single-branch "${mod_repo}" "${module_dir}"
     fi
-    log_msg Collecting the git tag
+    log_msg Collecting git tag for ${module}
     GIT_REV=$(echo "${module}_git_rev" | tr a-z A-Z)
     echo "${GIT_REV}=$(git rev-parse --short HEAD)" >>"$GIT_REV_FILE"
 done
 
-echo "Execution time: $(time_spent_s "${TIME_START}")s ($(basename "$0"))"
+echo "Execution time: $(time_spent_ms ${TIME_START})ms ($(basename "$0"))"

@@ -37,7 +37,8 @@ now_s_str() { date +%Y-%m-%d_%H%M%S; }
 
 # Gives the actual date in Ms as an integer number
 _now_ms_int() { node -e 'console.log(Date.now())'; }
-now_ms_int() { date +%s.%N; }
+now_ms_int() { calc "$(date +%s.%3N)*1000"; }
+now_s() { date +%s; }
 export now_ms_int
 
 TIME_SOURCED=$(now_ms_int)
@@ -59,13 +60,24 @@ _time_spent_s() {
     fi
     echo "$(calc "(${now}-${ref_time})/1000")"
 }
-export time_spent_s
+
+time_spent_ms() {
+    [ $# -ge 1 ] && local start=$1 || local start=${TIME_SOURCED}
+    [ $# -ge 2 ] && local now=$2 || local now=$(now_ms_int)
+    # echo "scale=2; $now - $start" | bc
+    # echo start=$start now=$now
+    echo "$(calc "${now}-${start}")"
+}
+export time_spent_ms
 
 time_spent_s() {
-    [ $# -ge 2 ] && local start=$2 || local start=${TIME_SOURCED}
-    [ $# -ge 1 ] && local now=$2 || local now=$(now_ms_int)
-    echo "scale=2; $now - $start" | bc
+    [ $# -ge 1 ] && local start=$1 || local start=${TIME_SOURCED}
+    [ $# -ge 2 ] && local now=$2 || local now=$(now_ms_int)
+    # echo "scale=2; $now - $start" | bc
+    echo start=$start now=$now
+    echo "$(calc "(${now}-${start})/1000")"
 }
+export time_spent_s
 
 # Access a folder like `cd` but creates the folder beforehand if it doesn't exist
 ccd() { test -d "$1" || mkdir -p "$1" && cd "$1" || exit; }
@@ -78,7 +90,7 @@ logfile_path() {
 }
 export logfile_path
 
-log_msg() { printf -- "-----( %ss )----------[ %s ]\n" "$(time_spent_s)" "$*" >&2; }
+log_msg() { printf -- "-----( %sms )----------[ %s ]\n" "$(time_spent_ms)" "$*" >&2; }
 export log_msg
 
 # log_in_file () { exec > >(tee "$(logfile_path "$1")") 2>&1; }
