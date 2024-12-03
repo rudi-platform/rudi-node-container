@@ -4,24 +4,72 @@ Eventually, a procedure to build your own image is detailed.
 
 # 1. Basic use: pull the image and run a RUDI producer node
 
+## A. (Optionally) specify these variables:
+
 ```sh
-# A. Pulling the image
-#    Two images are currenly available: either "linux/amd64" for Linux-based PC (should work on Windows too)
-#    or "linux/arm64" for MacOS.
-export IMG_NAME="rudinode:linux-amd64"
-podman pull "registry.aqmo.org/public-rudi/public-packages/$IMG_NAME"
+# This is where the container will run. A `data` folder will be created for the container data to be
+# be remanent even if you stopped the container
+INSTALL_DIR="~/rudinode"
 
-# B. Running the image
-#    To run the container with a remanent volume, only `/data` folder should be mounted as a volume.
-export OCI_NAME="rudinode"
-podman stop "$OCI_NAME" 2>/dev/null
-podman rm "$OCI_NAME" 2>/dev/null
+# This is the way the RUDI node Docker image would be named on this computer
+LOCAL_IMG_NAME="rudinode-local"
 
-podman run -d --rm --net host --name "$OCI_NAME" --volume ./data:/data "$IMG_NAME"
-
-# C. Test the running container
-curl -v http://localhost:3033/api/open/test
+# This is the name we want for the running RUDI node Docker container
+OCI_NAME="my-rudinode"
 ```
+
+## B. Launch this script (or copy-paste the content)
+
+This will pull the container image from aqmo gitlab repo and run it.
+This command lets the logs be displayed. Beware: closing the terminal should close the container.
+
+```sh
+./0-run-container.sh
+```
+
+## C. Test the running container
+
+```sh
+# This should display the word "test"
+curl -v http://localhost:3032/api/open/test
+
+```
+
+## D. Log to the RUDI node
+
+You may open a web browser and type the following URL:
+
+```js
+url: `http://localhost:3032`
+```
+
+Here are the default credentials you'll need to log in the first time:
+
+```js
+usr: `node admin`
+pwd: `manager admin password!`
+```
+
+Start with creating an organization and a contact (avoid using personal data as a good practice).
+You can possibly create a new user.
+
+## E. Stop the container
+
+```sh
+podman ps
+podman stop $OCI_NAME
+```
+
+## F. Second run
+
+Next time you want to run the container without seeing the logs, you can "simply" run the following command:
+
+```sh
+podman run --rm -d --name "${OCI_NAME:-"my-rudinode"}" --volume ./data:/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 ${LOCAL_IMG_NAME:-"rudinode-local"}
+```
+
+Super user default usr/pwd credentials are:
+`node admin` / `manager admin password!`
 
 # 2. Building your own RUDI node container
 

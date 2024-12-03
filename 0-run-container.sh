@@ -4,9 +4,46 @@
 # This script runs the container image with podman
 # ==================================================================================================
 
-source ./install/.bashrc
+source ./install/.shrc
+
+# A. Pulling the image
+#    Two images are currenly available: either "linux/amd64" for Linux-based PC (should work on Windows too)
+#    or "linux/arm64" for MacOS.
+
+# This is aqmo gitlab container repo
+REGISTRY_IMG=registry.aqmo.org/public-rudi/public-packages/rudinode:latest
+
+# Here you can specify any name you want
+LOCAL_IMG_NAME=${LOCAL_IMG_NAME:-"rudinode-local"}
+
+# Fetch the image
+podman pull "$REGISTRY_IMG"
+
+# Give the image your prefered name
+podman tag "$REGISTRY_IMG" "$LOCAL_IMG_NAME" && podman rmi "$REGISTRY_IMG"
+
+# List the images
+podman images
+
+# B. Running the image
+#    To run the container with a remanent volume, only `/data` folder should be mounted as a volume.
+
+# Give the running container a name of your choice
+OCI_NAME="${OCI_NAME:-LOCAL_IMG_NAME}"
+# Stop the running instance in case it hadn't been stopped
+podman stop "$OCI_NAME" 2>/dev/null
+podman rm "$OCI_NAME" 2>/dev/null
+
+# This is the install folder, you can optionally
+INSTALL_DIR=${INSTALL_DIR:-"~/rudinode"}
+mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
+
+podman run --rm --name "$OCI_NAME" --volume ./data:/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 $LOCAL_IMG_NAME
 
 
+
+
+exit 0
 
 # Argument 1 is the destination platform for the container image. Defaults to "amd64"
 if [ $# -lt 1 ]; then source ./env/platform.ini; else IMG_PLATFORM=$1; fi
@@ -44,9 +81,7 @@ podman run -it                                                  \
     --publish 3030:3030                                         \
     --publish 3031:3031                                         \
     --publish 3033:3033                                         \
-    --volume "${HOME}/data/db":/data/db:Z                       \
-    --volume "${HOME}/data/dump":/data/dump:Z                   \
-    --volume "${HOME}/data/media":/data/media:Z                 \
+    --volume "${HOME}/data":/data:Z                       \
     --volume "${HOME}/data/conf":$WK_DIR/conf:Z                 \
     -e CATALOG_PROFILES="$WK_DIR/ini/rudi-catalog-profiles.ini" \
     -e PORTAL_CONF="$WK_DIR/conf/rudi-catalog-portal.ini"       \
