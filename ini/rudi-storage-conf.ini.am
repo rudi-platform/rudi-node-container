@@ -2,7 +2,7 @@
 listening_address = @LOCAL_INTERFACE@
 listening_port = @NODE_STORAGE_PORT@
 server_url = @LOCAL_URL@:@NODE_STORAGE_PORT@
-server_prefix = /media/
+server_prefix = @STORAGE_PREFIX@
 
 [auth]
 system_users = {
