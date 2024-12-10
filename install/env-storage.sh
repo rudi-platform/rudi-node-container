@@ -16,7 +16,7 @@ STORAGE_LOG_DIR="${STORAGE_LOG_DIR:-${LOG_DIR}/media/}"
 
 #
 # DB configuration
-STORAGE_DB_NAME=${STORAGE_DB_NAME:-rudi_api}
+STORAGE_DB_NAME=${STORAGE_DB_NAME:-db_storage}
 STORAGE_DB_URI=${STORAGE_DB_URI:-${MONGODB}/${STORAGE_DB_NAME}}
 
 log_msg Init RUDI storage variables
