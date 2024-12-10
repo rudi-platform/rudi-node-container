@@ -1,6 +1,6 @@
 FROM node:22-alpine AS NodeBuilder
 LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr"
-LABEL version="$OCI_VERSION:-0.0.1"
+LABEL version="2.5.0"
 LABEL description="RUDI producer node - https://github.com/rudi-platform"
 
 # Folder that contains the source of every rudi-node module
@@ -9,16 +9,12 @@ ARG SRC_DIR="./src"
 # Folder that contains the files to install all the modules in the same upper node_modules folder
 ARG NPMIG_DIR="./npmg"
 
-# The RUDI node public URL
-ARG PUBLIC_URL=""
-
 ENV WK_DIR="/app/rudi-node"
 ENV INI_DIR="$WK_DIR/ini"
 ENV NODE_ENV=production
 
 WORKDIR "$WK_DIR"
 RUN apk update && apk add --no-cache python3 xz
-
 
 COPY ./env/* "$WK_DIR"/
 
@@ -57,19 +53,11 @@ COPY "${SRC_DIR}/rudi-manager" "${WK_DIR}/rudi-manager"
 COPY "${SRC_DIR}/rudi-jwtauth" "${WK_DIR}/rudi-jwtauth"
 
 # Building the front-end
-ENV PUBLIC_URL=${PUBLIC_URL}
-RUN ( cd "rudi-manager/front" && NODE_ENV='development' ${NPM_INSTALL_DEV} && npm run build:prod  )
+RUN ( cd "rudi-manager/front" && PUBLIC_URL='' && NODE_ENV='development' ${NPM_INSTALL_DEV} && npm run build:prod  )
 RUN ( rm -rf "rudi-manager/front/node_modules" "rudi-manager/front/src" $(find . -iname '.docker*' -o -iname '.git*' ) )
 
 COPY "${NPMIG_DIR}/*" "${WK_DIR}/"
 RUN npm run install:all
-
-# COPY ./install/searchPackages.py /app/searchPackages.py
-# RUN python3 /app/searchPackages.py > package.json
-
-# RUN npm config set package-lock false                                     && \
-#     rm -rf $(find . -iname 'package-lock.json' -o -iname 'node_modules' ) && \
-#     ${NPM_INSTALL_PRD}
 
 RUN chown -R root:rudi        node_modules *.ini *.json && \
     chown -R root:rudicatalog rudi-catalog              && \
@@ -79,11 +67,6 @@ RUN chown -R root:rudi        node_modules *.ini *.json && \
 
 RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-jwtauth rudi-manager && \
     chmod -R u=rX,g=rX,o= node_modules *.ini *.json
-
-#RUN ( cd /app && tar -Jcvf /app/rudi-node.tar.xz rudi-node )
-
-#RUN apk add squashfs-tools
-#RUN mksquashfs /app/rudi-node /app/rudi-node.iso -comp xz -b 4096 -wildcards -e rudi-manager/front/src -e rudi-manager/front/node_modules -e '... .git'
 
 FROM alpine:3.20 AS system
 

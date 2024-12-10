@@ -10,6 +10,14 @@
 listening_address = @LOCAL_INTERFACE@
 ; prodmanager server port
 listening_port = @NODE_MANAGER_PORT@
+; manager backend URL prefix
+manager_prefix = 'manager'
+; manager backend URL prefix
+backend_prefix = 'api'
+; manager console URL prefix
+frontend_prefix = ''
+; manager console URL prefix
+console_prefix = 'form'
 
 [database]
 ; folder where the user database is stored
