@@ -4,19 +4,29 @@
 # This script builds the container image with podman
 # ==================================================================================================
 
-test -r ./install/.shrc && . ./install/.shrc
+test -r ./install/.shrc && source ./install/.shrc
 
 TIME_START=$(now_ms_int)
-source './container-conf.sh'
+test -r ./container-conf.sh && source ./container-conf.sh
+
+VERSION="${VERSION:-'2.5.0'}"
+IMG_NAME="${IMG_NAME:-'rudinode'}"
+
+REGISTRY="${REGISTRY:-'registry.aqmo.org/public-rudi/public-packages'}"
+PLATFORMS=${PLATFORMS:-('linux/amd64' 'linux/arm64')}
+
+VERSIONED_NAME="${IMG_NAME}-${VERSION}"
+LATEST="${IMG_NAME}:latest"
 
 # Build and tag for each platform
 for PLATFORM in "${PLATFORMS[@]}"; do
+
     export PLATFORM_SANITIZED=$(echo "$PLATFORM" | tr '/' '-')
     export CONTAINER_NAME="${VERSIONED_NAME}-${PLATFORM_SANITIZED}"
-    # export CONTAINER_NAME_TAG="${CONTAINER_NAME}:${PLATFORM_SANITIZED}"
     export IMG_NAME_TAG="${VERSIONED_NAME}:${PLATFORM_SANITIZED}"
     export TARGETPLATFORM="$PLATFORM"
-    podman-compose -f ${DOCKER_COMPOSE_CONF:-"docker-compose-multip.yml"} build
+    echo building the image \'$IMG_NAME_TAG\' for platform \'$TARGETPLATFORM\'
+    podman-compose -f "${DOCKER_COMPOSE_CONF:-"docker-compose-multip.yml"}" build
 #   podman-compose push  # Optional: Push to a registry if needed
 done
 
