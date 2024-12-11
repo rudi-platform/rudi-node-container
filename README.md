@@ -65,11 +65,9 @@ podman stop $OCI_NAME
 Next time you want to run the container without seeing the logs, you can just run the following command:
 
 ```sh
-SU_CREDS=cnVkaW5vZGUgYWRtaW46bWNpdnZxV0E4YmlRSFNMblN2Y2xQekRCUm9LNDQ5S3kxQm91ZjRHcTRjYXE0ZEtmTFAwczNOOV9XcWtVQmRqc21nSDNld3kxbHpEekdnNURVbUtNZWdBMnBWVm5mVXZOcTVQbHF6M0p6Yktid0VDT2ZpWGJpYUZDc0poRE5n
-
-podman run --rm -d --name "${OCI_NAME:-"my-rudinode"}" -e SU="$SU_CREDS" --volume ./data:/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 ${LOCAL_IMG_NAME:-"rudinode-local"}
+podman run --rm -d --name "${OCI_NAME:-"my-rudinode"}" --volume ./data:/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 ${LOCAL_IMG_NAME:-"rudinode-local"}
 # Or with the logs
-podman run --rm --name "${OCI_NAME:-"my-rudinode"}" -e SU="$SU_CREDS" --volume ./data:/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 ${LOCAL_IMG_NAME:-"rudinode-local"}
+podman run --rm --name "${OCI_NAME:-"my-rudinode"}" --volume ./data:/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 ${LOCAL_IMG_NAME:-"rudinode-local"}
 ```
 
 You can alternatively run the container and open a terminal within:
@@ -78,7 +76,7 @@ You can alternatively run the container and open a terminal within:
 # You may have to stop the running container first
 podman stop $OCI_NAME
 
-# Run it with the terminal openned
+# Run it with the terminal opened
 podman run -it --rm --name "${OCI_NAME:-"my-rudinode"}" --user root -t ${LOCAL_IMG_NAME:-"rudinode-local"} '/bin/ash' -l
 
 # Once in the container, you may run msot shell commands:
@@ -88,12 +86,24 @@ ls -laH
 exit
 ```
 
+## 1G.Custom SuperUser
+
+You'll certainly want to define a custom user password.
+You can use the RUDI Manager API to hash your usr+pwd pair.
+
 ```sh
-SU_USR="rudinode admin"
-SU_PWD="toto"
-HASHED_CREDS=$(curl --json "{\"usr\": \"$SU_USR\", \"pwd\":\"$SU_PWD\"}" http://localhost:3032/api/open/hash-credentials)
+SU_USR="RudiNodeAdmin"
+SU_PWD="bed12345-2ec2-4713-98c3-6bcb1c74f37e"
+SU_CREDS=$(curl --json "{\"usr\": \"$SU_USR\", \"pwd\":\"$SU_PWD\"}" http://localhost:3032/api/open/hash-credentials)
 # This gives a base64 encoded "usr:hashed_pwd" string
-echo $HASHED_CREDS
+echo $SU_CREDS
+```
+
+You may then use the environment variable "SU" to overwrite the Admin credentials in the RUDI Manager next time
+you run the container. This only needs to be done once obviously.
+
+```sh
+podman run --rm -d -e SU="$SU_CREDS" --name "${OCI_NAME:-rudinode}" --volume ./data:/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 ${LOCAL_IMG_NAME:-"rudinode-local"}
 ```
 
 # 2. Building your own RUDI node container
@@ -273,7 +283,7 @@ SU_CREDS=UE0gQWRtaW46QTUyMllEV2ZpWDV2VkpManlTNU5DTkVSTS16cnpxdlotLTl6eVhJYzVJSVp
 
 # Public URL for the node
 #   Note: if your modules have different URLs, you might want to alternatively set the 3 following URLs
-#       CATALOG_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr
+#       CATALOG_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr/catalog
 #       STORAGE_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr/prodmanager
 #       MANAGER_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr/media
 NODE_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr

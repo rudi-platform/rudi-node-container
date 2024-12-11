@@ -6,7 +6,7 @@ ROOT_DIR=$(dirname $(readlink -f $0))
 #
 # URL
 MANAGER_PREFIX=${MANAGER_PREFIX:-"manager"}
-MANAGER_PUBLIC_URL=${MANAGER_PUBLIC_URL:-${NODE_PUBLIC_URL}:${MANAGER_PREFIX}}
+MANAGER_PUBLIC_URL=${MANAGER_PUBLIC_URL:-${NODE_PUBLIC_URL}/${MANAGER_PREFIX}}
 APP_MANAGER_DIR=${APP_MANAGER_DIR:-${APP_DIR}/rudi-manager}
 
 #
@@ -14,7 +14,7 @@ APP_MANAGER_DIR=${APP_MANAGER_DIR:-${APP_DIR}/rudi-manager}
 MANAGER_CONF="${MANAGER_CONF:-${INI_DIR}/rudi-manager-conf.ini}"
 
 # Tag for the container, usually the RUDI node version
-TAG=${TAG:-RUDI-OCI-2.5.0}
+TAG=${TAG:-RUDI-node-2.5.0}
 # Base64 encoded <usr>:<hashedPwd> pair. You may use /api/open/hash-credentials to correctly hash the password and encode the pair
 #SU=${SU:-bm9kZSBhZG1pbjpUYlNDY1QzajN0eDZHZzdQdk10c0VGUDBEREw4TlFqRngxR0Z3MXVWbE5yTktudUFQTEp0Y1RBOFBkSklZS3dXRmpTU1lINHBHaVNVNXJsVHBBVGEyLTB0ZzItM1hBQWFrUmlUREtLTzNoR3cwMFVENmFzVXJZcFdQSW9IbXc=}
 #SU=${SU:-dG90bzp1cGlTVVNkUm1naDRCelc3SnVLMjVRaTJpN0F5TjVmRjdJRUd2X0wxQmlvME0zdmRYOXVkV0FxeXN2bDhsbW5OUUhUdTlvSUdsYVdzNmxZZVltc2Z2Zw}

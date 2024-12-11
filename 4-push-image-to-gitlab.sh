@@ -12,9 +12,6 @@ TIME_START=$(now_ms_int)
 test -r ./container-conf.sh && source ./container-conf.sh
 test -r ./git_creds && source ./git_creds
 
-# auth_file=$HOME/.config/containers/auth.json
-# echo $git_token | podman login registry.aqmo.org -u=$git_usr --password-stdin
-
 # TODO (uneeded so far): put aqmo as registry in either of these locations:
 # /etc/containers/registries.conf
 # $HOME/.config/containers/registries.conf.

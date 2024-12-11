@@ -13,6 +13,8 @@ listening_address = @LOCAL_INTERFACE@
 listening_port = @NODE_CATALOG_PORT@
 ; external URL for the RUDI Catalog server
 server_url = https://rudinode.org
+; catalog app prefix
+server_prefix = @CATALOG_PREFIX@
 
 [flags]
 should_log_console = false

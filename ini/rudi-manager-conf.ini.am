@@ -11,9 +11,9 @@ listening_address = @LOCAL_INTERFACE@
 ; prodmanager server port
 listening_port = @NODE_MANAGER_PORT@
 ; manager backend URL prefix
-manager_prefix = 'manager'
+manager_prefix = @MANAGER_PREFIX@
 ; manager backend URL prefix
-backend_prefix = 'api'
+backend_prefix = 'back'
 ; manager console URL prefix
 frontend_prefix = ''
 ; manager console URL prefix

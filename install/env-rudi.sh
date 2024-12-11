@@ -5,6 +5,7 @@ set -o nounset
 #
 # Global RUDI Config
 NODE_PUBLIC_URL=${NODE_PUBLIC_URL:-http://127.0.0.1}
+
 PORTAL_URL=${PORTAL_URL:-none}
 PORTAL_USER=${PORTAL_USER:-0}
 PORTAL_PASS=${PORTAL_PASS:-0}
