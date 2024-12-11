@@ -284,8 +284,8 @@ SU_CREDS=UE0gQWRtaW46QTUyMllEV2ZpWDV2VkpManlTNU5DTkVSTS16cnpxdlotLTl6eVhJYzVJSVp
 # Public URL for the node
 #   Note: if your modules have different URLs, you might want to alternatively set the 3 following URLs
 #       CATALOG_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr/catalog
-#       STORAGE_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr/prodmanager
-#       MANAGER_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr/media
+#       STORAGE_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr/media
+#       MANAGER_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr/manager
 NODE_PUBLIC_URL=https://tiare.rudi.univ-rennes.fr
 
 # Set the environment variable: production | staging | development

@@ -9,11 +9,11 @@
 ; prodmanager server address
 listening_address = @LOCAL_INTERFACE@
 ; prodmanager server port
-listening_port = @NODE_MANAGER_PORT@
+listening_port = @MANAGER_PORT@
 ; manager backend URL prefix
 manager_prefix = @MANAGER_PREFIX@
 ; manager backend URL prefix
-backend_prefix = 'back'
+backend_prefix = 'api'
 ; manager console URL prefix
 frontend_prefix = ''
 ; manager console URL prefix
@@ -41,10 +41,10 @@ exp_time_s = 25200
 ; helmet conf: frontend can only make calls to trusted domains (and itself)
 
 ; rudi manager backend
-trusted_domain[] = @CATALOG_LOCAL_URL@
+trusted_domain[] = @CATALOG_PUBLIC_URL@
 
 ; rudi storage/media
-trusted_domain[] = @STORAGE_LOCAL_URL@
+trusted_domain[] = @STORAGE_PUBLIC_URL@
 
 ; extra
 trusted_domain[] = @TRUSTED_DOMAINS@
@@ -54,7 +54,7 @@ trusted_domain[] = @TRUSTED_DOMAINS@
 rudi_api_url = @CATALOG_LOCAL_URL@
 
 ; sub-part of the RUDI Catalog URL reserved to the authenticated manipulations
-admin_api = /api/admin
+admin_api = /@CATALOG_PREFIX@/admin
 
 ; prodmanager authentification private key
 ; used for the RUDI Catalog authentification JWT
@@ -68,8 +68,8 @@ pm_api_id = "rudi_node_manager"
 exp_time_s = 1200
 
 [rudi_media]
-; RUDI Media listening address
-rudi_media_url = @STORAGE_LOCAL_URL@/media
+; RUDI Media listening address with its prefix
+rudi_media_url = @STORAGE_LOCAL_URL@/@STORAGE_PREFIX@
 ; prodmanager authentification private key
 ; used for the RUDI Media authentification JWT
 ; ! if not provided, <auth.pm_prv_key> will be used

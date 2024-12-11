@@ -21,16 +21,7 @@ VERSIONED_NAME="${IMG_NAME}-${VERSION}"
 LATEST="${IMG_NAME}:latest"
 
 # Here you can specify any name you want
-LOCAL_IMG_NAME=${LOCAL_IMG_NAME:-"rudinode-local"}
-
-# Give the image your prefered name
-podman tag "$REGISTRY_IMG" "$LOCAL_IMG_NAME" && podman rmi "$REGISTRY_IMG"
-
-# List the images
-podman images
-
-# B. Running the image
-#    To run the container with a remanent volume, only `/data` folder should be mounted as a volume.
+LOCAL_IMG_NAME=${LOCAL_IMG_NAME:-"localhost/rudinode-2.5.0"}
 
 # Give the running container a name of your choice
 OCI_NAME="${OCI_NAME:-LOCAL_IMG_NAME}"
@@ -42,7 +33,15 @@ podman rm "$OCI_NAME" 2>/dev/null
 INSTALL_DIR=${INSTALL_DIR:-"~/rudinode"}
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
-podman run --rm --name "$OCI_NAME" --volume ./data:/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 $LOCAL_IMG_NAME
+podman run --rm -it --name "$OCI_NAME"  \
+    --volume ./data:/data           \
+    --publish 3030:3030             \
+    --publish 3031:3031             \
+    --publish 3032:3032             \
+    -e CATALOG_PREFIX=catalog       \
+    -e STORAGE_PREFIX=storage       \
+    -e MANAGER_PREFIX=manager       \
+    $LOCAL_IMG_NAME
 
 
 

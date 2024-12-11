@@ -10,7 +10,7 @@
 ; 127.0.0.1 is deaf to external call, 0.0.0.0 is thus the way
 listening_address = @LOCAL_INTERFACE@
 ; server port
-listening_port = @NODE_CATALOG_PORT@
+listening_port = @CATALOG_PORT@
 ; external URL for the RUDI Catalog server
 server_url = https://rudinode.org
 ; catalog app prefix
