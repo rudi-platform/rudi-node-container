@@ -11,29 +11,23 @@ TIME_START=$(now_ms_int)
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-'1.0'}"
-IMG_NAME="${IMG_NAME:-'rudinode'}"
-
-REGISTRY="${REGISTRY:-'registry.aqmo.org/public-rudi/public-packages'}"
-PLATFORMS=${PLATFORMS:-('linux/amd64' 'linux/arm64')}
-
-VERSIONED_NAME="${IMG_NAME}-${VERSION}"
-LATEST="${IMG_NAME}:latest"
+VERSION="${VERSION:-'2.5.0'}"
+IMG_NAME='localhost/rudinode-2.5.0:linux-arm64'
 
 # Here you can specify any name you want
-LOCAL_IMG_NAME=${LOCAL_IMG_NAME:-"localhost/rudinode-2.5.0"}
+LOCAL_IMG_NAME=${LOCAL_IMG_NAME:-$IMG_NAME}
 
 # Give the running container a name of your choice
-OCI_NAME="${OCI_NAME:-LOCAL_IMG_NAME}"
+CNTNR_NAME="${CNTNR_NAME:-LOCAL_IMG_NAME}"
 # Stop the running instance in case it hadn't been stopped
-podman stop "$OCI_NAME" 2>/dev/null
-podman rm "$OCI_NAME" 2>/dev/null
+podman stop "$CNTNR_NAME" 2>/dev/null
+podman rm "$CNTNR_NAME" 2>/dev/null
 
 # This is the install folder, you can optionally
 INSTALL_DIR=${INSTALL_DIR:-"~/rudinode"}
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
-podman run --rm -it --name "$OCI_NAME"  \
+podman run --rm -it --name "$CNTNR_NAME"  \
     --volume ./data:/data           \
     --publish 3030:3030             \
     --publish 3031:3031             \
@@ -85,7 +79,6 @@ podman run -it                                                  \
     --publish 3031:3031                                         \
     --publish 3033:3033                                         \
     --volume "${HOME}/data":/data:Z                       \
-    --volume "${HOME}/data/conf":$WK_DIR/conf:Z                 \
     -e CATALOG_PROFILES="$WK_DIR/ini/rudi-catalog-profiles.ini" \
     -e PORTAL_CONF="$WK_DIR/conf/rudi-catalog-portal.ini"       \
     -e SU=$SU_CREDS                                             \
@@ -113,3 +106,4 @@ podman run -it                                                  \
 echo
 # shellcheck disable=SC2046
 echo Execution time: $( time_spent_s $TIME_START)s \($(basename "$0")\)
+
