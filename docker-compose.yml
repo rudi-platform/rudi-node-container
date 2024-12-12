@@ -1,0 +1,91 @@
+name: rudinode
+services:
+  rudi-db:
+    image: rudinode-dc
+    build:
+      context: .
+      dockerfile: Dockerfile.build
+      network: host
+      args:
+        PLATFORM: ${PLATFORM:-linux/amd64} # Pass the platform dynamically to the Dockerfile
+    container_name: rudi_db
+    restart: no
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data:rw
+    environment:
+      ENABLE_DB: 'true'
+      DB_LISTEN_ALL: 'true'
+      ENABLE_CATALOG: 'false'
+      ENABLE_STORAGE: 'false'
+      ENABLE_MANAGER: 'false'
+    networks:
+      - rudi-net
+
+  rudi-manager:
+    image: rudinode-dc
+    container_name: rudi_manager
+    restart: no
+    ports:
+      - 3032:3032
+    volumes:
+      - ./data:/data:rw
+    environment:
+      NODE_PUBLIC_URL: http://127.0.0.1
+      CATALOG_LOCAL_URL: http://rudi-catalog:3030
+      STORAGE_LOCAL_URL: http://rudi-storage:3031
+      ENABLE_DB: 'false'
+      ENABLE_CATALOG: 'false'
+      ENABLE_STORAGE: 'false'
+      ENABLE_MANAGER: 'true'
+    networks:
+      - rudi-net
+
+  rudi-catalog:
+    image: rudinode-dc
+    container_name: rudi_catalog
+    restart: no
+    ports:
+      - 3030:3030
+    volumes:
+      - ./data:/data:rw
+    environment:
+      DB_PREFIX:
+      NODE_PUBLIC_URL: http://127.0.0.1
+      MONGODB: mongodb://rudi-db:27017
+      ENABLE_DB: 'false'
+      ENABLE_CATALOG: 'true'
+      ENABLE_STORAGE: 'false'
+      ENABLE_MANAGER: 'false'
+    depends_on:
+      - rudi-db
+      - rudi-manager
+    networks:
+      - rudi-net
+
+  rudi-storage:
+    image: rudinode-dc
+    container_name: rudi_storage
+    restart: no
+    ports:
+      - 3031:3031
+    volumes:
+      - ./data:/data:rw
+    environment:
+      DB_PREFIX:
+      NODE_PUBLIC_URL: http://127.0.0.1
+      MONGODB: mongodb://rudi-db:27017
+      ENABLE_DB: 'false'
+      ENABLE_CATALOG: 'false'
+      ENABLE_STORAGE: 'true'
+      ENABLE_MANAGER: 'false'
+    depends_on:
+      - rudi-db
+      - rudi-manager
+    networks:
+      - rudi-net
+
+networks:
+  rudi-net:
+    driver: bridge

@@ -1,0 +1,116 @@
+; local config file for Prod Manager module
+;
+; [ IMPORTANT NOTICE ]
+; the config parameters values are read if and only if the parameters
+; names appear in the list of loaded parameters in the file config/config.js
+;
+
+[server]
+; prodmanager server address
+listening_address = @LOCAL_INTERFACE@
+; prodmanager server port
+listening_port = @MANAGER_PORT@
+; manager backend URL prefix
+manager_prefix = @MANAGER_PREFIX@
+; manager backend URL prefix
+backend_prefix = 'api'
+; manager console URL prefix
+frontend_prefix = ''
+; manager console URL prefix
+console_prefix = 'form'
+
+[database]
+; folder where the user database is stored
+db_directory = "/data/db"
+; name of the user database
+db_filename = "rudi_manager.db"
+; user account to be automatically created as super admin
+db_su_usr = "PM Admin"
+; id of the super-user account
+db_su_id = 0
+; base64 encoded super user password
+db_su_pwd = "jqchTNlg1IPgy2j3U2n3y8uL5ZRXMgA846Teru2TV3cAp_FTdCzk9K5QwOTYtedBiYn1IxlhxnIYZBK1shh2OPLxO7Rj04H9t3NSz7gvZfVuAo1sG7lD_ZOkJDtWtQ"
+is_su_pwd_hashed = true
+
+[auth]
+; default token expiration time in seconds
+; (when no other token expiration 'exp_time_s' is provided)
+exp_time_s = 25200
+
+[security]
+; helmet conf: frontend can only make calls to trusted domains (and itself)
+
+; rudi manager backend
+trusted_domain[] = @CATALOG_PUBLIC_URL@
+
+; rudi storage/media
+trusted_domain[] = @STORAGE_PUBLIC_URL@
+
+; extra
+trusted_domain[] = @TRUSTED_DOMAINS@
+
+[rudi_api]
+; RUDI Catalog server listening address
+rudi_api_url = @CATALOG_LOCAL_URL@
+
+; sub-part of the RUDI Catalog URL reserved to the authenticated manipulations
+admin_api = /@CATALOG_PREFIX@/admin
+
+; prodmanager authentification private key
+; used for the RUDI Catalog authentification JWT
+; ! if not provided, <auth.pm_prv_key> will be used
+pm_api_key = "@SAFE_DIR@/catalog_mngr"
+
+; identifier of the prodmanager for the RUDI Catalog authentification JWT
+pm_api_id = "rudi_node_manager"
+
+; expiration time in seconds for the RUDI Catalog authentification JWT
+exp_time_s = 1200
+
+[rudi_media]
+; RUDI Media listening address with its prefix
+rudi_media_url = @STORAGE_LOCAL_URL@/@STORAGE_PREFIX@
+; prodmanager authentification private key
+; used for the RUDI Media authentification JWT
+; ! if not provided, <auth.pm_prv_key> will be used
+pm_media_key = "@SAFE_DIR@/store_mngr"
+; name of the prodmanager for the RUDI Media authentification JWT
+pm_media_id = "rudi_node_manager"
+; expiration time in seconds for the RUDI MEdia authentification JWT
+exp_time_s = 1200
+
+
+[rudi_console]
+; default group for an identified user that can upload files to RUDI Media
+default_client_group = "producer"
+
+[logging]
+; Name that identifies the prodmanager server in the logs (e.g. in Grafana)
+app_name = manager
+; Folder for logs
+log_dir = @LOG_DIR@/manager
+; Name of the log file
+log_file = manager.log
+; Flag for enabling the logging of the configuration
+displayConf = true
+
+[syslog]
+app_name = maanger
+; sets the lowest priority level of the logs written
+syslog_level = debug
+; syslog conf
+syslog_host = localhost
+syslog_port = 514
+syslog_facility = local4
+; Available values: udp | tcp | unix
+syslog_protocol = udp
+; Available values: bsd | 3164 | RFC3164 | 5424 | RFC5424
+syslog_type = RFC5424
+; full path of the socket to which syslog messages should be sent
+; unix: /dev/log
+; macOS: /var/run/syslog
+syslog_socket = /var/run/syslog
+; name of this machine
+syslog_node_name = dev
+; folder for syslog backup files
+syslog_dir = @LOG_DIR@/rudi/manager/

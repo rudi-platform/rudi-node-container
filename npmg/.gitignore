@@ -1,0 +1,49 @@
+# Modules
+rudi-*
+jwt-lib
+rudi-catalog
+
+# Config
+**/custom.ini
+**/*custom.ini
+**/.env*
+
+# Generated
+*-lock.json
+*-lock.y*ml
+*.lock
+**/node_modules
+dump
+
+# Logs
+**/logs
+**/*log
+
+# Tests
+**/actions
+**/jest
+tests/doc
+**bak
+
+# Zip
+**/*.zip
+**/*.gz
+
+# XLSX
+**/*.xls*
+
+# Keys
+**/*.pem
+**/*.prv
+**/*.pub
+
+# Idz
+features
+notes
+demo
+z_*
+
+# Dev
+.vscode
+z_notes
+wip

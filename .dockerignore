@@ -1,0 +1,51 @@
+# Config
+**/custom.ini
+**/*custom.ini
+
+# Generated
+*-lock.json
+*-lock.y*ml
+*.lock
+**/node_modules
+dump
+
+# Logs
+**/logs
+
+# Tests
+**/actions
+**/jest
+tests/doc
+
+# GIT
+**/.git
+**/.eslintrc
+**/.gitignore
+
+# PM frontend ignore
+#src/rudi-manager/front/src
+#src/rudi-manager/front/public
+#src/rudi-manager/front/README.md
+#src/rudi-manager/front/.*
+#src/rudi-manager/front/package*
+
+# Zip
+**/*.zip
+**/*.gz
+
+# XLSX
+**/*.xls*
+
+# Keys
+**/*.pem
+**/*.prv
+.ssh
+
+# Idz
+features
+notes
+demo
+z_*
+
+# Dev
+.vscode

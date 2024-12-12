@@ -1,0 +1,12 @@
+# ----- Enpowreing shellcheck
+
+# SC1091: Not following: ./env-var-init.sh was not specified as input (see shellcheck -x).
+external-sources=true
+
+# ----- Disabling checks
+
+# SC2086: "Double quote to prevent globbing and word splitting."
+disable=SC2086
+
+# SC2155: "Declare and assign separately to avoid masking return values."
+disable=SC2155

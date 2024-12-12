@@ -1,0 +1,36 @@
+[server]
+listening_address = @LOCAL_INTERFACE@
+listening_port = @STORAGE_PORT@
+server_url = @LOCAL_URL@:@STORAGE_PORT@
+server_prefix = @STORAGE_PREFIX@
+
+[auth]
+system_users = {
+    "admin": [ 4, "$1$1586de76f5f26e8a6dbbe05182e4dc94$", [ "admin", "delegate" ], "" ],
+    "rudi_node_manager": [ 101, "", [ "producer", "auth" ], "@PUBKEY_DIR@/store_mngr.pub" ]
+ }
+
+[database]
+disabled = false
+db_url = @MONGODB@/@DB_PREFIX@rudi_media
+db_name = rudi_media
+
+[storage]
+media_dir = @MEDIA_DIR@
+acc_timeout = 20
+zones = [
+    { "name":"zone_A", "staging_time":15, "destroy_time":20 }
+ ]
+
+[log_server]
+path = @LOG_DIR@/storage
+transport= 5 // TCP=1, UNIX=4
+retryTimeout = 60000
+rfc3164 = true
+
+[log_local]
+consoleData= false
+directory= @LOG_DIR@/media/
+
+[logging]
+app_name = storage

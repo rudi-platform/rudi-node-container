@@ -1,0 +1,16 @@
+; ------------------------------------------------------------------------------
+; User config file for RUDI API module to connect to RUDI Portal
+;
+; The path of the custom configuration file can be set in
+; 'RUDI_API_PORTAL_CONF' environment variable
+; ------------------------------------------------------------------------------
+
+[portal]
+; ========== Portal metadata URL
+; 'portal_url' commented => no portal connected
+portal_url = @PORTAL_URL@
+
+; ========== Credentials
+login = @PORTAL_USER@
+passw = @PORTAL_PASS@
+is_pwd_b64 = true

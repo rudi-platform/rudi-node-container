@@ -1,0 +1,14 @@
+{
+  "name": "rudi-node",
+  "private": true,
+  "workspaces": [
+    "rudi-catalog",
+    "rudi-manager",
+    "rudi-storage",
+    "rudi-jwtauth"
+  ],
+  "scripts": {
+    "exec:all": "sh -c 'echo \"cmd=$cmd\"; echo; for module in catalog storage manager jwtauth; do (cd \"rudi-$module\" && echo \"-- [$module] $cmd\" && eval \"$cmd\") || exit 1; done'",
+    "install:all": "cmd=\"npm install --no-audit --no-fund --verbose --omit=dev\" npm run exec:all"
+  }
+}

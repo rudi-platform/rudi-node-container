@@ -1,0 +1,54 @@
+; ------------------------------------------------------------------------------
+; User custom config file for RUDI Catalog module
+;
+; The path of this custom configuration file can be set in
+; 'RUDI_CATALOG_USER_CONF' environment variable
+; ------------------------------------------------------------------------------
+
+[server]
+; server address
+; 127.0.0.1 is deaf to external call, 0.0.0.0 is thus the way
+listening_address = @LOCAL_INTERFACE@
+; server port
+listening_port = @CATALOG_PORT@
+; external URL for the RUDI Catalog server
+server_url = https://rudinode.org
+; catalog app prefix
+server_prefix = @CATALOG_PREFIX@
+
+[flags]
+should_log_console = false
+should_syslog = true
+should_syslog_in_console = true
+
+[logging]
+app_name = catalog
+; sets the lowest priority level of the logs written
+log_level = trace
+; folder for log files
+; log_dir = ./logs
+log_dir = @LOG_DIR@/catalog
+
+[syslog]
+app_name = catalog
+; sets the lowest priority level of the logs written
+syslog_level = warn
+; syslog conf
+syslog_host = localhost
+syslog_port = 514
+
+; syslog facility (see RFC5424): [0..23] int value, [local0 ... local7] strings acccepted, default is local4
+syslog_facility = local4
+; syslog protocol: udp | tcp | unix | tls
+syslog_protocol = unix
+; Available values: bsd | 3164 | RFC3164 | 5424 | RFC5424
+syslog_type = RFC5424
+; full path of the socket to which syslog messages should be sent
+; unix: /dev/log
+; macOS: /var/run/syslog
+syslog_socket = /dev/log
+; name of this machine
+syslog_node_name = rudinode_oci
+; folder for syslog backup files
+; syslog_dir = /tmp/devLogs/rudi
+syslog_dir = @LOG_DIR@/catalog/

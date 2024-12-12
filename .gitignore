@@ -1,0 +1,54 @@
+# Config
+**/custom.ini
+**/*custom.ini
+**/env.json
+conf
+tmp
+_
+
+# Generated
+*-lock.json
+*-lock.y*ml
+*.lock
+**/node_modules
+dump
+src
+env
+
+# Logs
+**/logs
+
+# Tests
+**/actions
+**/jest
+tests/doc
+
+# Zip
+**/*.zip
+**/*.gz
+data
+
+# XLSX
+**/*.xls*
+
+# Keys
+**/*.pem
+**/*.prv
+**/*.pub
+.ssh
+ssh
+git_creds
+
+# Idz
+features
+notes
+demo
+z_*
+wip*
+
+# Dev
+.vscode
+*.code-workspace
+bak
+*.bak
+dev*

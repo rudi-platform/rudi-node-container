@@ -1,0 +1,41 @@
+# --------------------------------------------------------------------------------------------------
+# Notes:
+# - jobs are executed in the order indicated at root "stages" property
+# - "needs" property needs an array of job names (not stages names)
+# --------------------------------------------------------------------------------------------------
+
+stages:
+  - fetch_sources
+  - build_container_img
+
+#---------------------------------------------------------------------------------------------------
+fetch_sources:
+  stage: fetch_sources
+  rules:
+    - if: $CI_COMMIT_BRANCH == "release"
+      when: always
+    - if: $CI_COMMIT_BRANCH != "release"
+      when: manual
+  tags:
+    - nodejs-20
+  variables:
+    NODE_ENV: development
+  script:
+    - echo 'fetching sources'
+    - ls -la .
+    - ls /bin
+    - source ./1-pull-rudi-node-gits.sh
+
+#---------------------------------------------------------------------------------------------------
+build_container_img:
+  stage: build_container_img
+  rules:
+    - if: $CI_COMMIT_BRANCH == "release"
+      when: on_success
+    - if: $CI_COMMIT_BRANCH != "release"
+      when: manual
+  tags:
+    - nodejs-20
+  script:
+    - echo 'building container image'
+    - /bin/bash -c "source ./2-build-image.sh"

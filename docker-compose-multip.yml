@@ -1,0 +1,30 @@
+name: rudinode
+services:
+  rudinode:
+    build:
+      context: .
+      dockerfile: Dockerfile.build
+      args:
+        TARGETPLATFORM: "${TARGETPLATFORM:-linux/amd64}" # Pass the platform dynamically to the Dockerfile
+    image: "${IMG_NAME_TAG:-rudinode:linux-amd64}"
+    platform: "${TARGETPLATFORM:-linux/amd64}"
+    container_name: "${IMG_NAME_TAG:-rudinode:linux-amd64}"
+    restart: always
+    ports:
+      - 3030:3030
+      - 3031:3031
+      - 3032:3032
+    volumes:
+      - ./data:/data:rw
+    environment:
+      NODE_PUBLIC_URL: "${NODE_PUBLIC_URL:-http://localhost}" # Parameterized URL
+      ENABLE_DB: 'true'
+      ENABLE_CATALOG: 'true'
+      ENABLE_STORAGE: 'true'
+      ENABLE_MANAGER: 'true'
+    networks:
+      - rudi-net
+
+networks:
+  rudi-net:
+    driver: bridge
