@@ -147,7 +147,7 @@ You can possibly create a new user that you'll reuse later.
 
 ## 1E. Stop the container
 
-_Note: in the following commands, the `"${VAR:-something}` means use the variable `$VAR`, but if you don't find it use the default value `something`. You may use `"$VAR"` _
+_Note: in the following commands, the `"${VAR:-something}` means use the variable `$VAR`, but if you don't find it use the default value `something`. You may use `"$VAR"`_
 
 ```sh
 echo "Stopping the '${CNTNR_NAME:-rudinode}' container"
