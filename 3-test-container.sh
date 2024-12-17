@@ -24,8 +24,8 @@ CNTNR_NAME="${CNTNR_NAME:-LOCAL_IMG_NAME}"
 podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
 
-# This is the install folder, you can optionally
-INSTALL_DIR=${INSTALL_DIR:-"~/rudinode"}
+# This is the install folder, you can set your own
+INSTALL_DIR=${INSTALL_DIR:-"$HOME/rudinode"}
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
 [ -z ${CATALOG_PREFIX+x} ] && CATALOG_PREFIX="electricite/catalog"
