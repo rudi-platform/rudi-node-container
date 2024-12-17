@@ -28,11 +28,12 @@ podman images
 
 # Give the running container a name of your choice
 CNTNR_NAME="${CNTNR_NAME:-rudinode}"
+
 # Stop the running instance in case it hadn't been stopped
 podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
 
-# This is the install folder, you can optionally
+# This is the folder where the node data will be saved, choose what you want as long as you have the rights to write
 INSTALL_DIR=${INSTALL_DIR:-$HOME/rudinode}
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
