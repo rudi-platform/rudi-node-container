@@ -6,7 +6,7 @@ Eventually, a procedure to build your own image is detailed._
 
 ## 1A. Prerequisites
 
-### Podman / Docker
+### Podman
 
 To run the following scripts you should have a podman instance running.
 
@@ -22,6 +22,8 @@ podman machine start
 Check podman installation page for other OS:
 https://podman.io/docs/installation
 
+### Docker
+
 You can alternatively replace or even alias every `podman`command with `docker` if you're used to Docker: it works exactly the same (`alias podman=docker`).
 
 ### (Optionally) specify these variables:
@@ -29,8 +31,7 @@ You can alternatively replace or even alias every `podman`command with `docker` 
 If you want to run the container locally, and need the data to persist between each run, you will have to run it in a folder where a 'data' subfolder will be created.
 
 ```sh
-# This is where the container will run. A `data` folder will be created for the container data to be
-# be remanent even if you stopped the container
+# This is where the container will run. A `data` folder will be created for the container data to be remanent even if you stopped the container
 INSTALL_DIR="~/rudinode"
 
 # This is the way the RUDI node Docker image would be named on this computer
@@ -84,7 +85,7 @@ podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
 
 # This is the install folder, you can set your own.
-INSTALL_DIR="~/rudinode"
+INSTALL_DIR="$HOME/rudinode"
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
 # The following variable is the hashed super user credentials that corresponds to
