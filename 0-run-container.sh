@@ -33,14 +33,23 @@ podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
 
 # This is the install folder, you can optionally
-INSTALL_DIR=${INSTALL_DIR:-"~/rudinode"}
+INSTALL_DIR=${INSTALL_DIR:-$HOME/rudinode}
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
-podman run --rm             \
-    --name "$CNTNR_NAME"    \
-    --volume ./data:/data   \
-    --publish 3030:3030     \
-    --publish 3031:3031     \
-    --publish 3032:3032     \
-    -e ENV=production       \
+# The following variable is the hashed super user credentials that corresponds to
+#     usr: 'node admin'
+#     pwd: 'manager admin password!'
+# - If you don't set the SU variable the first time the container is run, credentials wil be
+#   randomly generated and displayed in the logs.
+# - You normally only need to set it once, but if you set it in the run command next time, the
+#   previous super user credentials get overwritten.
+SU=cnVkaW5vZGUgYWRtaW46WnU2WGwxWVNRUS0tT1BzenlhUFNzcmlQRjA5V1U2dHlVYlh3ZVdaX1lOTVRXMG82MWwxUFVoU3BOdWlhSVBCdGFlN2xXVmU2M0ExRV9zTk85QnlUcWhaZGx5RHY5UW5xdlkxX2lMaklXb3pJRXRlX29zQkM4WmlwUmxvTmR3
+
+podman run --rm                             \
+    --name "$CNTNR_NAME"                    \
+    --volume "${INSTALL_DIR}/data":/data    \
+    --publish 3030:3030                     \
+    --publish 3031:3031                     \
+    --publish 3032:3032                     \
+    -e SU=$SU                               \
     $LOCAL_IMG_NAME

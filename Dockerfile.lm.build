@@ -1,0 +1,130 @@
+FROM node:22-alpine AS NodeBuilder
+
+# Folder that contains the source of every rudi-node module
+ARG SRC_DIR="./src"
+ARG PUBLIC_URL=""
+
+ENV WK_DIR="/app/rudi-node"
+ENV INI_DIR="$WK_DIR/ini"
+ENV NODE_ENV=production
+
+WORKDIR "$WK_DIR"
+RUN apk update && apk add --no-cache python3 xz
+
+
+COPY ./env/* "$WK_DIR"/
+
+ENV NPM_INSTALL_PRD="npm install --no-audit --no-fund --verbose --omit=dev"
+ENV NPM_INSTALL_DEV="npm install --no-audit --no-fund --verbose --include=dev"
+RUN npm config set registry https://registry.npmjs.org/     && \
+    npm config set fetch-timeout 1000                       && \
+    npm config set searchstaleness 3600                     && \
+    npm config set prefer-offline true                      && \
+    npm config set package-lock true                        && \
+    npm config set progress false                           && \
+    npm config set loglevel warn                            && \
+    npm i -g npm@latest                                     && \
+    npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
+
+RUN addgroup -g 5001 rudi         && \
+    addgroup -g 5002 rudicatalog  && \
+    addgroup -g 5003 rudistorage  && \
+    addgroup -g 5004 rudijwtauth  && \
+    addgroup -g 5005 rudimanager
+
+RUN adduser -D -G rudi        -u 5001 rudiadm       && \
+    adduser -D -G rudicatalog -u 5002 rudicatalog   && \
+    adduser -D -G rudistorage -u 5003 rudistorage   && \
+    adduser -D -G rudijwtauth -u 5004 rudijwtauth   && \
+    adduser -D -G rudimanager -u 5005 rudimanager   && \
+    addgroup rudicatalog rudi                       && \
+    addgroup rudistorage rudi                       && \
+    addgroup rudimanager rudi                       && \
+    addgroup rudijwtauth rudi
+
+COPY ${SRC_DIR}/rudi-catalog ${WK_DIR}/rudi-catalog
+COPY ${SRC_DIR}/rudi-storage ${WK_DIR}/rudi-storage
+COPY ${SRC_DIR}/rudi-manager ${WK_DIR}/rudi-manager
+COPY ${SRC_DIR}/rudi-jwtauth ${WK_DIR}/rudi-jwtauth
+
+RUN ( cd rudi-catalog && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-storage && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-manager && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-jwtauth && ${NPM_INSTALL_PRD} )
+
+COPY ./install/searchPackages.py /app/searchPackages.py
+RUN python3 /app/searchPackages.py > package.json
+
+RUN npm config set package-lock false                                     && \
+    rm -rf $(find . -iname 'package-lock.json' -o -iname 'node_modules' ) && \
+    ${NPM_INSTALL_PRD}
+
+RUN ( cd rudi-catalog && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-storage && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-manager && ${NPM_INSTALL_PRD} )
+RUN ( cd rudi-jwtauth && ${NPM_INSTALL_PRD} )
+
+RUN ( cd "rudi-manager/front" && NODE_ENV='development' ${NPM_INSTALL_DEV} )
+
+ENV PUBLIC_URL=${PUBLIC_URL}
+RUN ( cd "rudi-manager/front" && npm run build:prod  )
+
+RUN ( rm -rf rudi-manager/front/node_modules rudi-manager/front/src $(find . -iname '.docker*' -o -iname '.git*' ) )
+
+RUN chown -R root:rudi        node_modules *.ini *.json && \
+    chown -R root:rudicatalog rudi-catalog              && \
+    chown -R root:rudistorage rudi-storage              && \
+    chown -R root:rudimanager rudi-manager              && \
+    chown -R root:rudijwtauth rudi-jwtauth
+
+RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-jwtauth rudi-manager && \
+    chmod -R u=rX,g=rX,o= node_modules *.ini *.json
+
+#RUN ( cd /app && tar -Jcvf /app/rudi-node.tar.xz rudi-node )
+
+#RUN apk add squashfs-tools
+#RUN mksquashfs /app/rudi-node /app/rudi-node.iso -comp xz -b 4096 -wildcards -e rudi-manager/front/src -e rudi-manager/front/node_modules -e '... .git'
+
+FROM alpine:3.20 AS system
+
+WORKDIR /app
+
+RUN echo "Europe/Paris" > /etc/timezone
+RUN printf 'http://dl-cdn.alpinelinux.org/alpine/v3.9/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.9/community\n' >> /etc/apk/repositories && \
+    apk update                                                                                && \
+    apk upgrade                                                                               && \
+    apk add mongodb mongodb-tools nodejs openssh-keygen logrotate busybox-suid sqlite tzdata  && \
+    apk cache clean                                                                           && \
+    rm -f /var/cache/apk/*
+
+RUN addgroup --gid 5001 rudi         && \
+    addgroup --gid 5002 rudicatalog  && \
+    addgroup --gid 5003 rudistorage  && \
+    addgroup --gid 5004 rudijwtauth  && \
+    addgroup --gid 5005 rudimanager
+
+RUN adduser --disabled-password -G rudi        --uid 5001 rudiadm      && \
+    adduser --disabled-password -G rudicatalog --uid 5002 rudicatalog  && \
+    adduser --disabled-password -G rudistorage --uid 5003 rudistorage  && \
+    adduser --disabled-password -G rudijwtauth --uid 5004 rudijwtauth  && \
+    adduser --disabled-password -G rudimanager --uid 5005 rudimanager  && \
+    for usr in rudicatalog rudistorage rudijwtauth rudimanager; do addgroup "$usr" rudi ; addgroup rudiadm "$usr" ; done
+
+WORKDIR /app
+ENV WK_DIR="/app/rudi-node"
+
+COPY --from=NodeBuilder "$WK_DIR" "$WK_DIR"
+
+WORKDIR "$WK_DIR"
+RUN echo "$WK_DIR"
+RUN mkdir -p -m 0770      /data /app/config/ini && \
+    chown -R rudiadm:rudi /data /app/config
+
+COPY --chown=root:rudi    --chmod=440 ./ini /app/config/ini
+COPY                      --chmod=444 ./install/.profile /etc/profile.d/10-rudi.sh
+COPY --chown=root:rudi    --chmod=550 ./install/oci-alpine-startup.sh ./install/env-*  .
+
+USER rudiadm
+
+RUN ls -lah
+CMD "$WK_DIR/oci-alpine-startup.sh"
