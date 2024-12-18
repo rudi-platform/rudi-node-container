@@ -255,6 +255,6 @@ podman-compose -f "${DOCKER_COMPOSE_CONF:-'docker-compose-multip.yml'}" down
 
 ## 2D. Log to the RUDI node
 
-Go to the following URL and login with the Super User password you have set at
+Go to the following URL and login with the Super User password you have set:
 
 http://localhost:3032/manager
