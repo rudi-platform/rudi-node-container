@@ -28,23 +28,22 @@ podman images
 
 # Give the running container a name of your choice
 CNTNR_NAME="${CNTNR_NAME:-rudinode}"
-
 # Stop the running instance in case it hadn't been stopped
 podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
 
-# This is the folder where the node data will be saved, choose what you want as long as you have the rights to write
+# This is the install folder, you can optionally
 INSTALL_DIR=${INSTALL_DIR:-$HOME/rudinode}
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
-# The following variable is the hashed super user credentials that corresponds to
-#     usr: 'node admin'
+# The following variable is the hashed super user credentials that corresponds to the following (without quotes)
+#     usr: 'rudinode admin'
 #     pwd: 'manager admin password!'
 # - If you don't set the SU variable the first time the container is run, credentials wil be
 #   randomly generated and displayed in the logs.
 # - You normally only need to set it once, but if you set it in the run command next time, the
 #   previous super user credentials get overwritten.
-SU=cnVkaW5vZGUgYWRtaW46WnU2WGwxWVNRUS0tT1BzenlhUFNzcmlQRjA5V1U2dHlVYlh3ZVdaX1lOTVRXMG82MWwxUFVoU3BOdWlhSVBCdGFlN2xXVmU2M0ExRV9zTk85QnlUcWhaZGx5RHY5UW5xdlkxX2lMaklXb3pJRXRlX29zQkM4WmlwUmxvTmR3
+SU="cnVkaW5vZGUgYWRtaW46R3dvRDFiTmt5N1F1ZjNrbG1NZVk3NUhnVFdtUDZsZFpzU0ZJLWJDY1NMVWI2MldKOTZkMlJRVDZlMTFUd0E0eGNzTDljSHVNSnFaSkh4eW1SZE1iemRhMUM5WU8yU3Q2QVJoMmhlZFN1UmpZWW5PcXZpbDFEWDJ4cDJqZTZ3"
 
 podman run --rm                             \
     --name "$CNTNR_NAME"                    \

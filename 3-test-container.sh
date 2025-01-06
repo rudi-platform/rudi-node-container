@@ -14,6 +14,7 @@ test -r ./container-conf.sh && source ./container-conf.sh
 VERSION="${VERSION:-'2.5.0'}"
 IMG_NAME='localhost/rudinode-2.5.0:linux-arm64'
 TAG=${TAG:-OCI-2.5.0a}
+SU=UE0gQWRtaW46RXgwOTktblZMYlMtNVNTZkxGWElsSk1fWENBWHdZb2Fya19UVjliM3U5YlhGMGZSZXU2QTJWRndXdllXZm9QT3NUSm5RUkxIbDRvUFA1R2dUTDllNGFRRnJyOVNGSE9QZ3JKS3dMOS0wNGJLRTBOS19WeWRXcGR5aDNlRV9n
 
 # Here you can specify any name you want
 LOCAL_IMG_NAME=${LOCAL_IMG_NAME:-$IMG_NAME}

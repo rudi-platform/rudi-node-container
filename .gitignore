@@ -14,6 +14,7 @@ _
 dump
 src
 env
+**/env/platform.ini
 
 # Logs
 **/logs
@@ -37,7 +38,7 @@ data
 **/*.pub
 .ssh
 ssh
-git_creds
+git_creds*
 
 # Idz
 features

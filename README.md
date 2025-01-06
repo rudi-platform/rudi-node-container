@@ -15,6 +15,8 @@ If you need to install podman on MacOS, you may use homebrew for this:
 ```sh
 # Install podman
 brew install podman
+# Init podman
+podman machine init
 # Launch podman machine (Linux VM)
 podman machine start
 ```
@@ -89,13 +91,13 @@ INSTALL_DIR="$HOME/rudinode"
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
 # The following variable is the hashed super user credentials that corresponds to
-#     usr: 'node admin'
+#     usr: 'rudinode admin'
 #     pwd: 'manager admin password!'
 # - If you don't set the SU variable the first time the container is run, credentials wil be
 #   randomly generated and displayed in the logs.
 # - You normally only need to set it once, but if you set it in the run command next time, the
 #   previous super user credentials get overwritten.
-SU=cnVkaW5vZGUgYWRtaW46WnU2WGwxWVNRUS0tT1BzenlhUFNzcmlQRjA5V1U2dHlVYlh3ZVdaX1lOTVRXMG82MWwxUFVoU3BOdWlhSVBCdGFlN2xXVmU2M0ExRV9zTk85QnlUcWhaZGx5RHY5UW5xdlkxX2lMaklXb3pJRXRlX29zQkM4WmlwUmxvTmR3
+SU="cnVkaW5vZGUgYWRtaW46R3dvRDFiTmt5N1F1ZjNrbG1NZVk3NUhnVFdtUDZsZFpzU0ZJLWJDY1NMVWI2MldKOTZkMlJRVDZlMTFUd0E0eGNzTDljSHVNSnFaSkh4eW1SZE1iemRhMUM5WU8yU3Q2QVJoMmhlZFN1UmpZWW5PcXZpbDFEWDJ4cDJqZTZ3"
 
 podman run --rm                         \
     --name "$CNTNR_NAME"                \
@@ -126,7 +128,7 @@ Or check this URL in your browser:
 
 http://localhost:3032/manager/api/open/test
 
-## 1D. Log to the RUDI node
+## 1D. Log in to the RUDI node
 
 You may open a web browser and type the following URL to enter the RUDI node:
 
@@ -253,7 +255,7 @@ podman-compose -f "${DOCKER_COMPOSE_CONF:-'docker-compose-multip.yml'}" up -d
 podman-compose -f "${DOCKER_COMPOSE_CONF:-'docker-compose-multip.yml'}" down
 ```
 
-## 2D. Log to the RUDI node
+## 2D. Log in to the RUDI node
 
 Go to the following URL and login with the Super User password you have set:
 
