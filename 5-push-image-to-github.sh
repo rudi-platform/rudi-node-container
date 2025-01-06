@@ -10,7 +10,7 @@ TIME_START=$(now_ms_int)
 
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
-test -r ./git_creds && source ./git_creds
+test -r ./git_creds_rudip && source ./git_creds_rudip
 
 # TODO (uneeded so far): put aqmo as registry in either of these locations:
 # /etc/containers/registries.conf
@@ -34,7 +34,7 @@ podman manifest rm "${VERSIONED_NAME}" 2>/dev/null || true
 podman manifest create "${LATEST}"
 podman manifest create "${VERSIONED_NAME}"
 
-log_msg "Pushing images to gitlab"
+log_msg "Pushing images to the registry $REGISTRY"
 for PLATFORM in "${PLATFORMS[@]}"; do
     PLATFORM_SANITIZED=$(echo "$PLATFORM" | tr '/' '-')
     IMG_NAME_TAG="${VERSIONED_NAME}:${PLATFORM_SANITIZED}"

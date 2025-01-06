@@ -36,7 +36,7 @@ podman rm "$CNTNR_NAME" 2>/dev/null
 INSTALL_DIR=${INSTALL_DIR:-$HOME/rudinode}
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
-# The following variable is the hashed super user credentials that corresponds to
+# The following variable is the hashed super user credentials that corresponds to the following (without quotes)
 #     usr: 'node admin'
 #     pwd: 'manager admin password!'
 # - If you don't set the SU variable the first time the container is run, credentials wil be

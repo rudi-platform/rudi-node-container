@@ -15,6 +15,8 @@ If you need to install podman on MacOS, you may use homebrew for this:
 ```sh
 # Install podman
 brew install podman
+# Init podman
+podman machine init
 # Launch podman machine (Linux VM)
 podman machine start
 ```
@@ -126,7 +128,7 @@ Or check this URL in your browser:
 
 http://localhost:3032/manager/api/open/test
 
-## 1D. Log to the RUDI node
+## 1D. Log in to the RUDI node
 
 You may open a web browser and type the following URL to enter the RUDI node:
 
@@ -253,7 +255,7 @@ podman-compose -f "${DOCKER_COMPOSE_CONF:-'docker-compose-multip.yml'}" up -d
 podman-compose -f "${DOCKER_COMPOSE_CONF:-'docker-compose-multip.yml'}" down
 ```
 
-## 2D. Log to the RUDI node
+## 2D. Log in to the RUDI node
 
 Go to the following URL and login with the Super User password you have set:
 
