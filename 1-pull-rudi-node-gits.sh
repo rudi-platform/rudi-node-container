@@ -17,22 +17,22 @@ test -r "./$LOCAL_CONF" && . "./$LOCAL_CONF"
 
 
 # The gitlab repo generic URL. If set in
-REPO=${REPO:-"https://github.com/rudi-platform"}
+REPO="${REPO:-"https://github.com/rudi-platform"}"
 
 # Correspondance between each RUDI module and its original gitlab repo
-git_src_catalog=${git_src_catalog:-"rudi-node-catalog.git"}
-git_src_storage=${git_src_storage:-"rudi-node-storage.git"}
-git_src_manager=${git_src_manager:-"rudi-node-manager.git"}
-git_src_jwtauth=${git_src_jwtauth:-"rudi-node-jwtauth.git"}
+git_src_catalog="${git_src_catalog:-"rudi-node-catalog.git"}"
+git_src_storage="${git_src_storage:-"rudi-node-storage.git"}"
+git_src_manager="${git_src_manager:-"rudi-node-manager.git"}"
+git_src_jwtauth="${git_src_jwtauth:-"rudi-node-jwtauth.git"}"
 
 # Creating necessary folders
-PRJ_DIR=$(pwd)
-PRJ_SRC_DIR=${PRJ_DIR}/src
-PRJ_ENV_DIR=${PRJ_DIR}/env
+PRJ_DIR="$(pwd)"
+PRJ_SRC_DIR="${PRJ_DIR}/src"
+PRJ_ENV_DIR="${PRJ_DIR}/env"
 mkdir -p "$PRJ_ENV_DIR" "$PRJ_SRC_DIR"
 
 # The file `$GIT_REV_FILE`` is used to gather each repository's git tag
-GIT_REV_FILE=${PRJ_ENV_DIR}/git-rev.ini
+GIT_REV_FILE="${PRJ_ENV_DIR}/git-rev.ini"
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
 
@@ -48,7 +48,7 @@ for module in catalog storage manager jwtauth; do
         log_msg Cloning git repo: rudi-${module}
         # Recreating the git repo URI for this RUDI module
         mod_git=$(eval echo \$git_src_$module)
-        mod_repo=${REPO}/${mod_git}
+        mod_repo="${REPO}/${mod_git}"
         echo mod_repo=$mod_repo
         # Local destination folder for the RUDI module
         git clone -b release --single-branch "${mod_repo}" "${module_dir}"
