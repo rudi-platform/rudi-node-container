@@ -10,18 +10,20 @@ TIME_START=$(now_ms_int)
 
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
-test -r ./git_creds && source ./git_creds
 
-# TODO (uneeded so far): put aqmo as registry in either of these locations:
-# /etc/containers/registries.conf
-# $HOME/.config/containers/registries.conf.
-GIT_CREDS=${GIT_CREDS:-"$GIT_USR:$GIT_TOKEN"}
+# Write your credentials in 'git_creds' file with
+#    GIT_CREDS="usr:token"
+#    REGISTRY="ghcr.io/rudi-platform"
+GIT_CREDS_FILE="${GIT_CREDS_FILE:-"./git_creds"}"
 
-VERSION="${VERSION:-'1.0'}"
-IMG_NAME="${IMG_NAME:-'rudinode'}"
+test -r "$GIT_CREDS_FILE" && echo "Creds file was found: '$GIT_CREDS_FILE'" && source "$GIT_CREDS_FILE"
+GIT_CREDS="${GIT_CREDS:-"$GIT_USR:$GIT_TOKEN"}"
 
-REGISTRY="${REGISTRY:-'registry.aqmo.org/public-rudi/public-packages'}"
-PLATFORMS=${PLATFORMS:-('linux/amd64' 'linux/arm64')}
+VERSION="${VERSION:-"1.0"}"
+IMG_NAME="${IMG_NAME:-"rudinode"}"
+
+REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
+PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}
 
 VERSIONED_NAME="${IMG_NAME}-${VERSION}"
 LATEST="${IMG_NAME}:latest"
@@ -34,8 +36,9 @@ podman manifest rm "${VERSIONED_NAME}" 2>/dev/null || true
 podman manifest create "${LATEST}"
 podman manifest create "${VERSIONED_NAME}"
 
-log_msg "Pushing images to gitlab"
+log_msg "Pushing images to the registry $REGISTRY"
 for PLATFORM in "${PLATFORMS[@]}"; do
+
     PLATFORM_SANITIZED=$(echo "$PLATFORM" | tr '/' '-')
     IMG_NAME_TAG="${VERSIONED_NAME}:${PLATFORM_SANITIZED}"
 

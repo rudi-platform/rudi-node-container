@@ -12,7 +12,7 @@
 REGISTRY_IMG=registry.aqmo.org/public-rudi/public-packages/rudinode:latest
 
 # Here you can specify any name you want
-LOCAL_IMG_NAME=${LOCAL_IMG_NAME:-"rudinode-local"}
+LOCAL_IMG_NAME="${LOCAL_IMG_NAME:-"rudinode-local"}"
 
 # Fetch the image
 podman pull "$REGISTRY_IMG"
@@ -27,13 +27,13 @@ podman images
 #    To run the container with a remanent volume, only `/data` folder should be mounted as a volume.
 
 # Give the running container a name of your choice
-CNTNR_NAME="${CNTNR_NAME:-rudinode}"
+CNTNR_NAME="${CNTNR_NAME:-"rudinode"}"
 # Stop the running instance in case it hadn't been stopped
 podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
 
 # This is the install folder, you can optionally
-INSTALL_DIR=${INSTALL_DIR:-$HOME/rudinode}
+INSTALL_DIR="${INSTALL_DIR:-"$HOME/rudinode"}"
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
 # The following variable is the hashed super user credentials that corresponds to the following (without quotes)
