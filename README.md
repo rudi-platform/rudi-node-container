@@ -137,7 +137,7 @@ http://localhost:3032
 Here are the default credentials you'll need to log in if you set it as stated above:
 
 ```js
-usr: 'node admin'
+usr: 'rudinode admin'
 pwd: 'manager admin password!'
 ```
 
