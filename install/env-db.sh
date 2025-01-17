@@ -85,9 +85,9 @@ db_run() {
     local restore_file=${DB_DUMP_DIR}/restore_${DB_PREFIX}.mongo
 
     if [ ! -r ${restore_file} -a ! -e ${DB_DATA_DIR}/storage.bson -a -r ${DB_DUMP_PATH} ]; then
-	restore_file=${DB_DUMP_PATH}
+	    restore_file=${DB_DUMP_PATH}
     else
-	touch ${DB_DUMP_PATH}
+	    touch ${DB_DUMP_PATH}
     fi
 
     [ -r ${restore_file} ] && db_restore ${restore_file} || db_wait

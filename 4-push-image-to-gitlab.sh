@@ -19,7 +19,7 @@ GIT_CREDS_FILE="${GIT_CREDS_FILE:-"./git_creds"}"
 test -r "$GIT_CREDS_FILE" && echo "Creds file was found: '$GIT_CREDS_FILE'" && source "$GIT_CREDS_FILE"
 GIT_CREDS="${GIT_CREDS:-"$GIT_USR:$GIT_TOKEN"}"
 
-VERSION="${VERSION:-"1.0"}"
+VERSION="${VERSION:-"2.5.0"}"
 IMG_NAME="${IMG_NAME:-"rudinode"}"
 
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
