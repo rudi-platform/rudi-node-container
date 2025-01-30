@@ -13,7 +13,7 @@ APP_MANAGER_DIR=${APP_MANAGER_DIR:-${APP_DIR}/rudi-manager}
 MANAGER_CONF="${MANAGER_CONF:-${INI_DIR}/rudi-manager-conf.ini}"
 
 # Tag for the container, usually the RUDI node version
-TAG=${TAG:-RUDI-node-2.5.0}
+TAG=${TAG:-RUDI-node-2.5.1}
 
 #
 # DB configuration

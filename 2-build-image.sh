@@ -9,7 +9,7 @@ test -r ./install/.shrc && source ./install/.shrc
 TIME_START=$(now_ms_int)
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-"2.5.0"}"
+VERSION="${VERSION:-"2.5.1"}"
 IMG_NAME="${IMG_NAME:-"rudinode"}"
 
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
@@ -17,6 +17,8 @@ PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}
 
 VERSIONED_NAME="${IMG_NAME}-${VERSION}"
 LATEST="${IMG_NAME}:latest"
+
+
 
 # Build and tag for each platform
 for PLATFORM in "${PLATFORMS[@]}"; do

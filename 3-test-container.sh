@@ -12,7 +12,7 @@ TIME_START=$(now_ms_int)
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-"2.5.0"}"
+VERSION="${VERSION:-"2.5.1"}"
 
 # REGISTRY=ghcr.io/rudi-platform
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
