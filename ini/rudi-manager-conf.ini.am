@@ -95,7 +95,7 @@ log_file = manager.log
 displayConf = true
 
 [syslog]
-app_name = maanger
+app_name = manager
 ; sets the lowest priority level of the logs written
 syslog_level = debug
 ; syslog conf
