@@ -31,6 +31,7 @@ CNTNR_NAME="${CNTNR_NAME:-"rudinode"}"
 # Stop the running instance in case it hadn't been stopped
 podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
+# podman rm -f "$CNTNR_NAME" 2>/dev/null
 
 # This is the install folder, you can optionally
 INSTALL_DIR="${INSTALL_DIR:-"$HOME/rudinode"}"

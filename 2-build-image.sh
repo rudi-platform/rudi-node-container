@@ -19,7 +19,6 @@ VERSIONED_NAME="${IMG_NAME}-${VERSION}"
 LATEST="${IMG_NAME}:latest"
 
 
-
 # Build and tag for each platform
 for PLATFORM in "${PLATFORMS[@]}"; do
 

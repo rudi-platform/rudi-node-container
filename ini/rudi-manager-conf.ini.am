@@ -18,8 +18,6 @@ backend_prefix = 'api'
 frontend_prefix = ''
 ; manager console URL prefix
 console_prefix = 'form'
-; manager backend internal URL prefix
-router_prefix = @MANAGER_PREFIX@
 
 [database]
 ; folder where the user database is stored
