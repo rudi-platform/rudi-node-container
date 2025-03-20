@@ -36,6 +36,8 @@ is_su_pwd_hashed = true
 ; default token expiration time in seconds
 ; (when no other token expiration 'exp_time_s' is provided)
 exp_time_s = 25200
+; folder for admin ssh pub keys that will be used to verify incoming JWTs
+ssh_pub_dir = @MANAGER_PUBKEY_DIR@
 
 [security]
 ; helmet conf: frontend can only make calls to trusted domains (and itself)

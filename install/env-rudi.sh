@@ -63,7 +63,7 @@ GLOBAL_VARS="${GLOBAL_VARS} MEDIA_DIR PORTAL_URL PORTAL_USER PORTAL_PASS TRUSTED
 GLOBAL_VARS="${GLOBAL_VARS} JWTAUTH_PORT JWTAUTH_LOCAL_URL LOCAL_INTERFACE LOCAL_URL"
 GLOBAL_VARS="${GLOBAL_VARS} CATALOG_PORT CATALOG_LOCAL_URL CATALOG_PREFIX CATALOG_PUBLIC_URL"
 GLOBAL_VARS="${GLOBAL_VARS} STORAGE_PORT STORAGE_LOCAL_URL STORAGE_PREFIX STORAGE_PUBLIC_URL"
-GLOBAL_VARS="${GLOBAL_VARS} MANAGER_PORT MANAGER_LOCAL_URL MANAGER_PREFIX"
+GLOBAL_VARS="${GLOBAL_VARS} MANAGER_PORT MANAGER_LOCAL_URL MANAGER_PREFIX MANAGER_PUBKEY_DIR"
 
 assert_key() {
     local keyname=${1:-myprivate}
@@ -88,13 +88,13 @@ dirCheck() {
 rudi_check() {
     local user=${1:-rudiadm}
     local group=${2:-rudi}
-    test -d ${APP_DIR}     || error "Could not find ${APP_DIR}"
-    dirCheck ${INI_DIR}    || error "Could not access or create ${INI_DIR}"
-    dirCheck ${SAFE_DIR}   || error "Could not access or create ${SAFE_DIR}"
-    dirCheck ${LOG_DIR}    || error "Could not access or create ${LOG_DIR}"
-    dirCheck ${MEDIA_DIR}  || error "Could not access or create ${MEDIA_DIR}"
-    dirCheck ${DB_DIR}     || error "Could not access or create ${DB_DIR}"
-    dirCheck ${PUBKEY_DIR} || error "Could not access or create ${PUBKEY_DIR}"
+    test -d ${APP_DIR}              || error "Could not find ${APP_DIR}"
+    dirCheck ${INI_DIR}             || error "Could not access or create ${INI_DIR}"
+    dirCheck ${SAFE_DIR}            || error "Could not access or create ${SAFE_DIR}"
+    dirCheck ${LOG_DIR}             || error "Could not access or create ${LOG_DIR}"
+    dirCheck ${MEDIA_DIR}           || error "Could not access or create ${MEDIA_DIR}"
+    dirCheck ${DB_DIR}              || error "Could not access or create ${DB_DIR}"
+    dirCheck ${PUBKEY_DIR}          || error "Could not access or create ${PUBKEY_DIR}"
 
     chown $user:$group ${INI_DIR} ${SAFE_DIR} ${LOG_DIR} ${DB_DIR}
     chmod 770          ${INI_DIR} ${SAFE_DIR} ${LOG_DIR} ${DB_DIR}
