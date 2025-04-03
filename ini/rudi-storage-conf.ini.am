@@ -19,7 +19,7 @@ db_name = rudi_media
 media_dir = @MEDIA_DIR@
 acc_timeout = 20
 zones = [
-    { "name":"zone_A", "staging_time":15, "destroy_time":20 }
+    { "name":"zone1", "staging_time":15, "destroy_time":20 }
  ]
 
 [log_server]
