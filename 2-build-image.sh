@@ -9,7 +9,7 @@ test -r ./install/.shrc && source ./install/.shrc
 TIME_START=$(now_ms_int)
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-"2.5.1"}"
+VERSION="${VERSION:-"2.5.2"}"
 IMG_NAME="${IMG_NAME:-"rudinode"}"
 
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
