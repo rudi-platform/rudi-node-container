@@ -32,7 +32,7 @@ services:
     volumes:
       - ./data:/data:rw
     environment:
-      NODE_PUBLIC_URL: http://127.0.0.1
+      NODE_PUBLIC_URL: http://localhost
       CATALOG_LOCAL_URL: http://rudi-catalog:3030
       STORAGE_LOCAL_URL: http://rudi-storage:3031
       ENABLE_DB: 'false'
@@ -52,7 +52,7 @@ services:
       - ./data:/data:rw
     environment:
       DB_PREFIX:
-      NODE_PUBLIC_URL: http://127.0.0.1
+      NODE_PUBLIC_URL: http://localhost
       MONGODB: mongodb://rudi-db:27017
       ENABLE_DB: 'false'
       ENABLE_CATALOG: 'true'
@@ -74,7 +74,7 @@ services:
       - ./data:/data:rw
     environment:
       DB_PREFIX:
-      NODE_PUBLIC_URL: http://127.0.0.1
+      NODE_PUBLIC_URL: http://localhost
       MONGODB: mongodb://rudi-db:27017
       ENABLE_DB: 'false'
       ENABLE_CATALOG: 'false'

@@ -65,7 +65,7 @@ services:
     volumes:
       - ./data:/data:rw
     environment:
-      NODE_PUBLIC_URL: http://127.0.0.1
+      NODE_PUBLIC_URL: http://localhost
       ENABLE_DB: 'false'
       ENABLE_CATALOG: 'false'
       ENABLE_STORAGE: 'true'

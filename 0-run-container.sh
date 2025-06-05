@@ -46,9 +46,6 @@ mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 #   previous super user credentials get overwritten.
 SU="cnVkaW5vZGUgYWRtaW46R3dvRDFiTmt5N1F1ZjNrbG1NZVk3NUhnVFdtUDZsZFpzU0ZJLWJDY1NMVWI2MldKOTZkMlJRVDZlMTFUd0E0eGNzTDljSHVNSnFaSkh4eW1SZE1iemRhMUM5WU8yU3Q2QVJoMmhlZFN1UmpZWW5PcXZpbDFEWDJ4cDJqZTZ3"
 
-NODE_ENV=production
-NODE_PUBLIC_URL=http://localhost
-
 podman run --rm                             \
     --name "$CNTNR_NAME"                    \
     --volume "${INSTALL_DIR}/data":/data    \
@@ -56,4 +53,5 @@ podman run --rm                             \
     --publish 3031:3031                     \
     --publish 3032:3032                     \
     -e SU=$SU                               \
+    -e NODE_PUBLIC_URL="http://localhost"   \
     $LOCAL_IMG_NAME

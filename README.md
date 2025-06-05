@@ -51,7 +51,7 @@ Beware: closing the terminal will close the container.
 To exit, press Ctrl+C
 
 ```sh
-./0-run-container.sh
+source ./0-run-container.sh
 ```
 
 Here is the content of the script, in case you want to execute only a part of the steps

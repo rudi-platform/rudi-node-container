@@ -12,7 +12,7 @@ TIME_START=$(now_ms_int)
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-"2.5.3"}"
+VERSION="${VERSION:-"2.5.4"}"
 
 # REGISTRY=ghcr.io/rudi-platform
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
@@ -43,17 +43,20 @@ mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 [ -z ${STORAGE_PREFIX+x} ] && STORAGE_PREFIX="electricite/storage"
 [ -z ${MANAGER_PREFIX+x} ] && MANAGER_PREFIX="electricite/manager"
 
-podman run --rm -it                     \
-    --name "$CNTNR_NAME"                \
-    --volume ./data:/data               \
-    --publish 3030:3030                 \
-    --publish 3031:3031                 \
-    --publish 3032:3032                 \
-    -e CATALOG_PREFIX=$CATALOG_PREFIX   \
-    -e STORAGE_PREFIX=$STORAGE_PREFIX   \
-    -e MANAGER_PREFIX=$MANAGER_PREFIX   \
-    -e TAG=${TAG:-dev}                  \
-    -e SU=$SU                           \
+NODE_PUBLIC_URL="http://localhost/electricite"
+
+podman run --rm -it                         \
+    --name "$CNTNR_NAME"                    \
+    --volume ./data:/data                   \
+    --publish 3030:3030                     \
+    --publish 3031:3031                     \
+    --publish 3032:3032                     \
+    -e CATALOG_PREFIX=$CATALOG_PREFIX       \
+    -e STORAGE_PREFIX=$STORAGE_PREFIX       \
+    -e MANAGER_PREFIX=$MANAGER_PREFIX       \
+    -e NODE_PUBLIC_URL=$NODE_PUBLIC_URL     \
+    -e TAG=${TAG:-dev}                      \
+    -e SU=$SU                               \
     $REGISTRY/$LATEST
 
 
