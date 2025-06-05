@@ -31,6 +31,7 @@ CNTNR_NAME="${CNTNR_NAME:-"rudinode"}"
 # Stop the running instance in case it hadn't been stopped
 podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
+# podman rm -f "$CNTNR_NAME" 2>/dev/null
 
 # This is the install folder, you can optionally
 INSTALL_DIR="${INSTALL_DIR:-"$HOME/rudinode"}"
@@ -52,4 +53,5 @@ podman run --rm                             \
     --publish 3031:3031                     \
     --publish 3032:3032                     \
     -e SU=$SU                               \
+    -e NODE_PUBLIC_URL="http://localhost"   \
     $LOCAL_IMG_NAME

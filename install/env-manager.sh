@@ -7,13 +7,14 @@ ROOT_DIR=$(dirname $(readlink -f $0))
 # URL
 MANAGER_PUBLIC_URL=${MANAGER_PUBLIC_URL:-${NODE_PUBLIC_URL}:${MANAGER_PORT}}
 APP_MANAGER_DIR=${APP_MANAGER_DIR:-${APP_DIR}/rudi-manager}
+MANAGER_PUBKEY_DIR=${MANAGER_PUBKEY_DIR:-""}
 
 #
 # Config files
 MANAGER_CONF="${MANAGER_CONF:-${INI_DIR}/rudi-manager-conf.ini}"
 
 # Tag for the container, usually the RUDI node version
-TAG=${TAG:-RUDI-node-2.5.0}
+TAG=${TAG:-RUDI-node-2.5.4}
 
 #
 # DB configuration

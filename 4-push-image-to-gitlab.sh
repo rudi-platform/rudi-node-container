@@ -19,44 +19,68 @@ GIT_CREDS_FILE="${GIT_CREDS_FILE:-"./git_creds"}"
 test -r "$GIT_CREDS_FILE" && echo "Creds file was found: '$GIT_CREDS_FILE'" && source "$GIT_CREDS_FILE"
 GIT_CREDS="${GIT_CREDS:-"$GIT_USR:$GIT_TOKEN"}"
 
-VERSION="${VERSION:-"2.5.0"}"
 IMG_NAME="${IMG_NAME:-"rudinode"}"
+VERSION="${VERSION:-"2.5.4"}"
+REGISTRY="${REGISTRY:-registry.aqmo.org/public-rudi/public-packages}"
+PLATFORMS=${PLATFORMS:-(linux/amd64 linux/arm64)}
 
-REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
-PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}
+IMG_LATEST="${IMG_NAME}:latest"
+IMG_VERSION="${IMG_NAME}:${VERSION}"
 
-VERSIONED_NAME="${IMG_NAME}-${VERSION}"
-LATEST="${IMG_NAME}:latest"
+REPO_IMG_VERSION="docker://${REGISTRY}/${IMG_VERSION}"
+REPO_IMG_LATEST="docker://${REGISTRY}/${IMG_LATEST}"
 
-# Remove the previous manifest if it exists
-podman manifest rm "${LATEST}" 2>/dev/null || true
-podman manifest rm "${VERSIONED_NAME}" 2>/dev/null || true
+echo HLD_IMG=$HLD_IMG
+echo HLD_MNFST=$HLD_MNFST
 
-# Create the manifest
-podman manifest create "${LATEST}"
-podman manifest create "${VERSIONED_NAME}"
+echo "This script will $([ -n "$HLD_IMG" ] && echo 'not ')push the podman images ${PLATFORMS[@]}"
+echo "This script will $([ -n "$HLD_MNFST" ] && echo 'not ')push the podman manifests for ${IMG_LATEST} and ${VERSION}"
 
-log_msg "Pushing images to the registry $REGISTRY"
+if [ ! -n "$HLD_MNFST" ]; then
+    log_msg "Removing the previous manifests if they exist"
+    podman manifest rm "${IMG_LATEST}" 2>/dev/null || true
+    podman manifest rm "${IMG_VERSION}" 2>/dev/null || true
+
+    log_msg "Create the manifest"
+    podman manifest create "${IMG_LATEST}"
+    podman manifest create "${IMG_VERSION}"
+fi
+
+[ ! -n "$HLD_IMG" ] && log_msg "Pushing images to the registry $REGISTRY"
 for PLATFORM in "${PLATFORMS[@]}"; do
 
     PLATFORM_SANITIZED=$(echo "$PLATFORM" | tr '/' '-')
-    IMG_NAME_TAG="${VERSIONED_NAME}:${PLATFORM_SANITIZED}"
+    IMG_VERSION_PLATFORM="${IMG_NAME}:${VERSION}-${PLATFORM_SANITIZED}"
+    LOCAL_IMG_VERSION_PLATFORM="localhost/${IMG_VERSION_PLATFORM}"
+    REMOTE_IMG_VERSION_PLATFORM="docker://${REGISTRY}/${IMG_VERSION_PLATFORM}"
 
     # Push platform-specific images
-    log_msg "Pushing the image ${IMG_NAME_TAG} to ${REGISTRY}"
-    podman push "$IMG_NAME_TAG" "${REGISTRY}/${IMG_NAME_TAG}" --creds=$GIT_CREDS
-
-    # Add platform-specific images to the manifest
-    log_msg "Adding ${IMG_NAME_TAG} to manifests"
-    podman manifest add "${LATEST}" "docker://${REGISTRY}/${IMG_NAME_TAG}"
-    podman manifest add "${VERSIONED_NAME}" "docker://${REGISTRY}/${IMG_NAME_TAG}"
+    if [ ! -n "$HLD_IMG" ]; then
+        log_msg "Pushing the image ${IMG_VERSION_PLATFORM} to ${REMOTE_IMG_VERSION_PLATFORM}"
+        podman --log-level=debug push "${IMG_VERSION_PLATFORM}" "${REMOTE_IMG_VERSION_PLATFORM}" --creds=$GIT_CREDS
+    fi
+    if [ ! -n "$HLD_MNFST" ]; then
+        log_msg "Adding ${REMOTE_IMG_VERSION_PLATFORM} to ${IMG_LATEST} manifest"
+        podman manifest add "${IMG_LATEST}" "${REMOTE_IMG_VERSION_PLATFORM}"
+        log_msg "Adding ${REMOTE_IMG_VERSION_PLATFORM} to ${IMG_VERSION} manifest"
+        podman manifest add "${IMG_VERSION}" "${REMOTE_IMG_VERSION_PLATFORM}"
+    fi
 done
 
-# Push the manifest to the registry
-log_msg "Pushing $LATEST to the registry..."
-podman manifest push "$LATEST" "docker://${REGISTRY}/$LATEST" --all --creds=$GIT_CREDS
-podman manifest push "$VERSIONED_NAME" "docker://${REGISTRY}/$VERSIONED_NAME" --all --creds=$GIT_CREDS
+if [ ! -n "$HLD_MNFST" ]; then
+    # Pushing the versioned manifest to the registry
+    log_msg "Pushing $IMG_VERSION to the registry $REPO_IMG_VERSION"
+    podman --log-level=debug manifest push "${IMG_VERSION}" "${REPO_IMG_VERSION}" --all --creds=$GIT_CREDS
+    log_msg "Manifest for $IMG_VERSION"
+    podman manifest inspect "${IMG_VERSION}" | jq '.manifests[].platform'
 
-log_msg "Images sent to aqmo registry"
+    # Pushing the latest manifest to the registry
+    log_msg "Manifest for $IMG_LATEST"
+    podman manifest inspect "${IMG_LATEST}" | jq '.manifests[].platform'
 
+    log_msg "Pushing $IMG_LATEST to the registry $REPO_IMG_LATEST"
+    podman --log-level=debug manifest push "${IMG_LATEST}" "${REPO_IMG_LATEST}" --all --creds=$GIT_CREDS
+
+    log_msg "Manifests sent to aqmo registry"
+fi
 echo "Execution time: $(time_spent_ms ${TIME_START})ms ($(basename "$0"))"

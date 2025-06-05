@@ -51,7 +51,7 @@ Beware: closing the terminal will close the container.
 To exit, press Ctrl+C
 
 ```sh
-./0-run-container.sh
+source ./0-run-container.sh
 ```
 
 Here is the content of the script, in case you want to execute only a part of the steps
@@ -99,13 +99,13 @@ mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 #   previous super user credentials get overwritten.
 SU="cnVkaW5vZGUgYWRtaW46R3dvRDFiTmt5N1F1ZjNrbG1NZVk3NUhnVFdtUDZsZFpzU0ZJLWJDY1NMVWI2MldKOTZkMlJRVDZlMTFUd0E0eGNzTDljSHVNSnFaSkh4eW1SZE1iemRhMUM5WU8yU3Q2QVJoMmhlZFN1UmpZWW5PcXZpbDFEWDJ4cDJqZTZ3"
 
-podman run --rm                         \
-    --name "$CNTNR_NAME"                \
+podman run --rm                           \
+    --name "$CNTNR_NAME"                  \
     --volume "${INSTALL_DIR}/data":/data  \
-    --publish 3030:3030                 \
-    --publish 3031:3031                 \
-    --publish 3032:3032                 \
-    -e SU=$SU                           \
+    --publish 3030:3030                   \
+    --publish 3031:3031                   \
+    --publish 3032:3032                   \
+    -e SU=$SU                             \
     "$LOCAL_IMG_NAME"
 
 ```

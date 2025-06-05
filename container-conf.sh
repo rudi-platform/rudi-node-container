@@ -1,4 +1,4 @@
-VERSION="2.5.0"
+VERSION="2.5.4"
 IMG_NAME="rudinode"
 
 PLATFORMS=("linux/amd64" "linux/arm64")
