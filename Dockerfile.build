@@ -1,6 +1,6 @@
 FROM node:22-alpine AS NodeBuilder
 LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr"
-LABEL version="2.5.4"
+LABEL version="2.5.5"
 LABEL description="RUDI producer node - https://github.com/rudi-platform"
 
 # Folder that contains the source of every rudi-node module
@@ -105,7 +105,7 @@ RUN mkdir -p -m 0770      /data /app/config/ini && \
 
 COPY --chown=root:rudi    --chmod=440 ./ini /app/config/ini
 COPY                      --chmod=444 ./install/.profile /etc/profile.d/10-rudi.sh
-COPY --chown=root:rudi    --chmod=550 ./install/oci-alpine-startup.sh ./install/env-*  .
+COPY --chown=root:rudi    --chmod=550 ./install/oci-alpine-startup.sh ./install/env-*  ./
 
 USER rudiadm
 
