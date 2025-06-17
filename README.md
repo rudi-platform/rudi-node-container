@@ -161,13 +161,23 @@ podman stop "${CNTNR_NAME:-rudinode}"
 Next time you want to run the container in the background (without seeing the logs displayed in you terminal) you can just run the following command:
 
 ```sh
-podman run --rm -d --name "${CNTNR_NAME:-rudinode}" --volume "$INSTALL_DIR/data":/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 ${LOCAL_IMG_NAME:-"rudinode-local"}
+podman run --rm -d                                \
+          --name "${CNTNR_NAME:-rudinode}"        \
+          --volume "$INSTALL_DIR/data":/data      \
+          --publish 3030:3030 --publish 3031:3031 \
+          --publish 3032:3032                     \
+          ${LOCAL_IMG_NAME:-"rudinode-local"}
 ```
 
 Or with the logs (= without the "detach" `-d` option)
 
 ```sh
-podman run --rm --name "${CNTNR_NAME:-rudinode}" --volume "$INSTALL_DIR/data":/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 ${LOCAL_IMG_NAME:-"rudinode-local"}
+podman run --rm                                   \
+          --name "${CNTNR_NAME:-rudinode}"        \
+          --volume "$INSTALL_DIR/data":/data      \
+          --publish 3030:3030 --publish 3031:3031 \
+          --publish 3032:3032                     \
+          ${LOCAL_IMG_NAME:-"rudinode-local"}
 ```
 
 You can alternatively run the container and access the inside through a terminal launched within:
@@ -177,7 +187,15 @@ You can alternatively run the container and access the inside through a terminal
 podman stop $CNTNR_NAME
 
 # Run it with the terminal opened
-podman run -it --rm --name "${CNTNR_NAME:-rudinode}" --volume "$INSTALL_DIR/data":/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 --user root -t ${LOCAL_IMG_NAME:-"rudinode-local"} '/bin/sh' -l
+podman run -it --rm                           \
+          --name "${CNTNR_NAME:-rudinode}"    \
+          --volume "$INSTALL_DIR/data":/data  \
+          --publish 3030:3030                 \
+          --publish 3031:3031                 \
+          --publish 3032:3032                 \
+          --user root                         \
+          ${LOCAL_IMG_NAME:-"rudinode-local"} \
+          '/bin/sh' -l
 
 # Once in the container, you may run any shell command:
 ls -laH
@@ -213,7 +231,52 @@ you run the container. This only needs to be done once obviously.
 ```sh
 podman stop $CNTNR_NAME
 
-podman run --rm -d -e SU="$SU_CREDS" --name "${CNTNR_NAME:-rudinode}" --volume "$INSTALL_DIR/data":/data --publish 3030:3030 --publish 3031:3031 --publish 3032:3032 ${LOCAL_IMG_NAME:-"rudinode-local"}
+podman run --rm -d                             \
+          --name "${CNTNR_NAME:-rudinode}"     \
+          --volume "$INSTALL_DIR/data":/data   \
+          --publish 3030:3030                  \
+          --publish 3031:3031                  \
+          --publish 3032:3032                  \
+          -e SU="$SU_CREDS"                    \
+          ${LOCAL_IMG_NAME:-"rudinode-local"}
+```
+
+## 1H. Adding a connection to a RUDI portal
+
+The connection to the portal is activated if the RUDI node Catalog is fed a portal config file with the following parameters.
+If you need to disconnect the node, you can simply comment the `portal_url` parameter.
+
+```ini
+; ------------------------------------------------------------------------------
+; User config file for RUDI API module to connect to RUDI Portal
+; ------------------------------------------------------------------------------
+
+[portal]
+; ========== Portal metadata URL
+; 'portal_url' commented => no portal connected
+portal_url = "<portal URL>"
+
+; ========== Credentials
+login = "<node identifier>"
+passw = "<base64 encoded node password>"
+is_pwd_b64 = true
+```
+
+To feed such a file to the RUDI node, just add the environment variable `PORTAL_CONF` with the path of the conf file described above when launching the container.
+The path of the conf file is the one as seen from within the container, so it is more likely relative to the path filled on the `--volume` option.
+
+```sh
+podman stop $CNTNR_NAME
+
+podman run --rm -d                                              \
+          --name "${CNTNR_NAME:-rudinode}"                      \
+          --volume "$INSTALL_DIR/data":/data                    \
+          --publish 3030:3030                                   \
+          --publish 3031:3031                                   \
+          --publish 3032:3032                                   \
+          -e SU="$SU_CREDS"                                     \
+          -e PORTAL_CONF="/data/conf/rudi-catalog-portal.ini"   \
+          ${LOCAL_IMG_NAME:-"rudinode-local"}
 ```
 
 # 2. Building your own RUDI node container
