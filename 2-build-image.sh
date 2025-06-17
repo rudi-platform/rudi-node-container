@@ -10,7 +10,7 @@ TIME_START=$(now_ms_int)
 test -r ./container-conf.sh && source ./container-conf.sh
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.5.4"}"
+VERSION="${VERSION:-"2.5.5"}"
 PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}
 
 # Build and tag for each platform
