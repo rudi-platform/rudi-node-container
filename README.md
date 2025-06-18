@@ -293,7 +293,7 @@ Two configurations are offered:
 
 ```sh
 export LOCAL_CONF='.git-conf-rudip.sh' # or '.git-conf-aqmo.sh' if you have access to aqmo gitlab
-./1-pull-rudi-node-gits.sh
+source ./1-pull-rudi-node-gits.sh
 ```
 
 ## 2B. Building the OCI/Docker image
@@ -305,7 +305,7 @@ take some time, go take any hot beverage you like.
 ```sh
 export IMG_NAME="rudinode"
 export DOCKER_COMPOSE_CONF="docker-compose-multip.yml"
-./2-build-image.sh
+source ./2-build-image.sh
 ```
 
 ## 2C. Running the container
