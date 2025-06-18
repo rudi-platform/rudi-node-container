@@ -17,7 +17,8 @@ CATALOG_PROFILES="${CATALOG_PROFILES:-${SAFE_DIR}/rudi-catalog-profiles.ini}"
 
 #
 # DB configuration
-CATALOG_DB_NAME=${CATALOG_DB_NAME:-${DB_PREFIX}-db_catalog}
+DB_PREFIX=${DB_PREFIX:-default_}
+CATALOG_DB_NAME=${CATALOG_DB_NAME:-${DB_PREFIX}rudi_catalog_mdb}
 CATALOG_DB_URI=${CATALOG_DB_URI:-${MONGODB}/${CATALOG_DB_NAME}}
 
 log_msg Init RUDI manager variables

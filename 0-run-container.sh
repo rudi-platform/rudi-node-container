@@ -46,12 +46,19 @@ mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 #   previous super user credentials get overwritten.
 SU="cnVkaW5vZGUgYWRtaW46R3dvRDFiTmt5N1F1ZjNrbG1NZVk3NUhnVFdtUDZsZFpzU0ZJLWJDY1NMVWI2MldKOTZkMlJRVDZlMTFUd0E0eGNzTDljSHVNSnFaSkh4eW1SZE1iemRhMUM5WU8yU3Q2QVJoMmhlZFN1UmpZWW5PcXZpbDFEWDJ4cDJqZTZ3"
 
+# In case you already have a MongoDB server running and you want to use it, you may give its URL and port to the container.
+# Uncomment the following line if needed
+# EXT_MONGODB_URL="mongodb://host.containers.internal:27017"
+
 podman run --rm                             \
     --name "$CNTNR_NAME"                    \
     --volume "${INSTALL_DIR}/data":/data    \
+    --publish 3017:27017                    \
+    --publish 3030:3030                     \
     --publish 3030:3030                     \
     --publish 3031:3031                     \
     --publish 3032:3032                     \
     -e SU=$SU                               \
+    -e MONGODB="${EXT_MONGODB_URL:-}"       \
     -e NODE_PUBLIC_URL="http://localhost"   \
     $LOCAL_IMG_NAME

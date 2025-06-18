@@ -12,7 +12,7 @@ TIME_START=$(now_ms_int)
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-"2.5.5"}"
+VERSION="${VERSION:-"2.5.6"}"
 
 # REGISTRY=ghcr.io/rudi-platform
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
@@ -45,9 +45,12 @@ mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
 NODE_PUBLIC_URL="http://localhost/electricite"
 
+EXT_MONGODB_URL="mongodb://host.containers.internal:27017"
+
 podman run --rm -it                         \
     --name "$CNTNR_NAME"                    \
     --volume ./data:/data                   \
+    --publish 3017:27017                    \
     --publish 3030:3030                     \
     --publish 3031:3031                     \
     --publish 3032:3032                     \
@@ -55,7 +58,9 @@ podman run --rm -it                         \
     -e STORAGE_PREFIX=$STORAGE_PREFIX       \
     -e MANAGER_PREFIX=$MANAGER_PREFIX       \
     -e NODE_PUBLIC_URL=$NODE_PUBLIC_URL     \
-    -e TAG=${TAG:-dev}                      \
+    -e TAG=${VERSION:-dev}                  \
+    -e MONGODB="${EXT_MONGODB_URL:-}"       \
+    -e CATALOG_DB_NAME="rudi_catalog"       \
     -e SU=$SU                               \
     $REGISTRY/$LATEST
 

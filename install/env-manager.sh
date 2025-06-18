@@ -14,14 +14,15 @@ MANAGER_PUBKEY_DIR=${MANAGER_PUBKEY_DIR:-""}
 MANAGER_CONF="${MANAGER_CONF:-${INI_DIR}/rudi-manager-conf.ini}"
 
 # Tag for the container, usually the RUDI node version
-TAG=${TAG:-RUDI-node-2.5.5}
+TAG=${TAG:-RUDI-node-2.5.6}
 
 #
 # DB configuration
+DB_PREFIX=${DB_PREFIX:-default_}
 MANAGER_DB_DIR=${MANAGER_DB_DIR:-${DB_DIR}}
-MANAGER_DB_PATH=${MANAGER_DB_PATH:-${MANAGER_DB_DIR}/rudi_mngr.db}
+MANAGER_DB_PATH=${MANAGER_DB_PATH:-${MANAGER_DB_DIR}/rudi_manager.db}
 MANAGER_DUMP_DIR=${MANAGER_DUMP_DIR:-${MEDIA_DIR}/zone_db}
-MANAGER_DUMP_PATH=${MANAGER_DUMP_PATH:-${MANAGER_DUMP_DIR}/rudi_${DB_PREFIX:-default}_mngr.db}
+MANAGER_DUMP_PATH=${MANAGER_DUMP_PATH:-${MANAGER_DUMP_DIR}/${DB_PREFIX}rudi_manager.db}
 
 log_msg Init RUDI manager variables
 

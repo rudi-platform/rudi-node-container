@@ -12,7 +12,7 @@ system_users = {
 
 [database]
 disabled = false
-db_url = @MONGODB@/@DB_PREFIX@rudi_media
+db_url = @MONGODB@/@DB_PREFIX@rudi_storage
 db_name = rudi_media
 
 [storage]
