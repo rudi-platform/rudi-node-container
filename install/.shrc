@@ -93,6 +93,9 @@ export logfile_path
 log_msg() { printf -- "-----( %sms )----------[ %s ]\n" "$(time_spent_ms)" "$*" >&2; }
 export log_msg
 
+log_var() { local var="$1"; printf "%s = '%s'\n" "$var" "${!var}"; }
+export log_var
+
 # log_in_file () { exec > >(tee "$(logfile_path "$1")") 2>&1; }
 # export log_in_file
 

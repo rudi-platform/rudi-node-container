@@ -1,7 +1,7 @@
 #
 # From global configuration
 ROOT_DIR=$(dirname $(readlink -f $0))
-. ${ROOT_DIR}/env-rudi.sh
+source ${ROOT_DIR}/env-rudi.sh
 
 #
 # URL
@@ -24,7 +24,7 @@ MANAGER_DB_PATH=${MANAGER_DB_PATH:-${MANAGER_DB_DIR}/rudi_manager.db}
 MANAGER_DUMP_DIR=${MANAGER_DUMP_DIR:-${MEDIA_DIR}/zone_db}
 MANAGER_DUMP_PATH=${MANAGER_DUMP_PATH:-${MANAGER_DUMP_DIR}/${DB_PREFIX}rudi_manager.db}
 
-log_msg Init RUDI manager variables
+log_msg Init RUDI Manager variables
 
 manager_check() {
     test -z "${MANAGER_GIT_REV:-}" && error "manager git rev not set"

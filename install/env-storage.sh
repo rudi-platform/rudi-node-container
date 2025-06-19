@@ -1,7 +1,7 @@
 #
 # From global configuration
 ROOT_DIR=$(dirname $(readlink -f $0))
-. ${ROOT_DIR}/env-rudi.sh
+source ${ROOT_DIR}/env-rudi.sh
 
 #
 # URL
@@ -12,14 +12,14 @@ APP_STORAGE_DIR=${APP_STORAGE_DIR:-${APP_DIR}/rudi-storage}
 #
 # Config files
 STORAGE_CONF="${STORAGE_CONF:-${INI_DIR}/rudi-storage-conf.ini}"
-STORAGE_LOG_DIR="${STORAGE_LOG_DIR:-${LOG_DIR}/media/}"
+STORAGE_LOG_DIR="${STORAGE_LOG_DIR:-${LOG_DIR}/rudi_storage/}"
 
 #
 # DB configuration
-STORAGE_DB_NAME=${STORAGE_DB_NAME:-db_storage}
+STORAGE_DB_NAME=${STORAGE_DB_NAME:-rudi_storage}
 STORAGE_DB_URI="${STORAGE_DB_URI:-${MONGODB}/${STORAGE_DB_NAME}}"
 
-log_msg Init RUDI storage variables
+log_msg Init RUDI Storage variables
 
 storage_check() {
     test -z "${STORAGE_GIT_REV:-}" && error "catalog git rev not set"

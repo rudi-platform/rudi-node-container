@@ -13,7 +13,7 @@ system_users = {
 [database]
 disabled = false
 db_url = @MONGODB@/@DB_PREFIX@rudi_storage
-db_name = rudi_media
+db_name = rudi_storage
 
 [storage]
 media_dir = @MEDIA_DIR@
@@ -30,7 +30,7 @@ rfc3164 = true
 
 [log_local]
 consoleData= false
-directory= @LOG_DIR@/media/
+directory= @LOG_DIR@/rudi_storage/
 
 [logging]
 app_name = storage

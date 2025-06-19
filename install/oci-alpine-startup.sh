@@ -11,11 +11,11 @@
 # ==================================================================================================
 set -o nounset
 
-. /etc/profile.d/10-rudi.sh
+source /etc/profile.d/10-rudi.sh
 
 ROOT_DIR=$(dirname $(readlink -f $0))
 cd ${ROOT_DIR} || error "installation directly not found"
-. ${ROOT_DIR}/git-rev.ini || error "Git revision file not found"
+source ${ROOT_DIR}/git-rev.ini || error "Git revision file not found"
 
 TIME_START=$(now_ms_int)
 log_msg "Executing as user $(whoami)"
@@ -27,7 +27,7 @@ ENABLE_JWTAUTH=${ENABLE_JWTAUTH:-false}
 ENABLE_MANAGER=${ENABLE_MANAGER:-true}
 
 # Load configurations
-. ${ROOT_DIR}/env-rudi.sh
+source ${ROOT_DIR}/env-rudi.sh
 ${ENABLE_DB}      && . ${ROOT_DIR}/env-db.sh
 ${ENABLE_CATALOG} && . ${ROOT_DIR}/env-catalog.sh
 ${ENABLE_STORAGE} && . ${ROOT_DIR}/env-storage.sh
@@ -51,7 +51,7 @@ ${ENABLE_STORAGE} && storage_run & PIDS="${PIDS} $!"
 ${ENABLE_JWTAUTH} && jwtauth_run & PIDS="${PIDS} $!"
 ${ENABLE_MANAGER} && manager_run & PIDS="${PIDS} $!"
 
-log_msg "Launching over"
+log_msg "Modules launched"
 echo "Execution time for launching: $(time_spent_s "${TIME_START}")s ${ROOT_DIR}"
 
 allstop() {

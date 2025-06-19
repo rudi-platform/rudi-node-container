@@ -21,3 +21,4 @@ time_spent_s() {
 }
 
 log_msg() { printf -- "-----( %ss )----------[ %s ]\n" "$(time_spent_s)" "$*" >&2; }
+log_var() { local var="$1"; printf "%s = '%s'\n" "$var" "${!var}"; }
