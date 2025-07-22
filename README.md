@@ -279,6 +279,12 @@ podman run --rm -d                                              \
           ${LOCAL_IMG_NAME:-"rudinode-local"}
 ```
 
+# 1I. Case of a RUDI node on a distant dev server
+
+When running on localhost or production environment, default `NODE_ENV=production` setting works.
+But if you have to access the RUDI node on a development environment over http (= not https), default `NODE_ENV=production` will prevent the rudinode-manager to use cookies.
+In such case, you may set the environment variable `-e NODE_ENV=development` to overcome this (only for testing purposes).
+
 # 2. Building your own RUDI node container
 
 Scripts have been written to help you with building your own container, you may use them (maybe pull this git repo) or take what you need from them.
