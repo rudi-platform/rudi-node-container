@@ -12,7 +12,7 @@ TIME_START=$(now_ms_int)
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-"2.5.6"}"
+VERSION="${VERSION:-"2.5.7"}"
 
 # REGISTRY=ghcr.io/rudi-platform
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
@@ -31,7 +31,7 @@ LOCAL_IMG_NAME="${LOCAL_IMG_NAME:-$IMG_NAME}"
 # Give the running container a name of your choice
 CNTNR_NAME="${CNTNR_NAME:-$LOCAL_IMG_NAME}"
 
-# Stop the running instance in case it hadn't been stopped
+log_msg "Stopping the running instance in case it hadn't been stopped"
 podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
 
@@ -39,18 +39,25 @@ podman rm "$CNTNR_NAME" 2>/dev/null
 INSTALL_DIR="${INSTALL_DIR:-"$HOME/rudinode"}"
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
-[ -z ${CATALOG_PREFIX+x} ] && CATALOG_PREFIX="electricite/catalog"
-[ -z ${STORAGE_PREFIX+x} ] && STORAGE_PREFIX="electricite/storage"
-[ -z ${MANAGER_PREFIX+x} ] && MANAGER_PREFIX="electricite/manager"
+[ -z ${CATALOG_PREFIX+x} ] && CATALOG_PREFIX="catalog"
+[ -z ${STORAGE_PREFIX+x} ] && STORAGE_PREFIX="storage"
+[ -z ${MANAGER_PREFIX+x} ] && MANAGER_PREFIX="manager"
 
-NODE_PUBLIC_URL="http://localhost/electricite"
+NODE_PUBLIC_URL="http://localhost"
 
 EXT_MONGODB_URL="mongodb://host.containers.internal:27017"
+
+db_flag=""
+[ -z ${EXT_MONGODB_URL+x} ] || db_flag="-e MONGODB=${EXT_MONGODB_URL}"
+# log_msg "DB flag"
+# log_var db_flag
+
+log_msg "Launching the RUDI node"
 
 podman run --rm -it                         \
     --name "$CNTNR_NAME"                    \
     --volume ./data:/data                   \
-    --publish 3017:27017                    \
+    --publish 27017:27017                    \
     --publish 3030:3030                     \
     --publish 3031:3031                     \
     --publish 3032:3032                     \
@@ -59,9 +66,10 @@ podman run --rm -it                         \
     -e MANAGER_PREFIX=$MANAGER_PREFIX       \
     -e NODE_PUBLIC_URL=$NODE_PUBLIC_URL     \
     -e TAG=${VERSION:-dev}                  \
-    -e MONGODB="${EXT_MONGODB_URL:-}"       \
+    -e VERSION=${VERSION}                   \
     -e CATALOG_DB_NAME="rudi_catalog"       \
     -e SU=$SU                               \
+    ${db_flag}                              \
     $REGISTRY/$LATEST
 
 

@@ -1,7 +1,7 @@
 #
 # From global configuration
 ROOT_DIR=$(dirname $(readlink -f $0))
-. ${ROOT_DIR}/env-rudi.sh
+source ${ROOT_DIR}/env-rudi.sh
 
 #
 # Network options
@@ -27,13 +27,14 @@ is_db_alive() {
 db_wait () {
     ITE=${DB_WAIT_MAX:-60}
     while [ $ITE -gt 0 ] && is_db_alive; do
-        echo "waiting for MongoDB to initialize (${ITE})..."
+        log_msg "waiting for MongoDB to initialize (${ITE})..."
         sleep 1
 	ITE=$(($ITE-1))
     done
-    [ $ITE -eq 0 ] &&
-	return 1 ||
-	    log_msg DB is ready and listening on $MONGODB_PORT
+    [ $ITE -eq 0 ] && return 1
+    log_msg MongoDB is ready and listening
+    # echo D port=$MONGODB_PORT
+    # echo D mongo version=$(mongod --version)
 }
 
 # Retrieving the last dump in the bound folder /data/dump/
@@ -53,11 +54,12 @@ db_restore () {
 }
 
 db_check() {
+    log_msg "Checking DB"
     test -r ${DB_DATA_DIR}     || error "Could not find ${DB_DATA_DIR}"
-    test -d ${DB_LOG_DIR}      || mkdir -p ${DB_LOG_DIR}
+    test -d ${DB_LOG_DIR}      || mkdir -p ${DB_LOG_DIR} || error "Could not create log folder ${DB_LOG_DIR}"
 
     # Add automatic backup in logrotate
-    test -r ${DB_DUMP_DIR} || mkdir -p ${DB_DUMP_DIR} || error "Could not create ${dbdir}"
+    test -r ${DB_DUMP_DIR} || mkdir -p ${DB_DUMP_DIR} || error "Could not create DB dump folder ${DB_DUMP_DIR}"
 
     cat > ${LOG_ROTATE_CONF}.d/rudi-db.conf <<EOF
 ${DB_DUMP_PATH} {
@@ -75,7 +77,9 @@ EOF
 
 db_run() {
     # Starting MongoDB in the background
-    log_msg "Launching MongoDB"
+    log_msg "Launching MongoDB on $MONGODB_PORT"
+    # echo "MONGODB_PORT=$MONGODB_PORT"
+    # echo "DB_DATA_DIR=$DB_DATA_DIR"
     local extraops=""
     ${DB_LISTEN_ALL} && extraops=" --bind_ip_all"
     (mongod --port ${MONGODB_PORT} --dbpath ${DB_DATA_DIR} ${extraops} \
@@ -84,7 +88,7 @@ db_run() {
 
     local restore_file=${DB_DUMP_DIR}/restore_${DB_PREFIX}.mongo
 
-    if [ ! -r ${restore_file} -a ! -e ${DB_DATA_DIR}/storage.bson -a -r ${DB_DUMP_PATH} ]; then
+    if [ ! -r ${restore_file} -a ! -e    ${DB_DATA_DIR}/rudi_storage.bson -a -r ${DB_DUMP_PATH} ]; then
 	    restore_file=${DB_DUMP_PATH}
     else
 	    touch ${DB_DUMP_PATH}

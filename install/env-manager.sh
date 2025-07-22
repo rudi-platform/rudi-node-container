@@ -1,7 +1,7 @@
 #
 # From global configuration
 ROOT_DIR=$(dirname $(readlink -f $0))
-. ${ROOT_DIR}/env-rudi.sh
+source ${ROOT_DIR}/env-rudi.sh
 
 #
 # URL
@@ -14,7 +14,7 @@ MANAGER_PUBKEY_DIR=${MANAGER_PUBKEY_DIR:-""}
 MANAGER_CONF="${MANAGER_CONF:-${INI_DIR}/rudi-manager-conf.ini}"
 
 # Tag for the container, usually the RUDI node version
-TAG=${TAG:-RUDI-node-2.5.6}
+TAG=${TAG:-RUDI-node-2.5.7}
 
 #
 # DB configuration
@@ -24,7 +24,7 @@ MANAGER_DB_PATH=${MANAGER_DB_PATH:-${MANAGER_DB_DIR}/rudi_manager.db}
 MANAGER_DUMP_DIR=${MANAGER_DUMP_DIR:-${MEDIA_DIR}/zone_db}
 MANAGER_DUMP_PATH=${MANAGER_DUMP_PATH:-${MANAGER_DUMP_DIR}/${DB_PREFIX}rudi_manager.db}
 
-log_msg Init RUDI manager variables
+log_msg Init RUDI Manager variables
 
 manager_check() {
     test -z "${MANAGER_GIT_REV:-}" && error "manager git rev not set"

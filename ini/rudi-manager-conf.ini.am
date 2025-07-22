@@ -45,15 +45,15 @@ ssh_pub_dir = @MANAGER_PUBKEY_DIR@
 ; rudi manager backend
 trusted_domain[] = @CATALOG_PUBLIC_URL@
 
-; rudi storage/media
+; rudi storage
 trusted_domain[] = @STORAGE_PUBLIC_URL@
 
 ; extra
 trusted_domain[] = @TRUSTED_DOMAINS@
 
-[rudi_api]
+[rudi_catalog]
 ; RUDI Catalog server listening address
-rudi_api_url = @CATALOG_LOCAL_URL@
+rudi_catalog_url = @CATALOG_LOCAL_URL@
 
 ; sub-part of the RUDI Catalog URL reserved to the authenticated manipulations
 admin_api = /@CATALOG_PREFIX@/admin
@@ -61,24 +61,24 @@ admin_api = /@CATALOG_PREFIX@/admin
 ; prodmanager authentification private key
 ; used for the RUDI Catalog authentification JWT
 ; ! if not provided, <auth.pm_prv_key> will be used
-pm_api_key = "@SAFE_DIR@/catalog_mngr"
+pm_catalog_key = "@SAFE_DIR@/catalog_mngr"
 
 ; identifier of the prodmanager for the RUDI Catalog authentification JWT
-pm_api_id = "rudi_node_manager"
+pm_catalog_id = "rudi_node_manager"
 
 ; expiration time in seconds for the RUDI Catalog authentification JWT
 exp_time_s = 1200
 
-[rudi_media]
-; RUDI Media listening address with its prefix
-rudi_media_url = @STORAGE_LOCAL_URL@/@STORAGE_PREFIX@
+[rudi_storage]
+; RUDI Storage listening address with its prefix
+rudi_storage_url = @STORAGE_LOCAL_URL@/@STORAGE_PREFIX@
 ; prodmanager authentification private key
-; used for the RUDI Media authentification JWT
+; used for the RUDI Storage authentification JWT
 ; ! if not provided, <auth.pm_prv_key> will be used
-pm_media_key = "@SAFE_DIR@/store_mngr"
-; name of the prodmanager for the RUDI Media authentification JWT
-pm_media_id = "rudi_node_manager"
-; expiration time in seconds for the RUDI MEdia authentification JWT
+pm_storage_key = "@SAFE_DIR@/store_mngr"
+; name of the prodmanager for the RUDI Storage authentification JWT
+pm_storage_id = "rudi_node_manager"
+; expiration time in seconds for the RUDI Storage authentification JWT
 exp_time_s = 1200
 
 
@@ -94,7 +94,7 @@ log_dir = @LOG_DIR@/manager
 ; Name of the log file
 log_file = manager.log
 ; Flag for enabling the logging of the configuration
-displayConf = true
+display_conf = true
 
 [syslog]
 app_name = manager

@@ -4,6 +4,9 @@
 # This script runs the container image with podman
 # ==================================================================================================
 
+test -r ./install/.shrc && source ./install/.shrc
+TIME_START=$(now_ms_int)
+
 # A. Pulling the image
 #    Two images are currenly available: either "linux/amd64" for Linux-based PC (should work on Windows too)
 #    or "linux/arm64" for MacOS.
@@ -14,13 +17,13 @@ REGISTRY_IMG=registry.aqmo.org/public-rudi/public-packages/rudinode:latest
 # Here you can specify any name you want
 LOCAL_IMG_NAME="${LOCAL_IMG_NAME:-"rudinode-local"}"
 
-# Fetch the image
+log_msg "Fetching the image"
 podman pull "$REGISTRY_IMG"
 
 # Give the image your prefered name
 podman tag "$REGISTRY_IMG" "$LOCAL_IMG_NAME" && podman rmi "$REGISTRY_IMG"
 
-# List the images
+log_msg "Listing the images"
 podman images
 
 # B. Running the image
@@ -28,13 +31,14 @@ podman images
 
 # Give the running container a name of your choice
 CNTNR_NAME="${CNTNR_NAME:-"rudinode"}"
-# Stop the running instance in case it hadn't been stopped
+
+log_msg "Stopping the running instance in case it hadn't been stopped"
 podman stop "$CNTNR_NAME" 2>/dev/null
 podman rm "$CNTNR_NAME" 2>/dev/null
 # podman rm -f "$CNTNR_NAME" 2>/dev/null
 
-# This is the install folder, you can optionally
-INSTALL_DIR="${INSTALL_DIR:-"$HOME/rudinode"}"
+# This is the install folder, you can optionally set a path for the files that will need to be stored
+INSTALL_DIR="${INSTALL_DIR:-"$HOME/rudi-node"}"
 mkdir -p "$INSTALL_DIR/data" && cd "$INSTALL_DIR"
 
 # The following variable is the hashed super user credentials that corresponds to the following (without quotes)
@@ -50,15 +54,22 @@ SU="cnVkaW5vZGUgYWRtaW46R3dvRDFiTmt5N1F1ZjNrbG1NZVk3NUhnVFdtUDZsZFpzU0ZJLWJDY1NM
 # Uncomment the following line if needed
 # EXT_MONGODB_URL="mongodb://host.containers.internal:27017"
 
+db_flag=""
+[ -z ${EXT_MONGODB_URL+x} ] || db_flag="-e MONGODB=${EXT_MONGODB_URL}"
+
+log_msg "Launching the RUDI node"
+
 podman run --rm                             \
     --name "$CNTNR_NAME"                    \
     --volume "${INSTALL_DIR}/data":/data    \
-    --publish 3017:27017                    \
-    --publish 3030:3030                     \
+    --publish 27017:27017                   \
     --publish 3030:3030                     \
     --publish 3031:3031                     \
     --publish 3032:3032                     \
     -e SU=$SU                               \
-    -e MONGODB="${EXT_MONGODB_URL:-}"       \
+    -e TAG=${VERSION:-dev}                  \
+    -e VERSION=${VERSION}                   \
     -e NODE_PUBLIC_URL="http://localhost"   \
+    -e CATALOG_DB_NAME="rudi_catalog"       \
+    ${db_flag}                              \
     $LOCAL_IMG_NAME

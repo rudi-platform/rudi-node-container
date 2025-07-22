@@ -1,7 +1,7 @@
 #
 # From global configuration
 ROOT_DIR=$(dirname $(readlink -f $0))
-. ${ROOT_DIR}/env-rudi.sh
+source ${ROOT_DIR}/env-rudi.sh
 
 #
 # URL
@@ -17,11 +17,12 @@ CATALOG_PROFILES="${CATALOG_PROFILES:-${SAFE_DIR}/rudi-catalog-profiles.ini}"
 
 #
 # DB configuration
-DB_PREFIX=${DB_PREFIX:-default_}
-CATALOG_DB_NAME=${CATALOG_DB_NAME:-${DB_PREFIX}rudi_catalog_mdb}
+CATALOG_DB_NAME=${CATALOG_DB_NAME:-${DB_PREFIX}rudi_catalog}
 CATALOG_DB_URI=${CATALOG_DB_URI:-${MONGODB}/${CATALOG_DB_NAME}}
 
-log_msg Init RUDI manager variables
+# echo "D CATALOG_DB_URI=$CATALOG_DB_URI"
+
+log_msg Init RUDI Catalog variables
 
 generateProfile() {
     local name=${1:-invited}
@@ -58,9 +59,11 @@ catalog_run() {
 
     # Starting RUDI node Catalog
     log_msg "Launching RUDI node module: Catalog"
+    # echo "D Node version=$(node --version)"
     cd "${APP_CATALOG_DIR}" || error "Catalog application directory not found"
-    echo "$CATALOG_PROFILES"
+    # echo "$CATALOG_PROFILES"
     ls -lah "$CATALOG_PROFILES"
+
     node run-rudinode-catalog.js        \
         --node_env "$env"               \
         --app_env "$env"                \

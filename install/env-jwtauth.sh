@@ -1,7 +1,7 @@
 #
 # From global configuration
 ROOT_DIR=$(dirname $(readlink -f $0))
-. ${ROOT_DIR}/env-rudi.sh
+source ${ROOT_DIR}/env-rudi.sh
 
 #
 # URL
@@ -13,7 +13,7 @@ APP_JWTAUTH_DIR=${APP_JWTAUTH_DIR:-${APP_DIR}/rudi-jwtauth}
 JWTAUTH_CONF="${JWTAUTH_CONF:-${INI_DIR}/rudi-jwtauth-conf.ini}"
 JWTAUTH_KEY=${JWTAUTH_KEY:-jwtauth_mngr}
 
-log_msg Init RUDI jwtauth variables
+log_msg Init RUDI JwtAuth variables
 
 jwtauth_check() {
     test -z "${JWTAUTH_GIT_REV:-}" && error "jwtauth git rev not set"

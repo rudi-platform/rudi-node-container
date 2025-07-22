@@ -20,11 +20,12 @@ test -r "$GIT_CREDS_FILE" && echo "Creds file was found: '$GIT_CREDS_FILE'" && s
 GIT_CREDS="${GIT_CREDS:-"$GIT_USR:$GIT_TOKEN"}"
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.5.6"}"
+VERSION="${VERSION:-"2.5.7"}"
 REGISTRY="${REGISTRY:-registry.aqmo.org/public-rudi/public-packages}"
 PLATFORMS=${PLATFORMS:-(linux/amd64 linux/arm64)}
 
-IMG_LATEST="${IMG_NAME}:latest"
+IMG_TAG=$1||"release"
+IMG_LATEST="${IMG_NAME}:${IMG_TAG:-latest}"
 IMG_VERSION="${IMG_NAME}:${VERSION}"
 
 REPO_IMG_VERSION="docker://${REGISTRY}/${IMG_VERSION}"
