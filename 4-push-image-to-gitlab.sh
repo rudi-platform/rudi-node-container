@@ -1,4 +1,4 @@
 REGISTRY="registry.aqmo.org/public-rudi/public-packages"    && \
-GIT_CREDS_FILE="./git_creds"  && \
-IMG_TAG=latest
+GIT_CREDS_FILE="./git_creds"                                && \
+IMG_TAG=latest                                              && \
 source "./99-push-image.sh"
