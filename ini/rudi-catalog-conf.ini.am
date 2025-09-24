@@ -52,3 +52,7 @@ syslog_node_name = rudinode_oci
 ; folder for syslog backup files
 ; syslog_dir = /tmp/devLogs/rudi
 syslog_dir = @LOG_DIR@/catalog/
+
+[migration]
+;enable auto update of schema
+auto_update_schema = @CATALOG_AUTO_UPDATE_SCHEMA@
