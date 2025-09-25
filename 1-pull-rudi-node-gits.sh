@@ -52,6 +52,7 @@ for module in catalog storage manager jwtauth; do
         echo mod_repo=$mod_repo
         # Local destination folder for the RUDI module
         git clone -b release --single-branch "${mod_repo}" "${module_dir}"
+        cd ${module_dir}
     fi
     log_msg Collecting git tag for ${module}
     GIT_REV=$(echo "${module}_git_rev" | tr a-z A-Z)
