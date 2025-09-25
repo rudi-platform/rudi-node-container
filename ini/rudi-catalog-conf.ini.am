@@ -56,3 +56,4 @@ syslog_dir = @LOG_DIR@/catalog/
 [migration]
 ;enable auto update of schema
 auto_update_schema = @CATALOG_AUTO_UPDATE_SCHEMA@
+backups_dir= @BACKUP_DIR@/catalog
