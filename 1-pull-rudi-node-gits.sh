@@ -56,7 +56,7 @@ for module in catalog storage manager jwtauth; do
     fi
     log_msg Collecting git tag for ${module}
     GIT_REV=$(echo "${module}_git_rev" | tr a-z A-Z)
-    echo "${GIT_REV}=$(git rev-parse --short HEAD)" >>"$GIT_REV_FILE"
+    echo "${GIT_REV}=\"$(git rev-parse --short HEAD)\"" >>"$GIT_REV_FILE"
 done
 
 echo "Execution time: $(time_spent_ms ${TIME_START})ms ($(basename "$0"))"
