@@ -37,7 +37,7 @@ manager_check() {
     assert_key store_mngr rudiadm rudi
     assert_key catalog_mngr rudiadm rudi
 
-    cat > ${LOG_ROTATE_CONF}.d/rudi-manager.conf <<EOF
+    cat >${LOG_ROTATE_CONF}.d/rudi-manager.conf  <<EOF
 ${MANAGER_DUMP_PATH} {
     missingok
     firstaction
@@ -49,8 +49,8 @@ ${MANAGER_DUMP_PATH} {
 }
 EOF
 
-    [ ! -r ${MANAGER_DB_PATH} -a -e ${MANAGER_DUMP_PATH} ] && \
-	/usr/bin/install -m 640 -o rudiadm -g rudi ${MANAGER_DUMP_PATH} ${MANAGER_DB_PATH}
+    [ ! -r ${MANAGER_DB_PATH} -a -e ${MANAGER_DUMP_PATH} ] &&
+        /usr/bin/install -m 640 -o rudiadm -g rudi ${MANAGER_DUMP_PATH} ${MANAGER_DB_PATH}
 }
 
 manager_run() {
@@ -66,12 +66,12 @@ manager_run() {
     cd "${APP_MANAGER_DIR}" || error "Manager application directory not found"
 
     touch ${MANAGER_DUMP_PATH}
-    node run-rudinode-manager.js   \
-	 ${su_flag}                    \
-	 --tag "$TAG"                  \
-	 --node_env "$env"             \
-	 --hash "$MANAGER_GIT_REV"     \
-	 --url  "$MANAGER_PUBLIC_URL"  \
-	 --conf "$MANAGER_CONF"        \
-	 --db   "$MANAGER_DB_PATH"     || error "Could not launch app in ${APP_MANAGER_DIR}"
+    node run-rudinode-manager.js \
+        ${su_flag} \
+        --tag "$TAG" \
+        --node_env "$env" \
+        --hash "$MANAGER_GIT_REV" \
+        --url "$MANAGER_PUBLIC_URL" \
+        --conf "$MANAGER_CONF" \
+        --db "$MANAGER_DB_PATH" || error "Could not launch app in ${APP_MANAGER_DIR}"
 }

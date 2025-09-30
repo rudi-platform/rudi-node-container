@@ -27,7 +27,6 @@ for PLATFORM in "${PLATFORMS[@]}"; do
     docker-compose -f "${DOCKER_COMPOSE_CONF:-docker-compose-multip.yml}" build
 done
 
-
 log_msg "Images built"
 echo
 docker images

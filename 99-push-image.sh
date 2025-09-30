@@ -4,7 +4,6 @@
 # This script pushes the built image to gitlab
 # ==================================================================================================
 
-
 test -r ./install/.shrc && . ./install/.shrc
 TIME_START=$(now_ms_int)
 
