@@ -47,9 +47,9 @@ export TIME_SOURCED
 # Arg 1: reference time (ms, int) - defaulted to above ${TIME_SOURCED}
 # Arg 2: actual time (ms, int) - defaulted to the result of above now_ms_int function
 time_spent_s() {
-    if [ $# -lt 2 ]; then now=$(now_ms_int); else now=$2; fi
-    if [ $# -lt 1 ]; then ref_time=0${TIME_SOURCED}; else ref_time=$1; fi
-    echo "$(calc "(${now}-${ref_time})/1000")"
+	if [ $# -lt 2 ]; then now=$(now_ms_int); else now=$2; fi
+	if [ $# -lt 1 ]; then ref_time=0${TIME_SOURCED}; else ref_time=$1; fi
+	echo "$(calc "(${now}-${ref_time})/1000")"
 }
 export time_spent_s
 
@@ -59,15 +59,15 @@ export ccd
 
 export LOG_DIR=./logs
 logfile_path() {
-    mkdir -p logs
-    echo "${LOG_DIR}/${1}_$(now_s_str).log"
+	mkdir -p logs
+	echo "${LOG_DIR}/${1}_$(now_s_str).log"
 }
 export logfile_path
 
 log_msg() {
-    echo
-    echo "-----( $(time_spent_s)s )----------[ $* ]"
-    echo
+	echo
+	echo "-----( $(time_spent_s)s )----------[ $* ]"
+	echo
 }
 export log_msg
 
@@ -76,28 +76,28 @@ export log_msg
 
 # Gives the name of the most recently modified file in a folder, excluding dot files and subfolders
 last_modified() {
-    if [ $# -lt 1 ]; then
-        folder=.
-    else
-        folder=$*
-    fi
-    # find "${folder}" -maxdepth 1 -type f ! -name ".*" -exec stat -f "%m %N" {} + | sort -rn | head -n 1 | awk '{for (i=2; i<NF; i++) printf $i " "; print $NF}'
-    # find "$folder" -maxdepth 1 -type f ! -name ".*" -printf "%T+ %p\n" | sort -r | head -n 1 | cut -d" " -f2-;
-    # ls -ltp "$folder"
-    ls -ltp "$folder" |
-        grep -v '^[dl]' |
-        grep -v '^\.' |
-        grep -v '^total.*$' |
-        head -1 |
-        awk '{printf "%s", $9; for (i=10; i<=NF; i++) printf " %s", $i; print ""}'
+	if [ $# -lt 1 ]; then
+		folder=.
+	else
+		folder=$*
+	fi
+	# find "${folder}" -maxdepth 1 -type f ! -name ".*" -exec stat -f "%m %N" {} + | sort -rn | head -n 1 | awk '{for (i=2; i<NF; i++) printf $i " "; print $NF}'
+	# find "$folder" -maxdepth 1 -type f ! -name ".*" -printf "%T+ %p\n" | sort -r | head -n 1 | cut -d" " -f2-;
+	# ls -ltp "$folder"
+	ls -ltp "$folder" |
+		grep -v '^[dl]' |
+		grep -v '^\.' |
+		grep -v '^total.*$' |
+		head -1 |
+		awk '{printf "%s", $9; for (i=10; i<=NF; i++) printf " %s", $i; print ""}'
 }
 export last_modified
 
 #----- SSH -----------------------------------------------------------------------------------------
 genssh() {
-    if [[ $# -lt 2 ]]; then out="./$1"; else out="$2/$1"; fi
-    ssh-keygen -t ed25519 -C "$1" -q -N '' -f "$out"
-    chmod 400 "$out*"
+	if [[ $# -lt 2 ]]; then out="./$1"; else out="$2/$1"; fi
+	ssh-keygen -t ed25519 -C "$1" -q -N '' -f "$out"
+	chmod 400 "$out*"
 }
 export genssh
 
@@ -108,9 +108,9 @@ export NODE_PATH=$(npm root -g)
 
 # Function to handle SIGTERM
 cleanup() {
-    echo "Signal received, shutting down..."
-    # Use 'kill 0' to terminate all processes in the current process group
-    kill 0
+	echo "Signal received, shutting down..."
+	# Use 'kill 0' to terminate all processes in the current process group
+	kill 0
 }
 export cleanup
 

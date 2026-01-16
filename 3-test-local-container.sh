@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==================================================================================================
-# This script runs the container image with podman
+# This script runs the local container image with podman
 # ==================================================================================================
 
 test -r ./install/.shrc && . ./install/.shrc
@@ -47,10 +47,10 @@ EXT_MONGODB_URL="mongodb://host.containers.internal:27017"
 
 db_flag=""
 [ -z ${EXT_MONGODB_URL+x} ] || db_flag="-e MONGODB=${EXT_MONGODB_URL}"
-# log_msg "DB flag"
-# log_var db_flag
+# log_msg "DB flag:" $db_flag
 
-log_msg "Launching the RUDI node"
+RUDINODE_IMG="${IMG_NAME}:${VERSION}-linux-arm64"
+log_msg "Launching the RUDI node ${RUDINODE_IMG}"
 
 podman run --rm -it \
     --name "$CNTNR_NAME" \
@@ -68,4 +68,6 @@ podman run --rm -it \
     -e CATALOG_DB_NAME="rudi_catalog" \
     -e SU=$SU \
     ${db_flag} \
-    $REGISTRY/$LATEST
+    --pull=never \
+    "${RUDINODE_IMG}"
+    # $REGISTRY/$LATEST

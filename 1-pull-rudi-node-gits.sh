@@ -15,7 +15,6 @@ TIME_START=$(now_ms_int)
 LOCAL_CONF=${LOCAL_CONF:-".git-conf-aqmo.sh"}
 test -r "./$LOCAL_CONF" && . "./$LOCAL_CONF"
 
-
 # The gitlab repo generic URL. If set in
 REPO="${REPO:-"https://github.com/rudi-platform"}"
 
@@ -35,7 +34,6 @@ mkdir -p "$PRJ_ENV_DIR" "$PRJ_SRC_DIR"
 GIT_REV_FILE="${PRJ_ENV_DIR}/git-rev.ini"
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
-
 for module in catalog storage manager jwtauth; do
     cd "${PRJ_SRC_DIR}" || exit
     module_dir="${PRJ_SRC_DIR}/rudi-${module}"
@@ -43,7 +41,9 @@ for module in catalog storage manager jwtauth; do
     if [ -d "${module_dir}" ]; then
         log_msg Pulling git repo: rudi-${module}
         cd "${module_dir}" || exit
-        git pull origin release
+        git fetch origin
+        git checkout release # or the branch you want to align
+        git reset --hard origin/release
     else
         log_msg Cloning git repo: rudi-${module}
         # Recreating the git repo URI for this RUDI module
