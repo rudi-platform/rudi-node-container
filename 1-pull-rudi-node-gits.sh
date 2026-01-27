@@ -18,6 +18,8 @@ test -r "./$LOCAL_CONF" && . "./$LOCAL_CONF"
 # The gitlab repo generic URL. If set in
 REPO="${REPO:-"https://github.com/rudi-platform"}"
 
+echo "Pulling from $REPO"
+
 # Correspondance between each RUDI module and its original gitlab repo
 git_src_catalog="${git_src_catalog:-"rudi-node-catalog.git"}"
 git_src_storage="${git_src_storage:-"rudi-node-storage.git"}"
