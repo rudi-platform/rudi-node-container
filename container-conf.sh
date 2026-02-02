@@ -1,4 +1,4 @@
-export VERSION="2.6.0mig"
+export VERSION="2.7.0a"
 IMG_NAME="rudinode"
 
 PLATFORMS=("linux/amd64" "linux/arm64")

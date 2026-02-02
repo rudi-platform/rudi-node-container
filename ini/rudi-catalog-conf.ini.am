@@ -18,7 +18,7 @@ server_prefix = @CATALOG_PREFIX@
 
 [migration]
 ; Flag for enabling the schema update
-auto_update_schema = true
+auto_update_schema = false
 ; Default folder for MongoDB backup
 backups_dir= /data/dump
 
