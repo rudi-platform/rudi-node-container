@@ -59,17 +59,18 @@ db_flag=""
 
 log_msg "Launching the RUDI node"
 
-podman run --rm                             \
-    --name "$CNTNR_NAME"                    \
-    --volume "${INSTALL_DIR}/data":/data    \
-    --publish 27017:27017                   \
-    --publish 3030:3030                     \
-    --publish 3031:3031                     \
-    --publish 3032:3032                     \
-    -e SU=$SU                               \
-    -e TAG=${VERSION:-dev}                  \
-    -e VERSION=${VERSION}                   \
-    -e NODE_PUBLIC_URL="http://localhost"   \
-    -e CATALOG_DB_NAME="rudi_catalog"       \
-    ${db_flag}                              \
+podman run --rm \
+    --name "$CNTNR_NAME" \
+    --volume "${INSTALL_DIR}/data":/data \
+    --publish 27017:27017 \
+    --publish 3030:3030 \
+    --publish 3031:3031 \
+    --publish 3032:3032 \
+    -e SU=$SU \
+    -e TAG=${VERSION:-dev} \
+    -e VERSION=${VERSION} \
+    -e NODE_PUBLIC_URL="http://localhost" \
+    -e CATALOG_DB_NAME="rudi_catalog" \
+    -e LOG_DIR="/data/log" \
+    ${db_flag} \
     $LOCAL_IMG_NAME

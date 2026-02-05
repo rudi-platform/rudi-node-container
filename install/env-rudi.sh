@@ -27,10 +27,10 @@ ENV=${ENV:-production}
 
 #
 # Port Allocation
-CATALOG_PORT=${CATALOG_PORT:-$((${NODE_BASE_PORT}+0))}
-STORAGE_PORT=${STORAGE_PORT:-$((${NODE_BASE_PORT}+1))}
-MANAGER_PORT=${MANAGER_PORT:-$((${NODE_BASE_PORT}+2))}
-JWTAUTH_PORT=${JWTAUTH_PORT:-$((${NODE_BASE_PORT}+3))}
+CATALOG_PORT=${CATALOG_PORT:-$((${NODE_BASE_PORT} + 0))}
+STORAGE_PORT=${STORAGE_PORT:-$((${NODE_BASE_PORT} + 1))}
+MANAGER_PORT=${MANAGER_PORT:-$((${NODE_BASE_PORT} + 2))}
+JWTAUTH_PORT=${JWTAUTH_PORT:-$((${NODE_BASE_PORT} + 3))}
 
 # Module URLs
 CATALOG_LOCAL_URL=${CATALOG_LOCAL_URL:-${LOCAL_URL}:${CATALOG_PORT}}
@@ -104,14 +104,17 @@ rudi_check() {
     mkdir -p ${LOG_ROTATE_CONF}.d || error "Could not create ${LOG_ROTATE_CONF}.d"
 
     local log_rotate_default=${INI_DIR}/log_rotate_default.conf
-    [ -r ${log_rotate_default} ] && cat ${log_rotate_default}      > ${LOG_ROTATE_CONF}.conf
-    printf "# Include config files\ninclude ${LOG_ROTATE_CONF}.d\n" >> ${LOG_ROTATE_CONF}.conf || error "Could not initialize logrotate"
+    [ -r ${log_rotate_default} ] && cat ${log_rotate_default}      >${LOG_ROTATE_CONF}.conf
+    printf "# Include config files\ninclude ${LOG_ROTATE_CONF}.d\n" >>${LOG_ROTATE_CONF}.conf  || error "Could not initialize logrotate"
 }
 
 rudi_run() {
-    ( sleep 60 ; watch -t -n 60 \
-	  "/usr/sbin/logrotate --state ${SAFE_DIR}/logrotate.state ${LOG_ROTATE_CONF}.conf" \
-	  >> ${LOG_DIR}/crontab.log || error "Could not launch cron" ) &
+    ( 
+        sleep 60
+                 watch -t -n 60 \
+            "/usr/sbin/logrotate --state ${SAFE_DIR}/logrotate.state ${LOG_ROTATE_CONF}.conf" \
+            >>${LOG_DIR}/crontab.log || error "Could not launch cron"
+    ) &
 }
 
 rudi_force_backup() {
@@ -120,7 +123,7 @@ rudi_force_backup() {
 
 _preprocess_keys() {
     for k in ${GLOBAL_VARS}; do
-	echo -n " -e" 's~@'${k}'@~'$(eval echo -n \$${k})'~g'
+        echo -n " -e" 's~@'${k}'@~'$(eval echo -n \$${k})'~g'
     done
 }
 
@@ -128,6 +131,6 @@ preprocess() {
     local file=${1:-conf.ini}
     [ -r ${file}.am ] || return
     sed $(_preprocess_keys) \
-	< ${file}.am \
-	> ${file}        || error "Could not preprocess: ${file}"
+        <${file}.am \
+        >${file}  || error "Could not preprocess: ${file}"
 }

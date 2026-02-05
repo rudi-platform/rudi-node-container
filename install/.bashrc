@@ -57,12 +57,12 @@ export time_spent_s
 ccd() { test -d "$1" || mkdir -p "$1" && cd "$1" || exit; }
 export ccd
 
-export LOG_DIR=./logs
-logfile_path() {
-	mkdir -p logs
-	echo "${LOG_DIR}/${1}_$(now_s_str).log"
-}
-export logfile_path
+# export LOG_DIR="${LOG_DIR:-./data/log}"
+# logfile_path() {
+# 	mkdir -p "$LOG_DIR"
+# 	echo "${LOG_DIR}/${1}_$(now_s_str).log"
+# }
+# export logfile_path
 
 log_msg() {
 	echo

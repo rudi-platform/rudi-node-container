@@ -9,7 +9,7 @@ DB_LISTEN_ALL=${DB_LISTEN_ALL:-false}
 
 #
 # BD Storage locations
-DB_LOG_DIR=${DB_LOG_DIR:-${LOG_DIR}}
+DB_LOG_DIR=${DB_LOG_DIR:-${LOG_DIR}/db}
 DB_DATA_DIR=${DB_DATA_DIR:-${DB_DIR}}
 DB_DUMP_DIR=${DB_DUMP_DIR:-${MEDIA_DIR}/zone_db}
 DB_DUMP_PATH=${DB_DUMP_PATH:-${DB_DUMP_DIR}/db_${DB_PREFIX:-default}.mongo}

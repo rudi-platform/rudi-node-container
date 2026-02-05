@@ -32,13 +32,13 @@ app_name = catalog
 ; sets the lowest priority level of the logs written
 log_level = trace
 ; folder for log files
-; log_dir = ./logs
+; log_dir = ./data/log
 log_dir = @LOG_DIR@/catalog
 
 [syslog]
 app_name = catalog
 ; sets the lowest priority level of the logs written
-syslog_level = warn
+Syslog_Level = debug
 ; syslog conf
 syslog_host = localhost
 syslog_port = 514

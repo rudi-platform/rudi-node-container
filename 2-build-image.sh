@@ -9,6 +9,9 @@ TIME_START=$(now_ms_int)
 
 test -r ./container-conf.sh && source ./container-conf.sh
 
+log_msg Cleaning podman images
+podman image prune -af
+
 IMG_NAME="${IMG_NAME:-"rudinode"}"
 VERSION="${VERSION:-"2.7.0a"}"
 PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}

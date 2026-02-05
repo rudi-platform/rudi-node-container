@@ -66,6 +66,7 @@ podman run --rm -it \
     -e TAG=${VERSION:-dev} \
     -e VERSION=${VERSION} \
     -e CATALOG_DB_NAME="rudi_catalog" \
+    -e LOG_DIR="/data/logs" \
     -e SU=$SU \
     ${db_flag} \
     --pull=never \
