@@ -9,12 +9,15 @@ TIME_START=$(now_ms_int)
 
 test -r ./container-conf.sh && source ./container-conf.sh
 
-log_msg Cleaning podman images
-podman image prune -af
+# log_msg Cleaning podman images
+# podman image prune -f
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.7.0a"}"
+VERSION="${VERSION:-"2.7.0b"}"
 PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}
+
+# Enable BuildKit-style features like `RUN --mount=type=cache` (that uses npm cache)`
+export DOCKER_BUILDKIT=1
 
 # Build and tag for each platform
 for PLATFORM in "${PLATFORMS[@]}"; do

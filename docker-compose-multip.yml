@@ -18,10 +18,10 @@ services:
       - ./data:/data:rw
     environment:
       NODE_PUBLIC_URL: "${NODE_PUBLIC_URL:-http://localhost}" # Parameterized URL
-      ENABLE_DB: 'true'
-      ENABLE_CATALOG: 'true'
-      ENABLE_STORAGE: 'true'
-      ENABLE_MANAGER: 'true'
+      ENABLE_DB: "true"
+      ENABLE_CATALOG: "true"
+      ENABLE_STORAGE: "true"
+      ENABLE_MANAGER: "true"
     networks:
       - rudi-net
 

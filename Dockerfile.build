@@ -1,7 +1,25 @@
+# - Building -------------------------------------------------------------------
 FROM node:22-alpine AS NodeBuilder
+# ------------------------------------------------------------------------------
 LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr,benjamin.de-zordo@irisa.fr"
-LABEL version="2.7.0a"
+LABEL version="2.7.0b"
 LABEL description="RUDI producer node - https://github.com/rudi-platform/rudi-node-container"
+
+# derived from BuildKit's TARGETPLATFORM
+# "linux/amd64", "linux/arm64" or "windows/amd64"
+ARG TARGETPLATFORM
+RUN if [ -z "$TARGETPLATFORM" ]; then echo "Error: 'TARGETPLATFORM' is not set. BuildKit is required."; exit 1; fi
+
+# # Optional argument: "linux" or "windows"
+# ARG TARGETOS
+
+# # Optional argument: "amd64" or "arm64"
+# ARG TARGETARCH
+
+# # Derive OS/ARCH if not explicitly set
+# ENV TARGETOS="${TARGETOS:-${TARGETPLATFORM%%/*}}" \
+#     TARGETARCH="${TARGETARCH:-${TARGETPLATFORM##*/}}"
+# RUN echo "Building for OS=$TARGETOS ARCH=$TARGETARCH"
 
 # Folder that contains the source of every rudi-node module
 ARG SRC_DIR="./src"
@@ -9,11 +27,15 @@ ARG SRC_DIR="./src"
 # Folder that contains the files to install all the modules in the same upper node_modules folder
 ARG NPMIG_DIR="./npmg"
 
+# Explicit npm cache location (important)
+ENV NPM_CONFIG_CACHE=/npm-cache
+
 ENV WK_DIR="/app/rudi-node"
 ENV INI_DIR="$WK_DIR/ini"
 ENV NODE_ENV=production
 
 WORKDIR "$WK_DIR"
+
 RUN apk update && apk add --no-cache python3 xz
 
 COPY ./env/* "$WK_DIR"/
@@ -21,6 +43,7 @@ COPY ./env/* "$WK_DIR"/
 ENV NPM_INSTALL="npm install --no-audit --no-fund --verbose"
 ENV NPM_INSTALL_PRD="$NPM_INSTALL --omit=dev"
 ENV NPM_INSTALL_DEV="$NPM_INSTALL --include=dev"
+
 RUN npm config set registry http://registry.npmjs.org/  && \
     npm config set fetch-timeout 1000                   && \
     npm config set searchstaleness 3600                 && \
@@ -28,7 +51,7 @@ RUN npm config set registry http://registry.npmjs.org/  && \
     npm config set package-lock true                    && \
     npm config set progress false                       && \
     npm config set loglevel warn                        && \
-    npm i -g npm@latest                                 && \
+    npm i -g npm@11.7.0                                 && \
     npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
 
 RUN addgroup -g 5001 rudi         && \
@@ -47,17 +70,42 @@ RUN adduser -D -G rudi        -u 5001 rudiadm       && \
     addgroup rudimanager rudi                       && \
     addgroup rudijwtauth rudi
 
+# ---- Backend dependencies ----
+# Only package files first
+COPY "${NPMIG_DIR}/*" "${WK_DIR}/"
+COPY "${SRC_DIR}/rudi-catalog/package*.json" rudi-catalog/
+COPY "${SRC_DIR}/rudi-storage/package*.json" rudi-storage/
+COPY "${SRC_DIR}/rudi-manager/package*.json" rudi-manager/
+COPY "${SRC_DIR}/rudi-jwtauth/package*.json" rudi-jwtauth/
+
+# Run npm install with cache
+RUN --mount=type=cache,target="/npm-cache" \
+    npm run install:all
+
+# ---- Frontend dependencies ----
+COPY "${SRC_DIR}/rudi-manager/front/package*.json" rudi-manager/front/
+RUN --mount=type=cache,target=/npm-cache \
+    cd "rudi-manager/front" && \
+    ${NPM_INSTALL_DEV}
+
+
+# Let's copy the full source (after npm install)
 COPY "${SRC_DIR}/rudi-catalog" "${WK_DIR}/rudi-catalog"
 COPY "${SRC_DIR}/rudi-storage" "${WK_DIR}/rudi-storage"
 COPY "${SRC_DIR}/rudi-manager" "${WK_DIR}/rudi-manager"
 COPY "${SRC_DIR}/rudi-jwtauth" "${WK_DIR}/rudi-jwtauth"
 
-# Building the front-end
-RUN ( cd "rudi-manager/front" && PUBLIC_URL='' && NODE_ENV='development' ${NPM_INSTALL_DEV} && npm run build:prod  )
-RUN ( rm -rf "rudi-manager/front/node_modules" "rudi-manager/front/src" $(find . -iname '.docker*' -o -iname '.git*' ) )
+# ---- Front-end build (with npm cache) ----
+RUN --mount=type=cache,target="/npm-cache" \
+    cd "rudi-manager/front" && \
+    PUBLIC_URL='' NODE_ENV='development' && \
+    npm run build:prod
 
-COPY "${NPMIG_DIR}/*" "${WK_DIR}/"
-RUN npm run install:all
+RUN rm -rf \
+      "rudi-manager/front/node_modules" \
+      "rudi-manager/front/src" \
+      $(find . -iname '.docker*' -o -iname '.git*')
+
 
 RUN chown -R root:rudi        node_modules *.ini *.json && \
     chown -R root:rudicatalog rudi-catalog              && \
@@ -68,7 +116,9 @@ RUN chown -R root:rudi        node_modules *.ini *.json && \
 RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-jwtauth rudi-manager && \
     chmod -R u=rX,g=rX,o= node_modules *.ini *.json
 
+# ----- Application image ------------------------------------------------------
 FROM alpine:3.20 AS system
+# ------------------------------------------------------------------------------
 
 WORKDIR /app
 
