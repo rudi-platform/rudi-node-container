@@ -38,3 +38,4 @@ echo
 podman images
 echo
 echo "Execution time: $(time_spent_ms ${TIME_START})ms ($(basename "$0"))"
+echo "At: $(date '+%Y-%m-%d %H:%M:%S %Z')"

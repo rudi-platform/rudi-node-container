@@ -63,6 +63,7 @@ run_if_enabled jwtauth_run "${ENABLE_JWTAUTH}"
 
 log_msg "Modules launched"
 echo "Execution time for launching: $(time_spent_s "${TIME_START}")s ${ROOT_DIR}"
+echo "At: $(date '+%Y-%m-%d %H:%M:%S %Z')"
 
 allstop() {
     rudi_force_backup
