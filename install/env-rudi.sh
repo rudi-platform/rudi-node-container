@@ -6,7 +6,7 @@ set -o nounset
 # Global RUDI Config
 NODE_PUBLIC_URL=${NODE_PUBLIC_URL:-http://localhost}
 
-PORTAL_URL=${PORTAL_URL:-none}
+PORTAL_URL=${PORTAL_URL:-0}
 PORTAL_USER=${PORTAL_USER:-0}
 PORTAL_PASS=${PORTAL_PASS:-0}
 
@@ -109,7 +109,7 @@ rudi_check() {
 }
 
 rudi_run() {
-    ( 
+    (   
         sleep 60
                  watch -t -n 60 \
             "/usr/sbin/logrotate --state ${SAFE_DIR}/logrotate.state ${LOG_ROTATE_CONF}.conf" \
