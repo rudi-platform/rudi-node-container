@@ -7,8 +7,11 @@ IMG_TAG=latest
 # This script pushes the built image to gitlab
 # ==================================================================================================
 
-test -r ./install/.shrc && . ./install/.shrc
+test -r ./install/.bashrc && . ./install/.bashrc
+enable_script_logging
+
 TIME_START=$(now_ms_int)
+test -r ./env/version && source ./env/version
 
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
@@ -22,7 +25,7 @@ test -r "$GIT_CREDS_FILE" && echo "Creds file was found: '$GIT_CREDS_FILE'" && s
 GIT_CREDS="${GIT_CREDS:-"$GIT_USR:$GIT_TOKEN"}"
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.7.1"}"
+VERSION="${VERSION:-"2.7.1c"}"
 REGISTRY="${REGISTRY:-registry.aqmo.org/public-rudi/public-packages}"
 PLATFORMS=${PLATFORMS:-(linux/amd64 linux/arm64)}
 

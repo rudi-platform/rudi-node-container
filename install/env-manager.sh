@@ -2,6 +2,7 @@
 # From global configuration
 ROOT_DIR=$(dirname $(readlink -f $0))
 source ${ROOT_DIR}/env-rudi.sh
+test -r ./version && source ./version
 
 #
 # URL
@@ -14,7 +15,7 @@ MANAGER_PUBKEY_DIR=${MANAGER_PUBKEY_DIR:-""}
 MANAGER_CONF="${MANAGER_CONF:-${INI_DIR}/rudi-manager-conf.ini}"
 
 # Tag for the container, usually the RUDI node version
-TAG=${TAG:-RUDI-node-2.7.1}
+TAG=${TAG:-RUDI-node-2.7.1c}
 
 #
 # DB configuration

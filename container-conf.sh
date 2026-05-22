@@ -1,4 +1,5 @@
-export VERSION="2.7.1"
+test -r ./env/version && source ./env/version
+
 IMG_NAME="rudinode"
 
 PLATFORMS=("linux/amd64" "linux/arm64")

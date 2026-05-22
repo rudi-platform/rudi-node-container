@@ -1,3 +1,5 @@
+#!/bin/bash
+
 REGISTRY="registry.aqmo.org/public-rudi/public-packages" &&
     GIT_CREDS_FILE="./creds/git_creds"                   &&
     IMG_TAG=migration                                    &&

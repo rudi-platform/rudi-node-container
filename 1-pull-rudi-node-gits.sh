@@ -1,12 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 # shellcheck disable=SC2034
 
 # ==================================================================================================
 # This script clone (or pull) the git repository for every RUDI module then builds RUDI Prodmanager
 # frontend
 # ==================================================================================================
+set -euo pipefail
 
-test -r ./install/.shrc && . ./install/.shrc
+test -r ./install/.bashrc && . ./install/.bashrc
+enable_script_logging
 
 # log_in_file rudi-node-git
 TIME_START=$(now_ms_int)

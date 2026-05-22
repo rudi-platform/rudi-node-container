@@ -4,13 +4,16 @@
 # This script builds the container image with docker
 # ==================================================================================================
 
-test -r ./install/.shrc && source ./install/.shrc
+test -r ./install/.bashrc && source ./install/.bashrc
+enable_script_logging
+
 TIME_START=$(now_ms_int)
+test -r ./env/version && source ./env/version
 
 test -r ./container-conf.sh && source ./container-conf.sh
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.7.1"}"
+VERSION="${VERSION:-"2.7.1c"}"
 PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}
 
 # Build and tag for each platform

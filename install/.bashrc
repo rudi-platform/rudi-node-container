@@ -34,11 +34,12 @@ calc() { awk "BEGIN { print $* }"; }
 
 # Gives the actual date in seconds as a string
 now_s_str() { date +%Y-%m-%d_%H%M%S; }
-export nowS
+export -f now_s_str
 
 # Gives the actual date in Ms as an integer number
-now_ms_int() { node -e 'console.log(Date.now())'; }
-export now_ms_int
+_now_ms_int() { node -e 'console.log(Date.now())'; }
+now_ms_int() { calc "$(date +%s.%3N)*1000"; }
+export -f now_ms_int
 
 TIME_SOURCED=$(now_ms_int)
 export TIME_SOURCED
@@ -51,11 +52,20 @@ time_spent_s() {
 	if [ $# -lt 1 ]; then ref_time=0${TIME_SOURCED}; else ref_time=$1; fi
 	echo "$(calc "(${now}-${ref_time})/1000")"
 }
-export time_spent_s
+export -f time_spent_s
+
+time_spent_ms() {
+	[ $# -ge 1 ] && local start=$1 || local start=${TIME_SOURCED}
+	[ $# -ge 2 ] && local now=$2 || local now=$(now_ms_int)
+	# echo "scale=2; $now - $start" | bc
+	# echo start=$start now=$now
+	echo "$(calc "${now}-${start}")"
+}
+export time_spent_ms
 
 # Access a folder like `cd` but creates the folder beforehand if it doesn't exist
 ccd() { test -d "$1" || mkdir -p "$1" && cd "$1" || exit; }
-export ccd
+export -f ccd
 
 # export LOG_DIR="${LOG_DIR:-./data/log}"
 # logfile_path() {
@@ -69,18 +79,14 @@ log_msg() {
 	echo "-----( $(time_spent_s)s )----------[ $* ]"
 	echo
 }
-export log_msg
+export -f log_msg
 
 # log_in_file () { exec > >(tee "$(logfile_path "$1")") 2>&1; }
 # export log_in_file
 
 # Gives the name of the most recently modified file in a folder, excluding dot files and subfolders
 last_modified() {
-	if [ $# -lt 1 ]; then
-		folder=.
-	else
-		folder=$*
-	fi
+	if [ $# -lt 1 ]; then folder=.; else folder=$*; fi
 	# find "${folder}" -maxdepth 1 -type f ! -name ".*" -exec stat -f "%m %N" {} + | sort -rn | head -n 1 | awk '{for (i=2; i<NF; i++) printf $i " "; print $NF}'
 	# find "$folder" -maxdepth 1 -type f ! -name ".*" -printf "%T+ %p\n" | sort -r | head -n 1 | cut -d" " -f2-;
 	# ls -ltp "$folder"
@@ -91,7 +97,26 @@ last_modified() {
 		head -1 |
 		awk '{printf "%s", $9; for (i=10; i<=NF; i++) printf " %s", $i; print ""}'
 }
-export last_modified
+export -f last_modified
+
+enable_script_logging() {
+	caller="${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}"
+	local script_dir
+	script_dir="$(cd "$(dirname "$caller")" && pwd)"
+
+	local script_name
+	script_name="$(basename "$caller" .sh)"
+
+	local log_dir="${script_dir}/logs"
+	mkdir -p "$log_dir"
+
+	local log_file="${log_dir}/${script_name}_$(date +%Y%m%d_%H%M%S).log"
+
+	exec > >(tee -a "$log_file") 2>&1
+
+	echo "Logging to: $log_file"
+}
+export -f enable_script_logging
 
 #----- SSH -----------------------------------------------------------------------------------------
 genssh() {
@@ -99,7 +124,7 @@ genssh() {
 	ssh-keygen -t ed25519 -C "$1" -q -N '' -f "$out"
 	chmod 400 "$out*"
 }
-export genssh
+export -f genssh
 
 #----- NodeJS --------------------------------------------------------------------------------------
 export NODE_PATH=$(npm root -g)

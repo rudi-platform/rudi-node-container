@@ -4,13 +4,16 @@
 # This script runs the local container image with podman
 # ==================================================================================================
 
-test -r ./install/.shrc && . ./install/.shrc
+test -r ./install/.bashrc && . ./install/.bashrc
+enable_script_logging
+
 TIME_START=$(now_ms_int)
+test -r ./env/version && source ./env/version
 
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-"2.7.1"}"
+VERSION="${VERSION:-"2.7.1c"}"
 
 # REGISTRY=ghcr.io/rudi-platform
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
