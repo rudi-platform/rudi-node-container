@@ -10,7 +10,7 @@ test -r ./install/.bashrc && source ./install/.bashrc
 enable_script_logging
 
 TIME_START=$(now_ms_int)
-test -r ./env/version && source ./env/version
+test -r ./node-version && source ./node-version
 
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh

@@ -46,7 +46,7 @@ RUN npm config set registry "https://registry.npmjs.org/" && \
     npm config set package-lock true                      && \
     npm config set progress false                         && \
     npm config set loglevel warn                          && \
-    npm i -g npm@11.7.0                                   && \
+    # npm i -g npm@11.7.0                                   && \
     npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
 
 RUN addgroup -g 5001 rudi         && \
@@ -84,7 +84,8 @@ RUN --mount=type=cache,target=/npm-cache,sharing=locked \
 COPY "${SRC_DIR}/rudi-manager/front/package*.json" rudi-manager/front/
 RUN --mount=type=cache,target=/npm-cache,sharing=locked \
     cd "rudi-manager/front" && \
-    npm ci --no-audit --no-fund --include=dev
+    rm -rf package-lock.json && \
+    npm install --no-audit --no-fund --include=dev
 
 
 # Let's copy the full source (after npm install)
