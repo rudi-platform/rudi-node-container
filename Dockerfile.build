@@ -2,7 +2,7 @@
 FROM node:22-alpine AS NodeBuilder
 # ------------------------------------------------------------------------------
 LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr,benjamin.de-zordo@irisa.fr"
-LABEL version="2.7.1c"
+LABEL version="2.7.2"
 LABEL description="RUDI producer node - https://github.com/rudi-platform/rudi-node-container"
 
 # derived from BuildKit's TARGETPLATFORM
@@ -40,7 +40,7 @@ RUN apk update && apk add --no-cache python3 xz
 
 COPY ./env/* "$WK_DIR"/
 
-ENV NPM_INSTALL="npm install --no-audit --no-fund --verbose"
+ENV NPM_INSTALL="npm ci --no-audit --no-fund --verbose"
 ENV NPM_INSTALL_PRD="$NPM_INSTALL --omit=dev"
 ENV NPM_INSTALL_DEV="$NPM_INSTALL --include=dev"
 

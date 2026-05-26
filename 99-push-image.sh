@@ -24,7 +24,7 @@ test -r "$GIT_CREDS_FILE" && echo "Creds file was found: '$GIT_CREDS_FILE'" && s
 GIT_CREDS="${GIT_CREDS:-"${GIT_USR:-}:${GIT_TOKEN:-}"}"
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.7.1c"}"
+VERSION="${VERSION:-"2.7.2"}"
 REGISTRY="${REGISTRY:-registry.aqmo.org/public-rudi/public-packages}"
 read -r -a PLATFORMS <<<"${PLATFORMS:-linux/amd64 linux/arm64}"
 
