@@ -1,4 +1,8 @@
-export VERSION="2.5.8"
+# !/bin/bash
+
+test -r ./node-version && source ./node-version
+
+VERSION="${VERSION:-2.7.2a}"
 IMG_NAME="rudinode"
 
 PLATFORMS=("linux/amd64" "linux/arm64")

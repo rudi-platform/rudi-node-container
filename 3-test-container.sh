@@ -4,10 +4,9 @@
 # This script runs the container image with podman
 # ==================================================================================================
 
-
 test -r ./install/.shrc && . ./install/.shrc
 TIME_START=$(now_ms_int)
-
+test -r ./node-version && source ./node-version
 
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
@@ -54,23 +53,20 @@ db_flag=""
 
 log_msg "Launching the RUDI node"
 
-podman run --rm -it                         \
-    --name "$CNTNR_NAME"                    \
-    --volume ./data:/data                   \
-    --publish 27017:27017                    \
-    --publish 3030:3030                     \
-    --publish 3031:3031                     \
-    --publish 3032:3032                     \
-    -e CATALOG_PREFIX=$CATALOG_PREFIX       \
-    -e STORAGE_PREFIX=$STORAGE_PREFIX       \
-    -e MANAGER_PREFIX=$MANAGER_PREFIX       \
-    -e NODE_PUBLIC_URL=$NODE_PUBLIC_URL     \
-    -e TAG=${VERSION:-dev}                  \
-    -e VERSION=${VERSION}                   \
-    -e CATALOG_DB_NAME="rudi_catalog"       \
-    -e SU=$SU                               \
-    ${db_flag}                              \
+podman run --rm -it \
+    --name "$CNTNR_NAME" \
+    --volume ./data:/data \
+    --publish 27017:27017 \
+    --publish 3030:3030 \
+    --publish 3031:3031 \
+    --publish 3032:3032 \
+    -e CATALOG_PREFIX=$CATALOG_PREFIX \
+    -e STORAGE_PREFIX=$STORAGE_PREFIX \
+    -e MANAGER_PREFIX=$MANAGER_PREFIX \
+    -e NODE_PUBLIC_URL=$NODE_PUBLIC_URL \
+    -e TAG=${VERSION:-dev} \
+    -e VERSION=${VERSION} \
+    -e CATALOG_DB_NAME="rudi_catalog" \
+    -e SU=$SU \
+    ${db_flag} \
     $REGISTRY/$LATEST
-
-
-

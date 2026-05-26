@@ -1,17 +1,19 @@
 #!/bin/bash
 
 # ==================================================================================================
-# This script builds the container image with podman
+# This script builds the container image with docker
 # ==================================================================================================
 
-test -r ./install/.shrc && source ./install/.shrc
+test -r ./install/.bashrc && source ./install/.bashrc
+enable_script_logging
+
 TIME_START=$(now_ms_int)
 test -r ./node-version && source ./node-version
 
 test -r ./container-conf.sh && source ./container-conf.sh
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.5.8"}"
+VERSION="${VERSION:-"2.7.2a"}"
 PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}
 
 # Build and tag for each platform
@@ -25,11 +27,12 @@ for PLATFORM in "${PLATFORMS[@]}"; do
     export TARGETPLATFORM="$PLATFORM"
 
     log_msg "Building the image '$TAG' for platform '$TARGETPLATFORM'"
-    podman-compose -f "${DOCKER_COMPOSE_CONF:-docker-compose-multip.yml}" build
+    docker-compose -f "${DOCKER_COMPOSE_CONF:-docker-compose-multip.yml}" build
 done
 
 log_msg "Images built"
 echo
-podman images
+docker images
 echo
 echo "Execution time: $(time_spent_ms ${TIME_START})ms ($(basename "$0"))"
+echo "At: $(date '+%Y-%m-%d %H:%M:%S %Z')"

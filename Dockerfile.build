@@ -18,17 +18,13 @@ RUN apk update && apk add --no-cache python3 xz
 
 COPY ./env/* "$WK_DIR"/
 
-ENV NPM_INSTALL="npm install --no-audit --no-fund --verbose"
-ENV NPM_INSTALL_PRD="$NPM_INSTALL --omit=dev"
-ENV NPM_INSTALL_DEV="$NPM_INSTALL --include=dev"
-RUN npm config set registry http://registry.npmjs.org/  && \
-    npm config set fetch-timeout 1000                   && \
-    npm config set searchstaleness 3600                 && \
-    npm config set prefer-offline true                  && \
-    npm config set package-lock true                    && \
-    npm config set progress false                       && \
-    npm config set loglevel warn                        && \
-    npm i -g npm@latest                                 && \
+RUN npm config set registry "https://registry.npmjs.org/" && \
+    npm config set fetch-timeout 1000                     && \
+    npm config set searchstaleness 3600                   && \
+    npm config set package-lock true                      && \
+    npm config set progress false                         && \
+    npm config set loglevel warn                          && \
+    # npm i -g npm@11.7.0                                   && \
     npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
 
 RUN addgroup -g 5001 rudi         && \
@@ -47,6 +43,30 @@ RUN adduser -D -G rudi        -u 5001 rudiadm       && \
     addgroup rudimanager rudi                       && \
     addgroup rudijwtauth rudi
 
+# ---- Backend dependencies ----
+# Only package files first
+
+# 1. Workspace root
+COPY "${SRC_DIR}/rudi-install/package*.json" ./
+# 2. Workspace package manifests only
+COPY "${SRC_DIR}/rudi-catalog/package.json" rudi-catalog/
+COPY "${SRC_DIR}/rudi-storage/package.json" rudi-storage/
+COPY "${SRC_DIR}/rudi-manager/package.json" rudi-manager/
+COPY "${SRC_DIR}/rudi-jwtauth/package.json" rudi-jwtauth/
+
+# Run npm install with cache
+RUN --mount=type=cache,target=/npm-cache,sharing=locked \
+    npm ci --workspaces --prefer-offline=false --omit=dev
+
+# ---- Frontend dependencies ----
+COPY "${SRC_DIR}/rudi-manager/front/package*.json" rudi-manager/front/
+RUN --mount=type=cache,target=/npm-cache,sharing=locked \
+    cd "rudi-manager/front" && \
+    rm -rf package-lock.json && \
+    npm install --no-audit --no-fund --include=dev
+
+
+# Let's copy the full source (after npm install)
 COPY "${SRC_DIR}/rudi-catalog" "${WK_DIR}/rudi-catalog"
 COPY "${SRC_DIR}/rudi-storage" "${WK_DIR}/rudi-storage"
 COPY "${SRC_DIR}/rudi-manager" "${WK_DIR}/rudi-manager"
