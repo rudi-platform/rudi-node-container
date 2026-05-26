@@ -2,7 +2,7 @@
 FROM node:22-alpine AS NodeBuilder
 # ------------------------------------------------------------------------------
 LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr,benjamin.de-zordo@irisa.fr"
-LABEL version="2.7.2"
+LABEL version="2.7.2a"
 LABEL description="RUDI producer node - https://github.com/rudi-platform/rudi-node-container"
 
 # derived from BuildKit's TARGETPLATFORM
@@ -25,7 +25,7 @@ RUN if [ -z "$TARGETPLATFORM" ]; then echo "Error: 'TARGETPLATFORM' is not set. 
 ARG SRC_DIR="./src"
 
 # Folder that contains the files to install all the modules in the same upper node_modules folder
-ARG NPMIG_DIR="./npmg"
+# ARG NPMIG_DIR="./npmg"
 
 # Explicit npm cache location (important)
 ENV NPM_CONFIG_CACHE=/npm-cache
@@ -40,18 +40,13 @@ RUN apk update && apk add --no-cache python3 xz
 
 COPY ./env/* "$WK_DIR"/
 
-ENV NPM_INSTALL="npm ci --no-audit --no-fund --verbose"
-ENV NPM_INSTALL_PRD="$NPM_INSTALL --omit=dev"
-ENV NPM_INSTALL_DEV="$NPM_INSTALL --include=dev"
-
-RUN npm config set registry http://registry.npmjs.org/  && \
-    npm config set fetch-timeout 1000                   && \
-    npm config set searchstaleness 3600                 && \
-    npm config set prefer-offline true                  && \
-    npm config set package-lock true                    && \
-    npm config set progress false                       && \
-    npm config set loglevel warn                        && \
-    npm i -g npm@11.7.0                                 && \
+RUN npm config set registry "https://registry.npmjs.org/" && \
+    npm config set fetch-timeout 1000                     && \
+    npm config set searchstaleness 3600                   && \
+    npm config set package-lock true                      && \
+    npm config set progress false                         && \
+    npm config set loglevel warn                          && \
+    npm i -g npm@11.7.0                                   && \
     npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
 
 RUN addgroup -g 5001 rudi         && \
@@ -72,21 +67,24 @@ RUN adduser -D -G rudi        -u 5001 rudiadm       && \
 
 # ---- Backend dependencies ----
 # Only package files first
-COPY "${NPMIG_DIR}/*" "${WK_DIR}/"
-COPY "${SRC_DIR}/rudi-catalog/package*.json" rudi-catalog/
-COPY "${SRC_DIR}/rudi-storage/package*.json" rudi-storage/
-COPY "${SRC_DIR}/rudi-manager/package*.json" rudi-manager/
-COPY "${SRC_DIR}/rudi-jwtauth/package*.json" rudi-jwtauth/
+
+# 1. Workspace root
+COPY "${SRC_DIR}/rudi-install/package*.json" ./
+# 2. Workspace package manifests only
+COPY "${SRC_DIR}/rudi-catalog/package.json" rudi-catalog/
+COPY "${SRC_DIR}/rudi-storage/package.json" rudi-storage/
+COPY "${SRC_DIR}/rudi-manager/package.json" rudi-manager/
+COPY "${SRC_DIR}/rudi-jwtauth/package.json" rudi-jwtauth/
 
 # Run npm install with cache
-RUN --mount=type=cache,target="/npm-cache" \
-    npm run install:all
+RUN --mount=type=cache,target=/npm-cache,sharing=locked \
+    npm ci --workspaces --prefer-offline=false --omit=dev
 
 # ---- Frontend dependencies ----
 COPY "${SRC_DIR}/rudi-manager/front/package*.json" rudi-manager/front/
-RUN --mount=type=cache,target=/npm-cache \
+RUN --mount=type=cache,target=/npm-cache,sharing=locked \
     cd "rudi-manager/front" && \
-    ${NPM_INSTALL_DEV}
+    npm ci --no-audit --no-fund --include=dev
 
 
 # Let's copy the full source (after npm install)
@@ -96,10 +94,9 @@ COPY "${SRC_DIR}/rudi-manager" "${WK_DIR}/rudi-manager"
 COPY "${SRC_DIR}/rudi-jwtauth" "${WK_DIR}/rudi-jwtauth"
 
 # ---- Front-end build (with npm cache) ----
-RUN --mount=type=cache,target="/npm-cache" \
+RUN --mount=type=cache,target=/npm-cache,sharing=locked \
     cd "rudi-manager/front" && \
-    PUBLIC_URL='' NODE_ENV='development' && \
-    npm run build:prod
+    PUBLIC_URL='' NODE_ENV='development' npm run build:prod
 
 RUN rm -rf \
       "rudi-manager/front/node_modules" \
@@ -123,12 +120,18 @@ FROM alpine:3.20 AS system
 WORKDIR /app
 
 RUN echo "Europe/Paris" > /etc/timezone
-RUN printf 'http://dl-cdn.alpinelinux.org/alpine/v3.9/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.9/community\n' >> /etc/apk/repositories && \
+RUN printf 'https://dl-cdn.alpinelinux.org/alpine/v3.9/main\nhttps://dl-cdn.alpinelinux.org/alpine/v3.9/community\n' >> /etc/apk/repositories && \
     apk update                                                                                && \
-    apk upgrade                                                                               && \
-    apk add mongodb mongodb-tools nodejs openssh-keygen logrotate busybox-suid sqlite tzdata  && \
+    apk add mongodb mongodb-tools openssh-keygen logrotate busybox-suid sqlite tzdata  && \
     apk cache clean                                                                           && \
     rm -f /var/cache/apk/*
+
+# Copy Node.js runtime from builder image
+COPY --from=NodeBuilder /usr/local/bin/node /usr/local/bin/node
+COPY --from=NodeBuilder /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -sf /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -sf /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+RUN node --version && npm --version
 
 RUN addgroup --gid 5001 rudi         && \
     addgroup --gid 5002 rudicatalog  && \

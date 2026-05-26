@@ -27,6 +27,7 @@ git_src_catalog="${git_src_catalog:-"rudi-node-catalog.git"}"
 git_src_storage="${git_src_storage:-"rudi-node-storage.git"}"
 git_src_manager="${git_src_manager:-"rudi-node-manager.git"}"
 git_src_jwtauth="${git_src_jwtauth:-"rudi-node-jwtauth.git"}"
+git_src_install="${git_src_install:-"rudi-node-install.git"}"
 
 # Creating necessary folders
 PRJ_DIR="$(pwd)"
@@ -38,7 +39,7 @@ mkdir -p "$PRJ_ENV_DIR" "$PRJ_SRC_DIR"
 GIT_REV_FILE="${PRJ_ENV_DIR}/git-rev.ini"
 if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
-for module in catalog storage manager jwtauth; do
+for module in catalog storage manager jwtauth install; do
     cd "${PRJ_SRC_DIR}" || exit
     module_dir="${PRJ_SRC_DIR}/rudi-${module}"
 
