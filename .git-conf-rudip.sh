@@ -1,8 +1,11 @@
-REPO=https://github.com/rudi-platform
-git_src_catalog=rudi-node-catalog.git
-git_src_storage=rudi-node-storage.git
-git_src_manager=rudi-node-manager.git
-git_src_jwtauth=rudi-node-jwtauth.git
-git_src_install=rudi-node-install.git
+#!/bin/bash
 
-REGISTRY=ghcr.io/rudi-platform
+export REPO="https://github.com/rudi-platform"
+export git_src_catalog="rudi-node-catalog.git"
+export git_src_storage="rudi-node-storage.git"
+export git_src_manager="rudi-node-manager.git"
+export git_src_jwtauth="rudi-node-jwtauth.git"
+export git_src_install="rudi-node-install.git"
+
+export REGISTRY="ghcr.io/rudi-platform"
+export PLATFORMS=("linux/amd64" "linux/arm64" "darwin/arm64")
