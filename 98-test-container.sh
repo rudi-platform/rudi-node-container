@@ -6,6 +6,7 @@
 
 test -r ./install/.bashrc && . ./install/.bashrc
 enable_script_logging
+podman-context build
 
 TIME_START=$(now_ms_int)
 test -r ./node-version && source ./node-version
