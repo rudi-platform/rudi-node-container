@@ -16,6 +16,12 @@ server_url = https://rudinode.org
 ; catalog app prefix
 server_prefix = @CATALOG_PREFIX@
 
+[migration]
+; Flag for enabling the schema update
+auto_update_schema = false
+; Default folder for MongoDB backup
+backups_dir= /data/dump
+
 [flags]
 should_log_console = false
 should_syslog = true
@@ -26,13 +32,13 @@ app_name = catalog
 ; sets the lowest priority level of the logs written
 log_level = trace
 ; folder for log files
-; log_dir = ./logs
+; log_dir = ./data/log
 log_dir = @LOG_DIR@/catalog
 
 [syslog]
 app_name = catalog
 ; sets the lowest priority level of the logs written
-syslog_level = warn
+Syslog_Level = debug
 ; syslog conf
 syslog_host = localhost
 syslog_port = 514

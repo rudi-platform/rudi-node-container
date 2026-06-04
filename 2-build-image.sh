@@ -1,18 +1,29 @@
 #!/bin/bash
 
+# ./2-build-image.sh
 # ==================================================================================================
 # This script builds the container image with podman
 # ==================================================================================================
+set -euo pipefail
+podman-context build
 
-test -r ./install/.shrc && source ./install/.shrc
+test -r ./install/.bashrc && source ./install/.bashrc
+enable_script_logging
+
 TIME_START=$(now_ms_int)
 test -r ./node-version && source ./node-version
 
 test -r ./container-conf.sh && source ./container-conf.sh
 
+# log_msg Cleaning podman images
+# podman image prune -f
+
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.5.8"}"
+VERSION="${VERSION:-"2.7.3"}"
 PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}
+
+# Enable BuildKit-style features like `RUN --mount=type=cache` (that uses npm cache)`
+export DOCKER_BUILDKIT=1
 
 # Build and tag for each platform
 for PLATFORM in "${PLATFORMS[@]}"; do
@@ -33,3 +44,4 @@ echo
 podman images
 echo
 echo "Execution time: $(time_spent_ms ${TIME_START})ms ($(basename "$0"))"
+echo "At: $(date '+%Y-%m-%d %H:%M:%S %Z')"

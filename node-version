@@ -1,2 +1,2 @@
 #!/bin/sh
-export VERSION=2.7.2a
+export VERSION=2.7.3

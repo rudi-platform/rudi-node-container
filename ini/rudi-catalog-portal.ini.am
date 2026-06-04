@@ -4,7 +4,7 @@
 
 [portal]
 ; ========== Portal metadata URL
-; 'portal_url' commented => no portal connected
+; 'portal_url' commented or empty => no portal connected
 portal_url = @PORTAL_URL@
 
 ; ========== Credentials

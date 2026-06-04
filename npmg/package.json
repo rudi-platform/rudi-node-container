@@ -8,7 +8,12 @@
     "rudi-jwtauth"
   ],
   "scripts": {
-    "exec:all": "sh -c 'echo \"cmd=$cmd\"; echo; for module in catalog storage manager jwtauth; do (cd \"rudi-$module\" && echo \"-- [$module] $cmd\" && eval \"$cmd\") || exit 1; done'",
-    "install:all": "npm config set fetch-retry-maxtimeout 160000 -g; cmd=\"npm install --no-audit --no-fund --verbose --omit=dev\" npm run exec:all"
+    "install:all": "npm ci --workspaces --include-workspace-root",
+    "update:all": "npx npm-check-updates -u -t minor && npm install",
+    "run:all": "npm -ws run",
+    "exec:all": "npm -ws exec --",
+    "test:all": "npm -ws run test",
+    "build:all": "npm -ws run build",
+    "clean": "rm -rf node_modules package-lock.json && npm install"
   }
 }

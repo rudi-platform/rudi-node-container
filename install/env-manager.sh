@@ -2,6 +2,7 @@
 # From global configuration
 ROOT_DIR=$(dirname $(readlink -f $0))
 source ${ROOT_DIR}/env-rudi.sh
+test -r ./version && source ./version
 
 #
 # URL
@@ -14,7 +15,7 @@ MANAGER_PUBKEY_DIR=${MANAGER_PUBKEY_DIR:-""}
 MANAGER_CONF="${MANAGER_CONF:-${INI_DIR}/rudi-manager-conf.ini}"
 
 # Tag for the container, usually the RUDI node version
-TAG=${TAG:-RUDI-node-2.5.8}
+TAG=${TAG:-RUDI-node-2.7.3}
 
 #
 # DB configuration
@@ -37,20 +38,20 @@ manager_check() {
     assert_key store_mngr rudiadm rudi
     assert_key catalog_mngr rudiadm rudi
 
-    cat > ${LOG_ROTATE_CONF}.d/rudi-manager.conf <<EOF
+    cat >${LOG_ROTATE_CONF}.d/rudi-manager.conf  <<EOF
 ${MANAGER_DUMP_PATH} {
     missingok
     firstaction
         /usr/bin/sqlite3 ${MANAGER_DB_PATH} ".backup '${MANAGER_DUMP_PATH}'"
     endscript
     postrotate
-	cp -p '${MANAGER_DUMP_PATH}'.1 '${MANAGER_DUMP_PATH}'
+		cp -p '${MANAGER_DUMP_PATH}'.1 '${MANAGER_DUMP_PATH}'
     endscript
 }
 EOF
 
-    [ ! -r ${MANAGER_DB_PATH} -a -e ${MANAGER_DUMP_PATH} ] && \
-	/usr/bin/install -m 640 -o rudiadm -g rudi ${MANAGER_DUMP_PATH} ${MANAGER_DB_PATH}
+    [ ! -r ${MANAGER_DB_PATH} -a -e ${MANAGER_DUMP_PATH} ] &&
+        /usr/bin/install -m 640 -o rudiadm -g rudi ${MANAGER_DUMP_PATH} ${MANAGER_DB_PATH}
 }
 
 manager_run() {
@@ -66,12 +67,12 @@ manager_run() {
     cd "${APP_MANAGER_DIR}" || error "Manager application directory not found"
 
     touch ${MANAGER_DUMP_PATH}
-    node run-rudinode-manager.js   \
-	 ${su_flag}                    \
-	 --tag "$TAG"                  \
-	 --node_env "$env"             \
-	 --hash "$MANAGER_GIT_REV"     \
-	 --url  "$MANAGER_PUBLIC_URL"  \
-	 --conf "$MANAGER_CONF"        \
-	 --db   "$MANAGER_DB_PATH"     || error "Could not launch app in ${APP_MANAGER_DIR}"
+    node run-rudinode-manager.js \
+        ${su_flag} \
+        --tag "$TAG" \
+        --node_env "$env" \
+        --hash "$MANAGER_GIT_REV" \
+        --url "$MANAGER_PUBLIC_URL" \
+        --conf "$MANAGER_CONF" \
+        --db "$MANAGER_DB_PATH" || error "Could not launch app in ${APP_MANAGER_DIR}"
 }

@@ -30,7 +30,7 @@ rfc3164 = true
 
 [log_local]
 consoleData= false
-directory= @LOG_DIR@/rudi_storage/
+directory= @LOG_DIR@/storage/
 
 [logging]
 app_name = storage

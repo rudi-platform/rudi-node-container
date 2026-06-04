@@ -38,7 +38,8 @@ data
 **/*.pub
 .ssh
 ssh
-git_creds*
+*_creds*
+creds
 
 # Idz
 features

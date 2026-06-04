@@ -1,17 +1,20 @@
 #!/bin/bash
 
 # ==================================================================================================
-# This script runs the container image with podman
+# This script runs the local container image with podman
 # ==================================================================================================
 
-test -r ./install/.shrc && . ./install/.shrc
+test -r ./install/.bashrc && . ./install/.bashrc
+enable_script_logging
+podman-context build
+
 TIME_START=$(now_ms_int)
 test -r ./node-version && source ./node-version
 
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-"2.5.7"}"
+VERSION="${VERSION:-"2.7.3"}"
 
 # REGISTRY=ghcr.io/rudi-platform
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
@@ -48,11 +51,11 @@ EXT_MONGODB_URL="mongodb://host.containers.internal:27017"
 
 db_flag=""
 [ -z ${EXT_MONGODB_URL+x} ] || db_flag="-e MONGODB=${EXT_MONGODB_URL}"
-# log_msg "DB flag"
-# log_var db_flag
+# log_msg "DB flag:" $db_flag
 
-log_msg "Launching the RUDI node"
-
+RUDINODE_IMG="${IMG_NAME}:${VERSION}-linux-arm64"
+log_msg "Launching the RUDI node ${RUDINODE_IMG}"
+pwd
 podman run --rm -it \
     --name "$CNTNR_NAME" \
     --volume ./data:/data \
@@ -67,6 +70,9 @@ podman run --rm -it \
     -e TAG=${VERSION:-dev} \
     -e VERSION=${VERSION} \
     -e CATALOG_DB_NAME="rudi_catalog" \
+    -e LOG_DIR="/data/logs" \
     -e SU=$SU \
     ${db_flag} \
-    $REGISTRY/$LATEST
+    --pull=never \
+    "${RUDINODE_IMG}"
+    # $REGISTRY/$LATEST

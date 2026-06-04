@@ -115,4 +115,4 @@ syslog_socket = /var/run/syslog
 ; name of this machine
 syslog_node_name = dev
 ; folder for syslog backup files
-syslog_dir = @LOG_DIR@/rudi/manager/
+syslog_dir = @LOG_DIR@/manager/

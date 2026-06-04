@@ -1,19 +1,41 @@
+# - Building -------------------------------------------------------------------
 FROM node:22-alpine AS NodeBuilder
+# ------------------------------------------------------------------------------
 LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr,benjamin.de-zordo@irisa.fr"
-LABEL version="2.5.8"
+LABEL version="2.7.3"
 LABEL description="RUDI producer node - https://github.com/rudi-platform/rudi-node-container"
+
+# derived from BuildKit's TARGETPLATFORM
+# "linux/amd64", "linux/arm64" or "windows/amd64"
+ARG TARGETPLATFORM
+RUN if [ -z "$TARGETPLATFORM" ]; then echo "Error: 'TARGETPLATFORM' is not set. BuildKit is required."; exit 1; fi
+
+# # Optional argument: "linux" or "windows"
+# ARG TARGETOS
+
+# # Optional argument: "amd64" or "arm64"
+# ARG TARGETARCH
+
+# # Derive OS/ARCH if not explicitly set
+# ENV TARGETOS="${TARGETOS:-${TARGETPLATFORM%%/*}}" \
+#     TARGETARCH="${TARGETARCH:-${TARGETPLATFORM##*/}}"
+# RUN echo "Building for OS=$TARGETOS ARCH=$TARGETARCH"
 
 # Folder that contains the source of every rudi-node module
 ARG SRC_DIR="./src"
 
 # Folder that contains the files to install all the modules in the same upper node_modules folder
-ARG NPMIG_DIR="./npmg"
+# ARG NPMIG_DIR="./npmg"
+
+# Explicit npm cache location (important)
+ENV NPM_CONFIG_CACHE=/npm-cache
 
 ENV WK_DIR="/app/rudi-node"
 ENV INI_DIR="$WK_DIR/ini"
 ENV NODE_ENV=production
 
 WORKDIR "$WK_DIR"
+
 RUN apk update && apk add --no-cache python3 xz
 
 COPY ./env/* "$WK_DIR"/
@@ -72,12 +94,16 @@ COPY "${SRC_DIR}/rudi-storage" "${WK_DIR}/rudi-storage"
 COPY "${SRC_DIR}/rudi-manager" "${WK_DIR}/rudi-manager"
 COPY "${SRC_DIR}/rudi-jwtauth" "${WK_DIR}/rudi-jwtauth"
 
-# Building the front-end
-RUN ( cd "rudi-manager/front" && PUBLIC_URL='' && NODE_ENV='development' ${NPM_INSTALL_DEV} && npm run build:prod  )
-RUN ( rm -rf "rudi-manager/front/node_modules" "rudi-manager/front/src" $(find . -iname '.docker*' -o -iname '.git*' ) )
+# ---- Front-end build (with npm cache) ----
+RUN --mount=type=cache,target=/npm-cache,sharing=locked \
+    cd "rudi-manager/front" && \
+    PUBLIC_URL='' NODE_ENV='development' npm run build:prod
 
-COPY "${NPMIG_DIR}/*" "${WK_DIR}/"
-RUN npm run install:all
+RUN rm -rf \
+      "rudi-manager/front/node_modules" \
+      "rudi-manager/front/src" \
+      $(find . -iname '.docker*' -o -iname '.git*')
+
 
 RUN chown -R root:rudi        node_modules *.ini *.json && \
     chown -R root:rudicatalog rudi-catalog              && \
@@ -88,17 +114,25 @@ RUN chown -R root:rudi        node_modules *.ini *.json && \
 RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-jwtauth rudi-manager && \
     chmod -R u=rX,g=rX,o= node_modules *.ini *.json
 
+# ----- Application image ------------------------------------------------------
 FROM alpine:3.20 AS system
+# ------------------------------------------------------------------------------
 
 WORKDIR /app
 
 RUN echo "Europe/Paris" > /etc/timezone
-RUN printf 'http://dl-cdn.alpinelinux.org/alpine/v3.9/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.9/community\n' >> /etc/apk/repositories && \
+RUN printf 'https://dl-cdn.alpinelinux.org/alpine/v3.9/main\nhttps://dl-cdn.alpinelinux.org/alpine/v3.9/community\n' >> /etc/apk/repositories && \
     apk update                                                                                && \
-    apk upgrade                                                                               && \
-    apk add mongodb mongodb-tools nodejs openssh-keygen logrotate busybox-suid sqlite tzdata  && \
+    apk add mongodb mongodb-tools openssh-keygen logrotate busybox-suid sqlite tzdata  && \
     apk cache clean                                                                           && \
     rm -f /var/cache/apk/*
+
+# Copy Node.js runtime from builder image
+COPY --from=NodeBuilder /usr/local/bin/node /usr/local/bin/node
+COPY --from=NodeBuilder /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -sf /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -sf /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+RUN node --version && npm --version
 
 RUN addgroup --gid 5001 rudi         && \
     addgroup --gid 5002 rudicatalog  && \
