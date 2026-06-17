@@ -74,7 +74,7 @@ done
 
 if [ "$package_json_changed" = true ]; then
     log_msg "package.json changed — regenerating npmci/package-lock.json..."
-    "${PRJ_DIR}"/10-update-lockfile.sh
+    "${PRJ_DIR}"/91-update-lockfile.sh
 fi
 
 echo "Execution time: $(time_spent_ms ${TIME_START})ms ($(basename "$0"))"
