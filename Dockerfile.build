@@ -2,7 +2,7 @@
 FROM node:22-alpine AS NodeBuilder
 # ------------------------------------------------------------------------------
 LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr,benjamin.de-zordo@irisa.fr"
-LABEL version="2.7.3"
+LABEL version="2.7.4"
 LABEL description="RUDI producer node - https://github.com/rudi-platform/rudi-node-container"
 
 # derived from BuildKit's TARGETPLATFORM
@@ -68,15 +68,15 @@ RUN adduser -D -G rudi        -u 5001 rudiadm       && \
 # ---- Backend dependencies ----
 # Only package files first
 
-# 1. Workspace root
-COPY "${SRC_DIR}/rudi-install/package*.json" ./
+# 1. Workspace root (from local ./npmci/)
+COPY npmci/package*.json ./
 # 2. Workspace package manifests only
 COPY "${SRC_DIR}/rudi-catalog/package.json" rudi-catalog/
 COPY "${SRC_DIR}/rudi-storage/package.json" rudi-storage/
 COPY "${SRC_DIR}/rudi-manager/package.json" rudi-manager/
 COPY "${SRC_DIR}/rudi-jwtauth/package.json" rudi-jwtauth/
 
-# Run npm install with cache
+# Run npm install with cache (deduplicates deps via workspaces)
 RUN --mount=type=cache,target=/npm-cache,sharing=locked \
     npm ci --workspaces --prefer-offline=false --omit=dev
 

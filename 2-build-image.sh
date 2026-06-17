@@ -19,7 +19,7 @@ test -r ./container-conf.sh && source ./container-conf.sh
 # podman image prune -f
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.7.3"}"
+VERSION="${VERSION:-"2.7.4"}"
 PLATFORMS=${PLATFORMS:-("linux/amd64" "linux/arm64")}
 
 # Enable BuildKit-style features like `RUN --mount=type=cache` (that uses npm cache)`

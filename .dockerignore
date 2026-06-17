@@ -2,10 +2,13 @@
 **/custom.ini
 **/*custom.ini
 
+# npmci workspace symlinks (point into src/, not needed at build time)
+npmci/rudi-catalog
+npmci/rudi-storage
+npmci/rudi-manager
+npmci/rudi-jwtauth
+
 # Generated
-*-lock.json
-*-lock.y*ml
-*.lock
 **/node_modules
 dump
 

@@ -1,0 +1,10 @@
+{
+  "name": "rudi-node",
+  "private": true,
+  "workspaces": [
+    "rudi-catalog",
+    "rudi-storage",
+    "rudi-manager",
+    "rudi-jwtauth"
+  ]
+}

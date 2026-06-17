@@ -15,7 +15,8 @@ NODE_BASE_PORT=${NODE_BASE_PORT:-3030}
 MONGODB_PORT=${MONGODB_PORT:-27017}
 MONGODB=${MONGODB:-mongodb://localhost:${MONGODB_PORT}}
 
-# log_var MONGODB
+# Activate migration: true | false
+CATALOG_MIGRATION_ACTIVE=${CATALOG_MIGRATION_ACTIVE:-false}
 
 #
 # Domains
