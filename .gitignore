@@ -54,3 +54,4 @@ wip*
 bak
 *.bak
 dev*
+pyproject.toml

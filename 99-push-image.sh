@@ -95,7 +95,7 @@ if ! $HLD_MNFST; then
     podman manifest inspect "${IMG_TAGGED}" | jq '.manifests[].platform'
 
     log_msg "Pushing $IMG_TAGGED to the registry $REPO_IMG_TAGGED"
-    podman --log-level=debug manifest push "${IMG_TAGGED}" "${REPO_IMG_TAGGED}"  --creds="$GIT_CREDS"
+    podman --log-level=debug manifest push "${IMG_TAGGED}" "${REPO_IMG_TAGGED}" --all --creds="$GIT_CREDS"
 
     log_msg "Manifests sent to aqmo registry"
 fi

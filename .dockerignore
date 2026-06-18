@@ -49,6 +49,10 @@ features
 notes
 demo
 z_*
+**/wip
 
 # Dev
 .vscode
+pyproject.toml
+data
+.venv
