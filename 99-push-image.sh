@@ -25,7 +25,7 @@ test -r "$GIT_CREDS_FILE" && echo "Creds file was found: '$GIT_CREDS_FILE'" && s
 GIT_CREDS="${GIT_CREDS:-"${GIT_USR:-}:${GIT_TOKEN:-}"}"
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.7.4"}"
+VERSION="${VERSION:-"2.7.5"}"
 REGISTRY="${REGISTRY:-registry.aqmo.org/public-rudi/public-packages}"
 read -r -a PLATFORMS <<<"${PLATFORMS:-linux/amd64 linux/arm64}"
 
@@ -73,7 +73,10 @@ for PLATFORM in "${PLATFORMS[@]}"; do
     # Push platform-specific images
     if ! $HLD_IMG; then
         log_msg "Pushing the image ${IMG_VERSION_PLATFORM} to ${REMOTE_IMG_VERSION_PLATFORM}"
-        podman --log-level=debug push "${IMG_VERSION_PLATFORM}" "${REMOTE_IMG_VERSION_PLATFORM}" --creds="$GIT_CREDS"
+        podman --log-level=debug push 			\
+			"${IMG_VERSION_PLATFORM}" 			\
+			"${REMOTE_IMG_VERSION_PLATFORM}"	\
+			 --creds="$GIT_CREDS"
     fi
     if ! $HLD_MNFST; then
         log_msg "Adding ${REMOTE_IMG_VERSION_PLATFORM} to ${IMG_TAGGED} manifest"
@@ -86,7 +89,13 @@ done
 if ! $HLD_MNFST; then
     # Pushing the versioned manifest to the registry
     log_msg "Pushing $IMG_VERSION to the registry $REPO_IMG_VERSION"
-    podman --log-level=debug manifest push "${IMG_VERSION}" "${REPO_IMG_VERSION}" --all --creds="$GIT_CREDS"
+		# --format=v2s2 						\
+    podman --log-level=debug manifest push 	\
+		--all 								\
+		--creds="$GIT_CREDS"  				\
+		"${IMG_VERSION}" 					\
+		"${REPO_IMG_VERSION}"
+
     log_msg "Manifest for $IMG_VERSION"
     podman manifest inspect "${IMG_VERSION}" | jq '.manifests[].platform'
 
@@ -95,7 +104,12 @@ if ! $HLD_MNFST; then
     podman manifest inspect "${IMG_TAGGED}" | jq '.manifests[].platform'
 
     log_msg "Pushing $IMG_TAGGED to the registry $REPO_IMG_TAGGED"
-    podman --log-level=debug manifest push "${IMG_TAGGED}" "${REPO_IMG_TAGGED}" --all --creds="$GIT_CREDS"
+		# --format=v2s2 						\
+    podman --log-level=debug manifest push 	\
+		--all 								\
+		--creds="$GIT_CREDS" 				\
+		"${IMG_TAGGED}" 					\
+		"${REPO_IMG_TAGGED}"
 
     log_msg "Manifests sent to aqmo registry"
 fi
