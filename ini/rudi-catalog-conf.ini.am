@@ -26,6 +26,7 @@ backups_dir= /data/dump
 should_log_console = false
 should_syslog = true
 should_syslog_in_console = true
+should_log_in_db = true
 
 [logging]
 app_name = catalog
