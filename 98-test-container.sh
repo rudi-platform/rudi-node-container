@@ -14,7 +14,7 @@ test -r ./node-version && source ./node-version
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
 
-VERSION="${VERSION:-"2.7.6b"}"
+VERSION="${VERSION:-"2.7.7a"}"
 
 # REGISTRY=ghcr.io/rudi-platform
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"
