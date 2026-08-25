@@ -7,6 +7,11 @@
 ; 'portal_url' commented or empty => no portal connected
 portal_url = @PORTAL_URL@
 
+; ========== Request options
+portal_req_timeout = @PORTAL_REQ_TIMEOUT@
+portal_max_retries = @PORTAL_MAX_RETRIES@
+portal_initial_delay = @PORTAL_INITIAL_DELAY@
+
 ; ========== Credentials
 login = @PORTAL_USER@
 passw = @PORTAL_PASS@
