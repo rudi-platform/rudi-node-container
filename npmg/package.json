@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "install:all": "npm ci --workspaces --include-workspace-root",
-    "update:all": "npx npm-check-updates -u -t minor && npm install",
+    "update:all": "npx npm-check-updates -u -t minor --reject mongoose --reject mongodb && npm install",
     "run:all": "npm -ws run",
     "exec:all": "npm -ws exec --",
     "test:all": "npm -ws run test",
