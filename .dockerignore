@@ -6,7 +6,6 @@
 npmci/rudi-catalog
 npmci/rudi-storage
 npmci/rudi-manager
-npmci/rudi-jwtauth
 
 # Generated
 **/node_modules

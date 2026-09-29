@@ -26,7 +26,6 @@ echo "Pulling from $REPO"
 git_src_catalog="${git_src_catalog:-"rudi-node-catalog.git"}"
 git_src_storage="${git_src_storage:-"rudi-node-storage.git"}"
 git_src_manager="${git_src_manager:-"rudi-node-manager.git"}"
-git_src_jwtauth="${git_src_jwtauth:-"rudi-node-jwtauth.git"}"
 
 # Creating necessary folders
 PRJ_DIR="$(pwd)"
@@ -40,7 +39,7 @@ if [ -f "$GIT_REV_FILE" ]; then rm "$GIT_REV_FILE"; fi
 
 package_json_changed=false
 
-for module in catalog storage manager jwtauth; do
+for module in catalog storage manager; do
     cd "${PRJ_SRC_DIR}" || exit
     module_dir="${PRJ_SRC_DIR}/rudi-${module}"
 

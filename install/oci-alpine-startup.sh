@@ -24,7 +24,6 @@ ENABLE_DB=${ENABLE_DB:-true}
 ENABLE_CATALOG=${ENABLE_CATALOG:-true}
 ENABLE_STORAGE=${ENABLE_STORAGE:-true}
 ENABLE_MANAGER=${ENABLE_MANAGER:-true}
-ENABLE_JWTAUTH=${ENABLE_JWTAUTH:-false}
 
 # Load configurations
 source ${ROOT_DIR}/env-rudi.sh
@@ -32,7 +31,6 @@ ${ENABLE_DB}      && . ${ROOT_DIR}/env-db.sh
 ${ENABLE_CATALOG} && . ${ROOT_DIR}/env-catalog.sh
 ${ENABLE_STORAGE} && . ${ROOT_DIR}/env-storage.sh
 ${ENABLE_MANAGER} && . ${ROOT_DIR}/env-manager.sh
-${ENABLE_JWTAUTH} && . ${ROOT_DIR}/env-jwtauth.sh
 
 # Chek installations
 rudi_check
@@ -40,7 +38,6 @@ ${ENABLE_DB}      && db_check
 ${ENABLE_CATALOG} && catalog_check
 ${ENABLE_STORAGE} && storage_check
 ${ENABLE_MANAGER} && manager_check
-${ENABLE_JWTAUTH} && jwtauth_check
 
 # Run services
 PIDS=""
@@ -59,7 +56,6 @@ ${ENABLE_DB}      && db_run
 run_if_enabled catalog_run "${ENABLE_CATALOG}"
 run_if_enabled storage_run "${ENABLE_STORAGE}"
 run_if_enabled manager_run "${ENABLE_MANAGER}"
-run_if_enabled jwtauth_run "${ENABLE_JWTAUTH}"
 
 log_msg "Modules launched"
 echo "Execution time for launching: $(time_spent_s "${TIME_START}")s ${ROOT_DIR}"

@@ -2,7 +2,7 @@
 FROM node:22-alpine AS NodeBuilder
 # ------------------------------------------------------------------------------
 LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr,benjamin.de-zordo@irisa.fr"
-LABEL version="2.7.9"
+LABEL version="2.7.10"
 LABEL description="RUDI producer node - https://github.com/rudi-platform/rudi-node-container"
 
 # derived from BuildKit's TARGETPLATFORM
@@ -52,18 +52,15 @@ RUN npm config set registry "https://registry.npmjs.org/" && \
 RUN addgroup -g 5001 rudi         && \
     addgroup -g 5002 rudicatalog  && \
     addgroup -g 5003 rudistorage  && \
-    addgroup -g 5004 rudijwtauth  && \
     addgroup -g 5005 rudimanager
 
 RUN adduser -D -G rudi        -u 5001 rudiadm       && \
     adduser -D -G rudicatalog -u 5002 rudicatalog   && \
     adduser -D -G rudistorage -u 5003 rudistorage   && \
-    adduser -D -G rudijwtauth -u 5004 rudijwtauth   && \
     adduser -D -G rudimanager -u 5005 rudimanager   && \
     addgroup rudicatalog rudi                       && \
     addgroup rudistorage rudi                       && \
-    addgroup rudimanager rudi                       && \
-    addgroup rudijwtauth rudi
+    addgroup rudimanager rudi
 
 # ---- Backend dependencies ----
 # Only package files first
@@ -74,7 +71,6 @@ COPY npmci/package*.json ./
 COPY "${SRC_DIR}/rudi-catalog/package.json" rudi-catalog/
 COPY "${SRC_DIR}/rudi-storage/package.json" rudi-storage/
 COPY "${SRC_DIR}/rudi-manager/package.json" rudi-manager/
-COPY "${SRC_DIR}/rudi-jwtauth/package.json" rudi-jwtauth/
 
 # Run npm install with cache (deduplicates deps via workspaces)
 RUN --mount=type=cache,target=/npm-cache,sharing=locked \
@@ -92,7 +88,6 @@ RUN --mount=type=cache,target=/npm-cache,sharing=locked \
 COPY "${SRC_DIR}/rudi-catalog" "${WK_DIR}/rudi-catalog"
 COPY "${SRC_DIR}/rudi-storage" "${WK_DIR}/rudi-storage"
 COPY "${SRC_DIR}/rudi-manager" "${WK_DIR}/rudi-manager"
-COPY "${SRC_DIR}/rudi-jwtauth" "${WK_DIR}/rudi-jwtauth"
 
 # ---- Front-end build (with npm cache) ----
 RUN --mount=type=cache,target=/npm-cache,sharing=locked \
@@ -108,10 +103,9 @@ RUN rm -rf \
 RUN chown -R root:rudi        node_modules *.ini *.json && \
     chown -R root:rudicatalog rudi-catalog              && \
     chown -R root:rudistorage rudi-storage              && \
-    chown -R root:rudimanager rudi-manager              && \
-    chown -R root:rudijwtauth rudi-jwtauth
+    chown -R root:rudimanager rudi-manager
 
-RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-jwtauth rudi-manager && \
+RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-manager && \
     chmod -R u=rX,g=rX,o= node_modules *.ini *.json
 
 # ----- Application image ------------------------------------------------------
@@ -137,15 +131,13 @@ RUN node --version && npm --version
 RUN addgroup --gid 5001 rudi         && \
     addgroup --gid 5002 rudicatalog  && \
     addgroup --gid 5003 rudistorage  && \
-    addgroup --gid 5004 rudijwtauth  && \
     addgroup --gid 5005 rudimanager
 
 RUN adduser --disabled-password -G rudi        --uid 5001 rudiadm      && \
     adduser --disabled-password -G rudicatalog --uid 5002 rudicatalog  && \
     adduser --disabled-password -G rudistorage --uid 5003 rudistorage  && \
-    adduser --disabled-password -G rudijwtauth --uid 5004 rudijwtauth  && \
     adduser --disabled-password -G rudimanager --uid 5005 rudimanager  && \
-    for usr in rudicatalog rudistorage rudijwtauth rudimanager; do addgroup "$usr" rudi ; addgroup rudiadm "$usr" ; done
+    for usr in rudicatalog rudistorage rudimanager; do addgroup "$usr" rudi ; addgroup rudiadm "$usr" ; done
 
 WORKDIR /app
 ENV WK_DIR="/app/rudi-node"

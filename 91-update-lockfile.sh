@@ -11,7 +11,7 @@ NPMCI_DIR="${PRJ_DIR}/npmci"
 cd "$NPMCI_DIR"
 
 # Create symlinks for workspace members if they don't exist
-for module in catalog storage manager jwtauth; do
+for module in catalog storage manager; do
     target="${NPMCI_DIR}/rudi-${module}"
     if [ ! -L "$target" ]; then
         ln -snf "../src/rudi-${module}" "$target"
