@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile.build
       network: host
+      args:
+        VERSION: "${VERSION:-dev}" # Single source of truth: ./rudinode-version (exported by the build scripts)
     container_name: rudi_db
     restart: no
     ports:

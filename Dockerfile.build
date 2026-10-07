@@ -1,9 +1,9 @@
 # - Building -------------------------------------------------------------------
-FROM node:22-alpine AS NodeBuilder
+# Node build stage. Debian-based (glibc) on purpose: the runtime stage below is
+# Ubuntu (glibc). Do NOT switch this to alpine here, a musl/glibc mix can break
+# any native addon that gets compiled during `npm ci`.
+FROM node:26-bookworm-slim AS NodeBuilder
 # ------------------------------------------------------------------------------
-LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr,benjamin.de-zordo@irisa.fr"
-LABEL version="2.7.10"
-LABEL description="RUDI producer node - https://github.com/rudi-platform/rudi-node-container"
 
 # derived from BuildKit's TARGETPLATFORM
 # "linux/amd64", "linux/arm64" or "windows/amd64"
@@ -36,7 +36,9 @@ ENV NODE_ENV=production
 
 WORKDIR "$WK_DIR"
 
-RUN apk update && apk add --no-cache python3 xz
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 xz-utils ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY ./env/* "$WK_DIR"/
 
@@ -49,18 +51,21 @@ RUN npm config set registry "https://registry.npmjs.org/" && \
     npm i -g npm@12.0.2                                   && \
     npm config set @aqmo.org:registry "https://gitlab.aqmo.org/api/v4/projects/59/packages/npm/"
 
-RUN addgroup -g 5001 rudi         && \
-    addgroup -g 5002 rudicatalog  && \
-    addgroup -g 5003 rudistorage  && \
-    addgroup -g 5005 rudimanager
+RUN groupadd -g 5001 rudi         && \
+    groupadd -g 5002 rudicatalog  && \
+    groupadd -g 5003 rudistorage  && \
+    groupadd -g 5005 rudimanager
 
-RUN adduser -D -G rudi        -u 5001 rudiadm       && \
-    adduser -D -G rudicatalog -u 5002 rudicatalog   && \
-    adduser -D -G rudistorage -u 5003 rudistorage   && \
-    adduser -D -G rudimanager -u 5005 rudimanager   && \
-    addgroup rudicatalog rudi                       && \
-    addgroup rudistorage rudi                       && \
-    addgroup rudimanager rudi
+RUN useradd -M --shell /usr/sbin/nologin -g rudi        -u 5001 rudiadm      && \
+    useradd -M --shell /usr/sbin/nologin -g rudicatalog -u 5002 rudicatalog  && \
+    useradd -M --shell /usr/sbin/nologin -g rudistorage -u 5003 rudistorage  && \
+    useradd -M --shell /usr/sbin/nologin -g rudimanager -u 5005 rudimanager  && \
+    usermod -aG rudi        rudicatalog                                      && \
+    usermod -aG rudi        rudistorage                                      && \
+    usermod -aG rudi        rudimanager                                      && \
+    usermod -aG rudicatalog rudiadm                                          && \
+    usermod -aG rudistorage rudiadm                                          && \
+    usermod -aG rudimanager rudiadm
 
 # ---- Backend dependencies ----
 # Only package files first
@@ -109,35 +114,60 @@ RUN chmod -R u=rX,g=rX,o= rudi-catalog rudi-storage rudi-manager && \
     chmod -R u=rX,g=rX,o= node_modules *.ini *.json
 
 # ----- Application image ------------------------------------------------------
-FROM alpine:3.20 AS system
+# Ubuntu noble based (apt-get), ships MongoDB 9.0 + mongosh + mongodump/mongorestore.
+# Docker Official image (library/mongo); NOT affected by MongoDB's
+# mongodb-community-server non-slim deprecation. Chosen over the community-server
+# slim variants: '*ubi*-slim' is ubi-micro (no package manager) and
+# '*ubuntu2204-slim' lacks mongodump/mongorestore and is glibc 2.35 (< node 2.36).
+FROM mongo:9.0-noble AS system
 # ------------------------------------------------------------------------------
+# The base image declares ENTRYPOINT ["docker-entrypoint.sh"], CMD ["mongod"],
+# VOLUME /data/db /data/configdb and runs as root (drops privileges via gosu).
+# We take it over entirely below.
+
+# Version: single source of truth is ./rudinode-version, passed as a build arg by the
+# build scripts (they `source`/export it) and forwarded by docker-compose*.yml.
+ARG VERSION=dev
+LABEL authors="omartine@irisa.fr,lmaurin@irisa.fr,benjamin.de-zordo@irisa.fr" \
+      version="${VERSION}" \
+      description="RUDI producer node - https://github.com/rudi-platform/rudi-node-container"
+
+USER root
 
 WORKDIR /app
 
-RUN echo "Europe/Paris" > /etc/timezone
-RUN printf 'https://dl-cdn.alpinelinux.org/alpine/v3.9/main\nhttps://dl-cdn.alpinelinux.org/alpine/v3.9/community\n' >> /etc/apk/repositories && \
-    apk update                                                                                && \
-    apk add mongodb mongodb-tools openssh-keygen logrotate busybox-suid sqlite tzdata  && \
-    apk cache clean                                                                           && \
-    rm -f /var/cache/apk/*
+ENV TZ=Europe/Paris
 
-# Copy Node.js runtime from builder image
+# 'anacron' satisfies logrotate's 'cron | anacron | cron-daemon | systemd-sysv'
+# dependency without pulling in cron + systemd (logrotate is driven by `watch`).
+RUN echo "Europe/Paris" > /etc/timezone               && \
+    DEBIAN_FRONTEND=noninteractive apt-get update     && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        ca-certificates tzdata logrotate openssh-client sqlite3 bc procps net-tools libatomic1 anacron && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy Node.js runtime from builder image (both stages are glibc)
 COPY --from=NodeBuilder /usr/local/bin/node /usr/local/bin/node
 COPY --from=NodeBuilder /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -sf /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
     ln -sf /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 RUN node --version && npm --version
 
-RUN addgroup --gid 5001 rudi         && \
-    addgroup --gid 5002 rudicatalog  && \
-    addgroup --gid 5003 rudistorage  && \
-    addgroup --gid 5005 rudimanager
+RUN groupadd -g 5001 rudi         && \
+    groupadd -g 5002 rudicatalog  && \
+    groupadd -g 5003 rudistorage  && \
+    groupadd -g 5005 rudimanager
 
-RUN adduser --disabled-password -G rudi        --uid 5001 rudiadm      && \
-    adduser --disabled-password -G rudicatalog --uid 5002 rudicatalog  && \
-    adduser --disabled-password -G rudistorage --uid 5003 rudistorage  && \
-    adduser --disabled-password -G rudimanager --uid 5005 rudimanager  && \
-    for usr in rudicatalog rudistorage rudimanager; do addgroup "$usr" rudi ; addgroup rudiadm "$usr" ; done
+RUN useradd -M --shell /usr/sbin/nologin -g rudi        -u 5001 rudiadm      && \
+    useradd -M --shell /usr/sbin/nologin -g rudicatalog -u 5002 rudicatalog  && \
+    useradd -M --shell /usr/sbin/nologin -g rudistorage -u 5003 rudistorage  && \
+    useradd -M --shell /usr/sbin/nologin -g rudimanager -u 5005 rudimanager  && \
+    usermod -aG rudi        rudicatalog                                      && \
+    usermod -aG rudi        rudistorage                                      && \
+    usermod -aG rudi        rudimanager                                      && \
+    usermod -aG rudicatalog rudiadm                                          && \
+    usermod -aG rudistorage rudiadm                                          && \
+    usermod -aG rudimanager rudiadm
 
 WORKDIR /app
 ENV WK_DIR="/app/rudi-node"
@@ -156,4 +186,7 @@ COPY --chown=root:rudi    --chmod=550 ./install/oci-alpine-startup.sh ./install/
 USER rudiadm
 
 RUN ls -lah
-CMD "$WK_DIR/oci-alpine-startup.sh"
+
+# Reset the base image's mongod entrypoint, otherwise it runs instead of our script.
+ENTRYPOINT []
+CMD ["/app/rudi-node/oci-alpine-startup.sh"]

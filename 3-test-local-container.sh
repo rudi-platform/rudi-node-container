@@ -9,12 +9,12 @@ enable_script_logging
 podman-context build
 
 TIME_START=$(now_ms_int)
-test -r ./node-version && source ./node-version
+
+test -r ./rudinode-version && source ./rudinode-version
+VERSION="${VERSION:-"unset"}"
 
 # Write your own configuration in 'container-conf.sh' file
 test -r ./container-conf.sh && source ./container-conf.sh
-
-VERSION="${VERSION:-"2.7.10"}"
 
 # REGISTRY=ghcr.io/rudi-platform
 REGISTRY="${REGISTRY:-"registry.aqmo.org/public-rudi/public-packages"}"

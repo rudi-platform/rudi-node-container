@@ -1,4 +1,4 @@
-test -r ./node-version && source ./node-version
+test -r ./rudinode-version && source ./rudinode-version
 
 IMG_NAME="rudinode"
 

@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile.build
       args:
         TARGETPLATFORM: "${TARGETPLATFORM:-linux/amd64}" # Pass the platform dynamically to the Dockerfile
+        VERSION: "${VERSION:-dev}" # Single source of truth: ./rudinode-version (exported by the build scripts)
     image: "${IMG_NAME_TAG:-rudinode:linux-amd64}"
     platform: "${TARGETPLATFORM:-linux/amd64}"
     container_name: "${IMG_NAME_TAG:-rudinode:linux-amd64}"

@@ -11,7 +11,9 @@ test -r ./install/.bashrc && source ./install/.bashrc
 enable_script_logging
 
 TIME_START=$(now_ms_int)
-test -r ./node-version && source ./node-version
+
+test -r ./rudinode-version && source ./rudinode-version
+VERSION="${VERSION:-"unset"}"
 
 test -r ./container-conf.sh && source ./container-conf.sh
 
@@ -19,7 +21,6 @@ test -r ./container-conf.sh && source ./container-conf.sh
 # podman image prune -f
 
 IMG_NAME="${IMG_NAME:-"rudinode"}"
-VERSION="${VERSION:-"2.7.10"}"
 read -r -a PLATFORMS <<<"${PLATFORMS:-linux/amd64 linux/arm64}"
 
 # Enable BuildKit-style features like `RUN --mount=type=cache` (that uses npm cache)`

@@ -8,6 +8,7 @@ services:
       network: host
       args:
         PLATFORM: ${PLATFORM:-linux/amd64} # Pass the platform dynamically to the Dockerfile
+        VERSION: "${VERSION:-dev}" # Single source of truth: ./rudinode-version (exported by the build scripts)
     container_name: rudi_db
     restart: no
     ports:
